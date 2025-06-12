@@ -5,9 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -130,7 +137,7 @@ fun FormularioScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFC3C3C))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC3C3C))
             ) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
@@ -152,7 +159,7 @@ fun FormularioScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (isDateValid && isTitleValid && isDescriptionValid) Color(0xFF59FC3C) else Color.Gray
+                    containerColor = if (isDateValid && isTitleValid && isDescriptionValid) Color(0xFF59FC3C) else Color.Gray
                 ),
                 enabled = isDateValid && isTitleValid && isDescriptionValid
             ) {

@@ -1,16 +1,15 @@
 package unpsjb.tnt.appdepesca.Reglamentos
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.database.Reglamento
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+
 
 @Composable
 fun ReglamentoScreen(
@@ -41,7 +46,7 @@ fun ReglamentoScreen(
                     .weight(1f)
                     .padding(horizontal = 8.dp)
                     .wrapContentWidth(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
             Text(
                 text = "Lugar",
@@ -49,7 +54,7 @@ fun ReglamentoScreen(
                     .weight(1f)
                     .padding(horizontal = 8.dp)
                     .wrapContentWidth(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
         }
         Divider(
@@ -75,7 +80,7 @@ fun ReglamentoScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFC3C3C))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC3C3C))
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
