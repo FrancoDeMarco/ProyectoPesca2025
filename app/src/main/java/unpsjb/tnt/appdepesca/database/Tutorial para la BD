@@ -1,0 +1,32 @@
+https://developer.android.com/training/data-storage/room?hl=es-419
+
+
+
+// DE LA BD:
+
+    companion object {
+        @Volatile
+        private var INSTANCE: PescaRoomDatabase? = null
+
+        fun obtenerDatabase(context: Context, scope: CoroutineScope): PescaRoomDatabase {
+            val instanciaTemporal = INSTANCE
+            if (instanciaTemporal != null) {
+                return instanciaTemporal
+            }
+            synchronized(this) {
+                val instancia = Room.databaseBuilder(
+                    context.applicationContext,
+                    PescaRoomDatabase::class.java,
+                    "pesca_database"
+                )
+                    .build()
+                INSTANCE = instancia
+                return instancia
+            }
+        }
+    }
+
+    //.addCallback(PescaDatabaseCallback(scope))
+    class PescaDatabaseCallback(private val scope: CoroutineScope) : RoomDatabase.Callback() {
+
+    }
