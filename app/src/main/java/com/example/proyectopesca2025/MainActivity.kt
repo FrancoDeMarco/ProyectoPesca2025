@@ -4,112 +4,69 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.room.Room
-import unpsjb.tnt.appdepesca.Reglamentos.ReglamentoScreen
-import unpsjb.tnt.appdepesca.Reglamentos.ReglamentosViewModel
-import unpsjb.tnt.appdepesca.concursos.ConcursoScreen
-import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
-import unpsjb.tnt.appdepesca.formulario.FormularioScreen
-import unpsjb.tnt.appdepesca.login.LoginScreen
-import unpsjb.tnt.appdepesca.login.LoginViewModel
-import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
-import unpsjb.tnt.appdepesca.reportes.ReportScreen
-import unpsjb.tnt.appdepesca.reportes.ReportViewModel
-import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
-import unpsjb.tnt.appdepesca.database.ReporteDAO
-import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
-
+import com.example.proyectopesca2025.database.PescaRoomDatabase
+import com.example.proyectopesca2025.database.ReporteDAO
+import com.example.proyectopesca2025.formulario.FormularioScreen
+import com.example.proyectopesca2025.formulario.FormularioViewModel
+import com.example.proyectopesca2025.login.LoginScreen
+import com.example.proyectopesca2025.login.LoginViewModel
+import com.example.proyectopesca2025.Reglamentos.ReglamentoScreen
+import com.example.proyectopesca2025.Reglamentos.ReglamentosViewModel
+import com.example.proyectopesca2025.concursos.ConcursoScreen
+import com.example.proyectopesca2025.concursos.ConcursosViewModel
+import com.example.proyectopesca2025.reportes.ReportScreen
+import com.example.proyectopesca2025.reportes.ReportViewModel
+import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 
 class MainActivity : ComponentActivity() {
-    private lateinit var dao: ReporteDAO
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            ProyectoPesca2025Theme {
-                val database = Room.databaseBuilder(this, PescaRoomDatabase::class.java, "product_db3")
-                    .build()
-                dao = database.pescaDAO
 
-                val viewModelFactory = object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return ReportViewModel(dao, FormularioViewModel()) as T
-                    }
-                }
-                val reportViewModel: ReportViewModel by viewModels(factoryProducer = { viewModelFactory })
+        val database = Room.databaseBuilder(
+            applicationContext,
+            PescaRoomDatabase::class.java,
+            "product_db3"
+        ).build()
+        val dao = database.pescaDAO
 
-                MyApp(modifier = Modifier.fillMaxSize(), reportViewModel, dao)
+        val viewModelFactory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return ReportViewModel(dao, FormularioViewModel()) as T
             }
         }
-    }
-}//
+        val reportViewModel: ReportViewModel by viewModels { viewModelFactory }
 
-@Composable
-fun MyApp(modifier: Modifier = Modifier, reportViewModel: ReportViewModel, dao: ReporteDAO) {
-    val navController = rememberNavController()
-
-    NavHost(navController, startDestination = "login") {
-
-        composable("reportes") { ReportScreen(ReportViewModel(dao, FormularioViewModel()), FormularioViewModel(), navController) }
-
-        composable("reglamentos"){ ReglamentoScreen(ReglamentosViewModel(), navController)}
-
-        composable("login") { LoginScreen(LoginViewModel(), navController) }
-
-        composable("home") { ReportScreen(reportViewModel, FormularioViewModel(), navController) }
-
-        composable("concurso") { ConcursoScreen(ConcursosViewModel(), navController) }
-
-        //composable(("detalle2/{concursoId}")) { ConcursoDetalleScreen(ConcursosViewModel(), navController) }
-
-        //composable(("detalle/{reglamentoId}")) { ReglamentoDetalleScreen(ReglamentosViewModel(), navController) }
-
-        composable("formulario") {
-            val formularioViewModel = remember { FormularioViewModel() }
-            FormularioScreen(formularioViewModel, reportViewModel, navController)
+        setContent {
+            ProyectoPesca2023Theme {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(LoginViewModel(), navController)
+                    }
+                    composable("home") {
+                        ReportScreen(reportViewModel, FormularioViewModel(), navController)
+                    }
+                    composable("reportes") {
+                        ReportScreen(reportViewModel, FormularioViewModel(), navController)
+                    }
+                    composable("reglamentos") {
+                        ReglamentoScreen(ReglamentosViewModel(), navController)
+                    }
+                    composable("concurso") {
+                        ConcursoScreen(ConcursosViewModel(), navController)
+                    }
+                    composable("formulario") {
+                        val formularioViewModel = FormularioViewModel()
+                        FormularioScreen(formularioViewModel, reportViewModel, navController)
+                    }
+                }
+            }
         }
     }
 }
-/*import android.annotation.SuppressLint
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
-import com.example.proyectopesca2025.ui.theme.ProyectoPesca2025Theme
-import unpsjb.tnt.appdepesca.login.LoginScreen
-import unpsjb.tnt.appdepesca.login.LoginViewModel
-
-class MainActivity : ComponentActivity() {
-    private val loginViewModel: LoginViewModel by viewModels()
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ProyectoPesca2025Theme {
-                val navController = rememberNavController()
-
-                Scaffold(modifier = Modifier.fillMaxSize()) {
-                    LoginScreen(
-                        viewModel = loginViewModel,
-                        navController = navController
-                    )
-                }
-            }
-        }
-    }
-}*/
