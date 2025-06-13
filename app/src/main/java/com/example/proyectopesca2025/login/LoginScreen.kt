@@ -2,7 +2,6 @@ package com.example.proyectopesca2025.login
 
 
 // ======== IMPORTS ========
-//import androidx.compose.ui.tooling.preview.Preview // ✅ ESTA ES LA DE COMPOSE
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +28,8 @@ import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import com.example.proyectopesca2025.theme.ProyectoPesca2025Theme
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
+
 
 // ======== PANTALLA PRINCIPAL ========
 @Composable
@@ -256,10 +257,10 @@ fun LoginScreenPreviewUI() {
     }
 }
 
-/*@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenVisualPreview() {
     ProyectoPesca2025Theme {
         LoginScreenPreviewUI()
     }
-}*/
+}

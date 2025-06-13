@@ -1,17 +1,15 @@
-package com.example.proyectopesca2025
+package unpsjb.tnt.appdepesca
+
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.*
 import androidx.room.Room
 import com.example.proyectopesca2025.database.PescaRoomDatabase
-import com.example.proyectopesca2025.database.ReporteDAO
 import com.example.proyectopesca2025.formulario.FormularioScreen
 import com.example.proyectopesca2025.formulario.FormularioViewModel
 import com.example.proyectopesca2025.login.LoginScreen
