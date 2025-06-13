@@ -1,11 +1,15 @@
 package unpsjb.tnt.appdepesca.login
 
 
+// ======== IMPORTS ========
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -20,11 +24,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import com.example.proyectopesca2025.R
 
+// ======== PANTALLA PRINCIPAL ========
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
     Box(
@@ -39,8 +43,10 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
     }
 }
 
+// ======== LOGIN ========
 @Composable
 fun Login(modifier: Modifier, viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
+
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
     val passwordVisible = remember { mutableStateOf(false) }
@@ -54,6 +60,7 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, onLoginSuccesfull: () -
             showAlertDialog()
         }
     }
+
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -72,12 +79,12 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, onLoginSuccesfull: () -
             EmailField(email) { viewModel.onLoginChanged(it, password) }
             Spacer(modifier = Modifier.padding(4.dp))
             PasswordField(password, passwordVisible.value) {
-                    newValue -> viewModel.onLoginChanged(email, newValue)
+                viewModel.onLoginChanged(email, it)
             }
             Spacer(modifier = Modifier.padding(8.dp))
             ForgotPassword(Modifier.align(Alignment.End))
             Spacer(modifier = Modifier.padding(16.dp))
-            LoginButton(viewModel, loginEnable) {
+            LoginButton(loginEnable) {
                 coroutineScope.launch {
                     viewModel.onLoginSelected()
                     if (validarCredenciales(email, password)) {
@@ -91,9 +98,11 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, onLoginSuccesfull: () -
     }
 }
 
+// ======== ALERT DIALOG ========
 @Composable
 fun showAlertDialog() {
     val showDialog = remember { mutableStateOf(true) }
+
     if (showDialog.value) {
         AlertDialog(
             onDismissRequest = { showDialog.value = false },
@@ -108,14 +117,17 @@ fun showAlertDialog() {
     }
 }
 
+// ======== VALIDACIÓN ========
 fun validarCredenciales(usuario: String, contraseña: String): Boolean {
     return usuario == "admin@gmail.com" && contraseña == "administrador"
 }
 
+// ======== BOTÓN DE LOGIN ========
 @Composable
-fun LoginButton(viewModel: LoginViewModel, loginEnable: Boolean, onLoginSelected: () -> Unit) {
+fun LoginButton(enabled: Boolean, onClick: () -> Unit) {
     Button(
-        onClick = { onLoginSelected() },
+        onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),
@@ -124,13 +136,13 @@ fun LoginButton(viewModel: LoginViewModel, loginEnable: Boolean, onLoginSelected
             disabledContainerColor = Color(0xFFF78058),
             contentColor = Color.White,
             disabledContentColor = Color.White
-        ),
-        enabled = loginEnable
+        )
     ) {
         Text("Iniciar sesión")
     }
 }
 
+// ======== "¿OLVIDASTE TU CONTRASEÑA?" ========
 @Composable
 fun ForgotPassword(modifier: Modifier) {
     Text(
@@ -142,54 +154,61 @@ fun ForgotPassword(modifier: Modifier) {
     )
 }
 
+// ======== CAMPO CONTRASEÑA ========
 @Composable
-fun PasswordField(password: String, passwordVisible: Boolean, onTextFieldChanged: (String) -> Unit) {
-    val localPasswordVisible = remember { mutableStateOf(passwordVisible) }
+fun PasswordField(password: String, passwordVisible: Boolean, onTextChanged: (String) -> Unit) {
+    val visible = remember { mutableStateOf(passwordVisible) }
 
     OutlinedTextField(
         value = password,
-        onValueChange = onTextFieldChanged,
+        onValueChange = onTextChanged,
         placeholder = { Text("Contraseña") },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         singleLine = true,
-        visualTransformation = if (localPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = if (visible.value) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
-            IconButton(onClick = { localPasswordVisible.value = !localPasswordVisible.value }) {
+            IconButton(onClick = { visible.value = !visible.value }) {
                 Icon(
-                    imageVector = if (localPasswordVisible.value) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = null
+                    imageVector = if (visible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = if (visible.value) "Ocultar contraseña" else "Mostrar contraseña"
                 )
             }
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color(0xFF636262),
-            containerColor = Color(0xFFDEDDDD),
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
-        )
-    )
-}
-
-@Composable
-fun EmailField(email: String, onTextFieldChanged: (String) -> Unit) {
-    TextField(
-        value = email,
-        onValueChange = onTextFieldChanged,
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text("Email") },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        singleLine = true,
-        maxLines = 1,
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = Color(0xFF636262),
-            containerColor = Color(0xFFDEDDDD),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFDEDDDD),
+            unfocusedContainerColor = Color(0xFFDEDDDD),
+            focusedTextColor = Color(0xFF636262),
+            unfocusedTextColor = Color(0xFF636262),
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         )
     )
 }
 
+// ======== CAMPO EMAIL ========
+@Composable
+fun EmailField(email: String, onTextChanged: (String) -> Unit) {
+    OutlinedTextField(
+        value = email,
+        onValueChange = onTextChanged,
+        placeholder = { Text("Email") },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFDEDDDD),
+            unfocusedContainerColor = Color(0xFFDEDDDD),
+            focusedTextColor = Color(0xFF636262),
+            unfocusedTextColor = Color(0xFF636262),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        )
+    )
+}
+
+// ======== TÍTULO ========
 @Composable
 fun Titulo() {
     Text(
@@ -199,10 +218,11 @@ fun Titulo() {
     )
 }
 
+// ======== IMAGEN DE CABECERA ========
 @Composable
 fun HeaderImage() {
     Image(
-        painter = painterResource(id = R.drawable.pescado),
+        painter = painterResource(R.drawable.pescado),
         contentDescription = "Logo",
         modifier = Modifier
             .size(100.dp)

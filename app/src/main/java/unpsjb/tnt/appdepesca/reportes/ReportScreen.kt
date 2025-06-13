@@ -5,15 +5,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
 import java.text.ParseException
@@ -77,7 +82,7 @@ fun ReportScreen(
                 ) {
                     Text(
                         text = "Titulo",
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -128,7 +133,7 @@ fun ReportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3C8DFC))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3C8DFC))
             ) {
                 Text(text = "Concursos")
             }
@@ -141,7 +146,7 @@ fun ReportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE140FD))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE140FD))
             ) {
                 Text(text = "Reglamentos")
             }
@@ -153,7 +158,7 @@ fun ReportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF59FC3C))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF59FC3C))
             ) {
                 Text(text = "Agregar Reporte")
             }
@@ -164,7 +169,7 @@ fun ReportScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFC3C3C))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC3C3C))
             ) {
                 Text("Cerrar Sesión")
             }
@@ -210,6 +215,7 @@ fun ReportScreen(
         )
     }
 }
+
 
 
 
@@ -278,6 +284,8 @@ fun DatePickerComponent(
         }
     }
 }
+
+
 
 private fun String.isDateFormatValid(): Boolean {
     return try {
