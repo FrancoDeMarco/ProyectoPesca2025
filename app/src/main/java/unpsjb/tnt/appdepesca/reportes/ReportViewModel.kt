@@ -1,11 +1,8 @@
 package unpsjb.tnt.appdepesca.reportes
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte

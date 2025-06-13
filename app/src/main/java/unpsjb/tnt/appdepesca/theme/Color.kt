@@ -1,4 +1,4 @@
-package com.example.proyectopesca2025.ui.theme
+package unpsjb.tnt.appdepesca.theme
 
 import androidx.compose.ui.graphics.Color
 

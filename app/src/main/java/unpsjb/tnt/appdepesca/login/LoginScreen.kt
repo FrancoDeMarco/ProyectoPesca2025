@@ -22,11 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import com.example.proyectopesca2025.R
+import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 
 // ======== PANTALLA PRINCIPAL ========
 @Composable
@@ -228,4 +230,36 @@ fun HeaderImage() {
             .size(100.dp)
             .padding(bottom = 16.dp)
     )
+}
+
+
+@Composable
+fun LoginScreenPreviewUI() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(0xFF9EEE9E))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HeaderImage()
+        Titulo()
+        Spacer(modifier = Modifier.padding(16.dp))
+        EmailField(email = "", onTextChanged = {})
+        Spacer(modifier = Modifier.padding(4.dp))
+        PasswordField(password = "", passwordVisible = false, onTextChanged = {})
+        Spacer(modifier = Modifier.padding(8.dp))
+        ForgotPassword(Modifier.align(Alignment.End))
+        Spacer(modifier = Modifier.padding(16.dp))
+        LoginButton(enabled = true, onClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenVisualPreview() {
+    ProyectoPesca2025Theme {
+        LoginScreenPreviewUI()
+    }
 }
