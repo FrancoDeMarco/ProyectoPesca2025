@@ -1,7 +1,25 @@
 package unpsjb.tnt.appdepesca.login
 
+/* COLORES
+
+// Fondo general
+val BackgroundColor = Color(0xFF1B2B24)
+
+// Botones
+val ButtonActiveColor = Color(0xFF3E8B75)       // Botón habilitado (verde)
+val ButtonDisabledColor = Color(0xFF5D776C)     // Botón deshabilitado (gris oscuro)
+val ButtonTextEnabled = Color.White             // Texto blanco cuando está habilitado
+val ButtonTextDisabled = Color(0xFFAAAAAA)      // Texto gris claro cuando está deshabilitado
+
+// Texto general
+val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o palabras importantes
+
+ */
+
+
 
 // ======== IMPORTS ========
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,13 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
-import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 import kotlinx.coroutines.launch
-import androidx.compose.ui.tooling.preview.Preview
+import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 
 
 // ======== PANTALLA PRINCIPAL ========
@@ -261,4 +279,32 @@ fun HeaderImage() {
             .size(300.dp)
             .padding(bottom = 16.dp)
     )
+}
+
+//================PREVIEW==============
+@Composable
+fun LoginScreenPreviewUI() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(0xFF1B2B24)) // mismo color que LoginScreen real
+            .padding(horizontal = 16.dp, vertical = 64.dp), // mismo padding que Login()
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HeaderImage()
+        Titulo()
+        EmailField(email = "", onTextChanged = {})
+        PasswordField(password = "", passwordVisible = false, onTextChanged = {})
+        LoginButton(enabled = true, onClick = {})
+        ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginScreenVisualPreview() {
+    ProyectoPesca2025Theme {
+        LoginScreenPreviewUI()
+    }
 }
