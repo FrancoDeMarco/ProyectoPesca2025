@@ -33,10 +33,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
+import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -142,52 +146,63 @@ fun ReportScreen(
             }
         }
 
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = { navController.navigate("concurso") },
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3C8DFC))
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Concursos")
-            }
+                val buttonModifier = Modifier
+                    .weight(1f)           // Ocupa 1/4 del ancho disponible
+                    .aspectRatio(1f)      // Hace que el alto sea igual al ancho (cuadrado)
+                    .padding(horizontal = 4.dp) // Espacio entre botones
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    navController.navigate("reglamentos")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE140FD))
-            ) {
-                Text(text = "Reglamentos")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    navController.navigate("formulario")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF59FC3C))
-            ) {
-                Text(text = "Agregar Reporte")
-            }
+                Button(
+                    onClick = { navController.navigate("concurso") },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F6CBF)),
+                    shape = RectangleShape // <- esto lo hace cuadrado
+                ) {
+                    Text("Concurso")
+                }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = { navController.navigate("login") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC3C3C))
-            ) {
-                Text("Cerrar Sesión")
+                Button(
+                    onClick = { navController.navigate("reglamentos") },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAD4CAF)),
+                    shape = RectangleShape // <- esto lo hace cuadrado
+                ) {
+                    Text("Regl")
+                }
+
+                Button(
+                    onClick = { navController.navigate("formulario") },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75)),
+                    shape = RectangleShape // <- esto lo hace cuadrado
+                ) {
+                    Text(
+                        text = "+",
+                        fontSize = 30.sp // <- ajustás el tamaño acá
+                    )
+                }
+
+                Button(
+                    onClick = { navController.navigate("login") },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB24545)),
+                    shape = RectangleShape // <- esto lo hace cuadrado
+                ) {
+                    Text(
+                        text = "Salir",
+                        fontSize = 23.sp // <- ajustás el tamaño acá
+                    )
+                }
             }
         }
     }
