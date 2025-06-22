@@ -1,7 +1,25 @@
 package unpsjb.tnt.appdepesca.login
 
+/* COLORES
+
+// Fondo general
+val BackgroundColor = Color(0xFF1B2B24)
+
+// Botones
+val ButtonActiveColor = Color(0xFF3E8B75)       // Botón habilitado (verde)
+val ButtonDisabledColor = Color(0xFF5D776C)     // Botón deshabilitado (gris oscuro)
+val ButtonTextEnabled = Color.White             // Texto blanco cuando está habilitado
+val ButtonTextDisabled = Color(0xFFAAAAAA)      // Texto gris claro cuando está deshabilitado
+
+// Texto general
+val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o palabras importantes
+
+ */
+
+
 
 // ======== IMPORTS ========
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +33,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -22,13 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
-import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 import kotlinx.coroutines.launch
-import androidx.compose.ui.tooling.preview.Preview
+import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 
 
 // ======== PANTALLA PRINCIPAL ========
@@ -37,7 +56,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
     Box(
         Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF9EEE9E))
+            .background(color = Color(0xFF1B2B24))
             .padding(16.dp),
     ) {
         Login(viewModel) {
@@ -72,21 +91,18 @@ fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+                .padding(top = 64.dp, start = 16.dp, end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HeaderImage()
             Titulo()
-            Spacer(modifier = Modifier.padding(16.dp))
             EmailField(email) { viewModel.onLoginChanged(it, password) }
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             PasswordField(password, passwordVisible.value) {
                 viewModel.onLoginChanged(email, it)
             }
-            Spacer(modifier = Modifier.padding(8.dp))
-            ForgotPassword(Modifier.align(Alignment.End))
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             LoginButton(loginEnable) {
                 coroutineScope.launch {
                     viewModel.onLoginSelected()
@@ -97,6 +113,8 @@ fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+            ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
@@ -135,13 +153,16 @@ fun LoginButton(enabled: Boolean, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFF5B03),
-            disabledContainerColor = Color(0xFFF78058),
-            contentColor = Color.White,
-            disabledContentColor = Color.White
-        )
+            containerColor = Color(0xFF3E8B75),             // activo (verde)
+            disabledContainerColor = Color(0xFF5D776C),     // grisáceo oscuro cuando está deshabilitado
+            contentColor = Color.White,                     // texto en blanco
+            disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
+        ),
     ) {
-        Text("Iniciar sesión")
+        Text(
+            text = "Iniciar sesión",
+            fontSize = 20.sp,
+        )
     }
 }
 
@@ -151,43 +172,12 @@ fun ForgotPassword(modifier: Modifier) {
     Text(
         text = "¿Olvidaste la contraseña?",
         modifier = modifier.clickable { },
-        fontSize = 12.sp,
+        fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
-        color = Color(0xFFFB9600)
+        color = Color(0xFFE1EDE7)
     )
 }
 
-// ======== CAMPO CONTRASEÑA ========
-@Composable
-fun PasswordField(password: String, passwordVisible: Boolean, onTextChanged: (String) -> Unit) {
-    val visible = remember { mutableStateOf(passwordVisible) }
-
-    OutlinedTextField(
-        value = password,
-        onValueChange = onTextChanged,
-        placeholder = { Text("Contraseña") },
-        modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        singleLine = true,
-        visualTransformation = if (visible.value) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(onClick = { visible.value = !visible.value }) {
-                Icon(
-                    imageVector = if (visible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                    contentDescription = if (visible.value) "Ocultar contraseña" else "Mostrar contraseña"
-                )
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFDEDDDD),
-            unfocusedContainerColor = Color(0xFFDEDDDD),
-            focusedTextColor = Color(0xFF636262),
-            unfocusedTextColor = Color(0xFF636262),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        )
-    )
-}
 
 // ======== CAMPO EMAIL ========
 @Composable
@@ -195,28 +185,86 @@ fun EmailField(email: String, onTextChanged: (String) -> Unit) {
     OutlinedTextField(
         value = email,
         onValueChange = onTextChanged,
-        placeholder = { Text("Email") },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
+        label = {
+            Text(
+                text = "Email",
+                color = Color(0xFF3E8B75),
+                fontSize = 20.sp
+            )
+        },
         singleLine = true,
         maxLines = 1,
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFDEDDDD),
-            unfocusedContainerColor = Color(0xFFDEDDDD),
-            focusedTextColor = Color(0xFF636262),
-            unfocusedTextColor = Color(0xFF636262),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
         )
     )
 }
+
+
+// ======== CAMPO CONTRASEÑA ========
+@Composable
+fun PasswordField(password: String, passwordVisible: Boolean, onTextChanged: (String) -> Unit) {
+    val visible = remember { mutableStateOf(passwordVisible) }
+    var focusState by remember { mutableStateOf(false) }
+    OutlinedTextField(
+        value = password,
+        onValueChange = onTextChanged,
+        modifier =  Modifier.fillMaxWidth()
+                    .onFocusChanged { focusState = it.isFocused }, // <- Detecta foco,
+        singleLine = true,
+        visualTransformation = if (visible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
+        label = {
+            Text(
+                text = "Contraseña",
+                color = Color(0xFF3E8B75),
+                fontSize = 20.sp
+            )
+        },
+        trailingIcon = { // ícono del ojo
+            if (focusState) { // <- Solo muestra el ícono si hay foco
+                IconButton(onClick = { visible.value = !visible.value }) {
+                    Icon(
+                        imageVector = if (visible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (visible.value) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = Color.White // Esto lo hace blanco
+                    )
+                }
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
+    )
+}
+
+
+
 
 // ======== TÍTULO ========
 @Composable
 fun Titulo() {
     Text(
-        text = "Bienvenido a la App de Pesca",
-        style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+        text = "PescApp",
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
         modifier = Modifier.padding(bottom = 16.dp)
     )
 }
@@ -225,39 +273,35 @@ fun Titulo() {
 @Composable
 fun HeaderImage() {
     Image(
-        painter = painterResource(R.drawable.pescado),
+        painter = painterResource(R.drawable.fish),
         contentDescription = "Logo",
         modifier = Modifier
-            .size(100.dp)
+            .size(300.dp)
             .padding(bottom = 16.dp)
     )
 }
 
-
+//================PREVIEW==============
 @Composable
 fun LoginScreenPreviewUI() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF9EEE9E))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+            .background(color = Color(0xFF1B2B24)) // mismo color que LoginScreen real
+            .padding(horizontal = 16.dp, vertical = 64.dp), // mismo padding que Login()
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HeaderImage()
         Titulo()
-        Spacer(modifier = Modifier.padding(16.dp))
         EmailField(email = "", onTextChanged = {})
-        Spacer(modifier = Modifier.padding(4.dp))
         PasswordField(password = "", passwordVisible = false, onTextChanged = {})
-        Spacer(modifier = Modifier.padding(8.dp))
-        ForgotPassword(Modifier.align(Alignment.End))
-        Spacer(modifier = Modifier.padding(16.dp))
         LoginButton(enabled = true, onClick = {})
+        ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenVisualPreview() {
     ProyectoPesca2025Theme {
