@@ -65,7 +65,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
     }
 }
 
-// ======== LOGIN ========
+// ======== LoginScreen ========
 @Composable
 fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
 

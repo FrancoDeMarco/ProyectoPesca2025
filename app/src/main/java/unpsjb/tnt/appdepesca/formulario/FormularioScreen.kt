@@ -30,18 +30,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.TextStyle
+import unpsjb.tnt.appdepesca.reportes.ReportState
+import kotlin.Boolean
 
 /* COLORES
 
 // Fondo general
 val BackgroundColor = Color(0xFF1B2B24)
 
-// Botones
+/* Botones
 val ButtonActiveColor = Color(0xFF3E8B75)       // Botón habilitado (verde)
 val ButtonDisabledColor = Color(0xFF5D776C)     // Botón deshabilitado (gris oscuro)
 val ButtonTextEnabled = Color.White             // Texto blanco cuando está habilitado
 val ButtonTextDisabled = Color(0xFFAAAAAA)      // Texto gris claro cuando está deshabilitado
-
+*/
 // Texto general
 val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o palabras importantes
 
@@ -89,129 +91,168 @@ fun FormularioScreen(
     val showDialog = remember { mutableStateOf(false) }
     val isLoading: Boolean by formularioViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
-    var isDateValid by remember { mutableStateOf(false) }
-    var isTitleValid by remember { mutableStateOf(false) }
-    var isDescriptionValid by remember { mutableStateOf(false) }
+    var isDateValid = remember { mutableStateOf(false) }
+    val isTitleValid = remember { mutableStateOf(false) }
+    var isDescriptionValid = remember { mutableStateOf(false) }
+    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value
 
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
     } else {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color(0xFF1B2B24)),
-            contentAlignment = Alignment.Center
+                .background(color = Color(0xFF1B2B24))
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color(0xFF1B2B24))
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "Nuevo Reporte",
-                    style = TextStyle(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF3E8B75)
-                    ),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                TextField(
-                    value = state.reportTitle,
-                    onValueChange = { newValue ->
-                        reportViewModel.changeTitle(newValue)
-                        isTitleValid = newValue.trim().isNotEmpty()
-                    },
-                    placeholder = { Text(text = "Nombre del reporte") }
-                )
-                TextField(
-                    value = state.reportDescription,
-                    onValueChange = { newValue ->
-                        reportViewModel.changeDescription(newValue)
-                        isDescriptionValid = newValue.trim().isNotEmpty()
-                    },
-                    placeholder = { Text(text = "Descripción") }
-                )
-                TextField(
-                    value = dateState.value.text,
-                    onValueChange = { newValue ->
-                        dateState.value = TextFieldValue(newValue)
-                        reportViewModel.changeDate(newValue)
-
-                        // Validar el formato de fecha utilizando una expresión regular
-                        val regex =
-                            """(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/((19|20)\d\d)""".toRegex()
-                        isDateValid = regex.matches(newValue) && isValidDate(newValue)
-                    },
-                    placeholder = { Text(text = "dd/MM/yyyy") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            navController.navigate("reportes")
-                        }
-                    )
-                )
-
-                Button(
-                    onClick = {
-                        showDialog.value = true
-                        navController.navigate("reportes")
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Volver"
-                    )
-                    Text("Volver")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        run {
-                            reportViewModel.createReport()
-                            navController.navigate("reportes")
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isDateValid && isTitleValid && isDescriptionValid) Color(
-                            0xFF3E8B75
-                        ) else Color(0xFF5D776C)
-
-                    ),
-                    enabled = isDateValid && isTitleValid && isDescriptionValid
-                ) {
-                    Text(text = "Agregar Reporte")
-                }
-
+            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            TituloReporte()
+            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            NombreReporte(reportViewModel, state, isTitleValid)
+            DescripcionReporte(reportViewModel, state, isDescriptionValid)
+            FechaReporte(reportViewModel, dateState, isDateValid, navController)
+            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            VolverButton(navController, showDialog)
+            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            AgregarButton(enabled = formValido) {
+                reportViewModel.createReport()
+                navController.navigate("reportes")
             }
         }
     }
 }
 
-//////////////TITULO/////////////////////
-//////////////NOMBRE DEL REPORTE/////////
-//////////////DESCRIPCION DEL REPORTE////
-//////////////FECHA DEL REPORTE//////////
-//////////////BOTON VOLVER///////////////
-//////////////BOTON AGREGAR REPORTE//////
 
+//////////////TITULO/////////////////////
+@Composable
+fun TituloReporte() {
+    Text(
+        text = "Nuevo Reporte",
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
+}
+//////////////NOMBRE DEL REPORTE/////////
+@Composable
+fun NombreReporte(
+    reportViewModel: ReportViewModel,
+    state: ReportState,
+    isTitleValid: MutableState<Boolean>
+){
+    TextField(
+        value = state.reportTitle,
+        onValueChange = { newValue ->
+            reportViewModel.changeTitle(newValue)
+            isTitleValid.value = newValue.trim().isNotEmpty()
+        },
+        placeholder = { Text(text = "Nombre del reporte") }
+    )
+}
+//////////////DESCRIPCION DEL REPORTE////
+@Composable
+fun DescripcionReporte(
+    reportViewModel: ReportViewModel,
+    state: ReportState,
+    isDescriptionValid: MutableState<Boolean>
+){
+    TextField(
+        value = state.reportDescription,
+        onValueChange = { newValue ->
+            reportViewModel.changeDescription(newValue)
+            isDescriptionValid.value = newValue.trim().isNotEmpty()
+        },
+        placeholder = { Text(text = "Descripción") }
+    )
+}
+
+//////////////FECHA DEL REPORTE//////////
+@Composable
+fun FechaReporte(
+    reportViewModel: ReportViewModel,
+    dateState: MutableState<TextFieldValue>,
+    isDateValid: MutableState<Boolean>,
+    navController: NavController
+){
+    TextField(
+        value = dateState.value.text,
+        onValueChange = { newValue ->
+            dateState.value = TextFieldValue(newValue)
+            reportViewModel.changeDate(newValue)
+
+            // Validar el formato de fecha utilizando una expresión regular
+            val regex =
+                """(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/((19|20)\d\d)""".toRegex()
+            isDateValid.value = regex.matches(newValue) && isValidDate(newValue)
+        },
+        placeholder = { Text(text = "dd/MM/yyyy") },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                navController.navigate("reportes")
+            }
+        )
+    )
+}
+//////////////BOTON VOLVER///////////////
+@Composable
+fun VolverButton(
+    navController: NavController,
+    showDialog: MutableState<Boolean>
+) {
+    Button(
+        onClick = {
+            showDialog.value = true
+            navController.navigate("reportes")
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Volver"
+        )
+        Text("Volver")
+    }
+}
+
+//////////////BOTON AGREGAR REPORTE//////
+@Composable
+fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF3E8B75),             // Botón habilitado (verde)
+            disabledContainerColor = Color(0xFF5D776C),     // Botón deshabilitado (gris oscuro)
+            contentColor = Color.White,                     // texto en blanco
+            disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
+        )
+    ) {
+        Text(
+            text = "Agregar Reporte",
+            fontSize = 20.sp
+        )
+    }
+}
+
+
+/////////////////Validador de fecha////////////
 private fun isValidDate(dateString: String): Boolean {
     val parts = dateString.split('/')
     if (parts.size != 3) return false
