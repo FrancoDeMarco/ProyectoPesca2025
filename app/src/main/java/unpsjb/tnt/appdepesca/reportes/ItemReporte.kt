@@ -13,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 
 
 @Composable
@@ -29,18 +30,28 @@ fun ItemReporte(
             text = reporte.reportTitulo,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleLarge,
+            color = Color(0xFF3E8B75) // letra verde
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = reporte.reportFecha,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleLarge,
+            color = Color(0xFF3E8B75) // letra verde
         )
         IconButton(onClick = { onEdit(reporte) }) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit",
+                tint = Color(0xFF3E8B75) // icono verde
+            )
         }
         IconButton(onClick = { onDelete() }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete",
+                tint = Color(0xFF3E8B75) // icono verde
+            )
         }
     }
 }

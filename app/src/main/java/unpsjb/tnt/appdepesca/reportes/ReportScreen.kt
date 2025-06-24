@@ -17,6 +17,7 @@ val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o p
  */
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,10 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
 import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
@@ -103,6 +106,7 @@ fun ReportScreen(
                     Text(
                         text = "Titulo",
                         style = MaterialTheme.typography.titleLarge,
+                        color = Color.Red, // <- Color personalizado
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -117,13 +121,14 @@ fun ReportScreen(
                     )
                 }
                 Divider(
-                    color = Color.Black,
+                    color = Color(0xFF3E8B75),
                     thickness = 2.dp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
             }
+
 
             reportes?.let { list ->
                 items(list) { reporte ->
@@ -145,67 +150,73 @@ fun ReportScreen(
                 }
             }
         }
-
-        Box(
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            val buttonModifier = Modifier
+                .weight(1f)           // Ocupa 1/4 del ancho disponible
+                .aspectRatio(1f)      // Hace que el alto sea igual al ancho (cuadrado)
+                .padding(horizontal = 4.dp) // Espacio entre botones
+
+            Button(
+                onClick = { navController.navigate("concurso") },
+                modifier = buttonModifier,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F6CBF)),
+                shape = RectangleShape // <- esto lo hace cuadrado
             ) {
-                val buttonModifier = Modifier
-                    .weight(1f)           // Ocupa 1/4 del ancho disponible
-                    .aspectRatio(1f)      // Hace que el alto sea igual al ancho (cuadrado)
-                    .padding(horizontal = 4.dp) // Espacio entre botones
+                Image(
+                    painter = painterResource(R.drawable.concursos),
+                    contentDescription = "Concursos",
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(bottom = 16.dp)
+                )
+            }
 
-                Button(
-                    onClick = { navController.navigate("concurso") },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F6CBF)),
-                    shape = RectangleShape // <- esto lo hace cuadrado
-                ) {
-                    Text("Concurso")
-                }
+            Button(
+                onClick = { navController.navigate("reglamentos") },
+                modifier = buttonModifier,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAD4CAF)),
+                shape = RectangleShape // <- esto lo hace cuadrado
+            ) {
+                Text("Regl")
+            }
 
-                Button(
-                    onClick = { navController.navigate("reglamentos") },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAD4CAF)),
-                    shape = RectangleShape // <- esto lo hace cuadrado
-                ) {
-                    Text("Regl")
-                }
+            Button(
+                onClick = { navController.navigate("formulario") },
+                modifier = buttonModifier,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75)),
+                shape = RectangleShape // <- esto lo hace cuadrado
+            ) {
+                Text(
+                    text = "+",
+                    fontSize = 30.sp // <- ajustás el tamaño acá
+                )
+            }
 
-                Button(
-                    onClick = { navController.navigate("formulario") },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75)),
-                    shape = RectangleShape // <- esto lo hace cuadrado
-                ) {
-                    Text(
-                        text = "+",
-                        fontSize = 30.sp // <- ajustás el tamaño acá
-                    )
-                }
-
-                Button(
-                    onClick = { navController.navigate("login") },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB24545)),
-                    shape = RectangleShape // <- esto lo hace cuadrado
-                ) {
-                    Text(
-                        text = "Salir",
-                        fontSize = 23.sp // <- ajustás el tamaño acá
-                    )
-                }
+            Button(
+                onClick = { navController.navigate("login") },
+                modifier = buttonModifier,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB24545)),
+                shape = RectangleShape // <- esto lo hace cuadrado
+            ) {
+                Text(
+                    text = "Salir",
+                    fontSize = 23.sp // <- ajustás el tamaño acá
+                )
             }
         }
     }
+
 
     if (showDialog.value) {
         ConfirmationDialog(
