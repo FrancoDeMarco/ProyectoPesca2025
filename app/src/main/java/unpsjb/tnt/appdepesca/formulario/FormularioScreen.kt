@@ -29,8 +29,23 @@ import unpsjb.tnt.appdepesca.reportes.ReportViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.TextStyle
 
+/* COLORES
 
+// Fondo general
+val BackgroundColor = Color(0xFF1B2B24)
+
+// Botones
+val ButtonActiveColor = Color(0xFF3E8B75)       // Botón habilitado (verde)
+val ButtonDisabledColor = Color(0xFF5D776C)     // Botón deshabilitado (gris oscuro)
+val ButtonTextEnabled = Color.White             // Texto blanco cuando está habilitado
+val ButtonTextDisabled = Color(0xFFAAAAAA)      // Texto gris claro cuando está deshabilitado
+
+// Texto general
+val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o palabras importantes
+
+ */
 
 @Composable
 fun ConfirmationDialog(
@@ -83,93 +98,119 @@ fun FormularioScreen(
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
     } else {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color(0xFF9EEE9E))
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .background(color = Color(0xFF1B2B24)),
+            contentAlignment = Alignment.Center
         ) {
-            Text(text = "Formulario", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-            TextField(
-                value = state.reportTitle,
-                onValueChange = { newValue ->
-                    reportViewModel.changeTitle(newValue)
-                    isTitleValid = newValue.trim().isNotEmpty()
-                },
-                placeholder = { Text(text = "Nombre del reporte") }
-            )
-            TextField(
-                value = state.reportDescription,
-                onValueChange = { newValue ->
-                    reportViewModel.changeDescription(newValue)
-                    isDescriptionValid = newValue.trim().isNotEmpty()
-                },
-                placeholder = { Text(text = "Descripción") }
-            )
-            TextField(
-                value = dateState.value.text,
-                onValueChange = { newValue ->
-                    dateState.value = TextFieldValue(newValue)
-                    reportViewModel.changeDate(newValue)
-
-                    // Validar el formato de fecha utilizando una expresión regular
-                    val regex = """(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/((19|20)\d\d)""".toRegex()
-                    isDateValid = regex.matches(newValue) && isValidDate(newValue)
-                },
-                placeholder = { Text(text = "dd/MM/yyyy") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        navController.navigate("reportes")
-                    }
-                )
-            )
-
-            Button(
-                onClick = {
-                    showDialog.value = true
-                    navController.navigate("reportes")
-                },
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC3C3C))
+                    .fillMaxSize()
+                    .background(color = Color(0xFF1B2B24))
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Volver"
+                Text(
+                    text = "Nuevo Reporte",
+                    style = TextStyle(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF3E8B75)
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
-                Text("Volver")
-            }
+                TextField(
+                    value = state.reportTitle,
+                    onValueChange = { newValue ->
+                        reportViewModel.changeTitle(newValue)
+                        isTitleValid = newValue.trim().isNotEmpty()
+                    },
+                    placeholder = { Text(text = "Nombre del reporte") }
+                )
+                TextField(
+                    value = state.reportDescription,
+                    onValueChange = { newValue ->
+                        reportViewModel.changeDescription(newValue)
+                        isDescriptionValid = newValue.trim().isNotEmpty()
+                    },
+                    placeholder = { Text(text = "Descripción") }
+                )
+                TextField(
+                    value = dateState.value.text,
+                    onValueChange = { newValue ->
+                        dateState.value = TextFieldValue(newValue)
+                        reportViewModel.changeDate(newValue)
 
-            Spacer(modifier = Modifier.height(16.dp))
+                        // Validar el formato de fecha utilizando una expresión regular
+                        val regex =
+                            """(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/((19|20)\d\d)""".toRegex()
+                        isDateValid = regex.matches(newValue) && isValidDate(newValue)
+                    },
+                    placeholder = { Text(text = "dd/MM/yyyy") },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            navController.navigate("reportes")
+                        }
+                    )
+                )
 
-            Button(
-                onClick = {
-                    run {
-                        reportViewModel.createReport()
+                Button(
+                    onClick = {
+                        showDialog.value = true
                         navController.navigate("reportes")
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isDateValid && isTitleValid && isDescriptionValid) Color(0xFF59FC3C) else Color.Gray
-                ),
-                enabled = isDateValid && isTitleValid && isDescriptionValid
-            ) {
-                Text(text = "Agregar Reporte")
-            }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Volver"
+                    )
+                    Text("Volver")
+                }
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        run {
+                            reportViewModel.createReport()
+                            navController.navigate("reportes")
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDateValid && isTitleValid && isDescriptionValid) Color(
+                            0xFF3E8B75
+                        ) else Color(0xFF5D776C)
+
+                    ),
+                    enabled = isDateValid && isTitleValid && isDescriptionValid
+                ) {
+                    Text(text = "Agregar Reporte")
+                }
+
+            }
         }
     }
 }
+
+//////////////TITULO/////////////////////
+//////////////NOMBRE DEL REPORTE/////////
+//////////////DESCRIPCION DEL REPORTE////
+//////////////FECHA DEL REPORTE//////////
+//////////////BOTON VOLVER///////////////
+//////////////BOTON AGREGAR REPORTE//////
 
 private fun isValidDate(dateString: String): Boolean {
     val parts = dateString.split('/')
