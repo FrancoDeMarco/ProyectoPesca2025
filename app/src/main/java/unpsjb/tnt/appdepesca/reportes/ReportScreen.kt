@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,19 +99,35 @@ fun ReportScreen(
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             item {
+                Spacer(modifier = Modifier.height(24.dp))  // Espacio de 8dp entre los campos
                 Row(
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp)
+                        .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
                 ) {
+
                     Text(
                         text = "Titulo",
+                        modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.Red, // <- Color personalizado
-                        modifier = Modifier.weight(1f)
+                        color = Color(0xFF3E8B75) // letra verde
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    DatePickerComponent(
+                    Text(
+                        text = "Fecha",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF3E8B75), // letra verde
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "Acciones",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF3E8B75), // letra verde
+                        textAlign = TextAlign.End
+                    )
+                }
+                /*DatePickerComponent(  /////////FILTRO DE FECHAS
                         fromDate = fromDate.value,
                         onFromDateSelected = { fromDate.value = it },
                         toDate = toDate.value,
@@ -118,8 +135,8 @@ fun ReportScreen(
                         onSearch = {
                             reportViewModel.setFechasFiltro(fromDate.value, toDate.value)
                         }
-                    )
-                }
+                    )*/
+                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
                 Divider(
                     color = Color(0xFF3E8B75),
                     thickness = 2.dp,
@@ -127,8 +144,8 @@ fun ReportScreen(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 )
+                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             }
-
 
             reportes?.let { list ->
                 items(list) { reporte ->
