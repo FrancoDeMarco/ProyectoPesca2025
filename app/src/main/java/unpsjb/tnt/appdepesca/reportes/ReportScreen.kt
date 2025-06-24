@@ -19,6 +19,7 @@ val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o p
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -186,8 +187,12 @@ fun ReportScreen(
 
             Button(
                 onClick = { navController.navigate("concurso") },
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2F6CBF)),
+                modifier = buttonModifier.border(
+                    width = 2.dp,                   // grosor del borde
+                    color = Color(0xFF3E8B75),           // color del borde
+                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
                 Image(
@@ -201,17 +206,31 @@ fun ReportScreen(
 
             Button(
                 onClick = { navController.navigate("reglamentos") },
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFAD4CAF)),
+                modifier = buttonModifier.border(
+                    width = 2.dp,                   // grosor del borde
+                    color = Color(0xFF3E8B75),            // color del borde
+                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
-                Text("Regl")
+                Image(
+                    painter = painterResource(R.drawable.reglamento),
+                    contentDescription = "Reglamento",
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(bottom = 16.dp)
+                )
             }
 
             Button(
                 onClick = { navController.navigate("formulario") },
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75)),
+                modifier = buttonModifier.border(
+                    width = 2.dp,                   // grosor del borde
+                    color = Color(0xFF3E8B75),            // color del borde
+                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
                 Text(
@@ -222,8 +241,13 @@ fun ReportScreen(
 
             Button(
                 onClick = { navController.navigate("login") },
-                modifier = buttonModifier,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB24545)),
+                modifier = buttonModifier.border(
+                    width = 2.dp,                   // grosor del borde
+                    color = Color(0xFF3E8B75),            // color del borde
+                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                ),
+
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
                 Text(
