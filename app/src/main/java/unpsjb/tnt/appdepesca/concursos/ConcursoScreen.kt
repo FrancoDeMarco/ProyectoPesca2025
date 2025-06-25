@@ -57,7 +57,11 @@ fun ConcursoScreen(
         Spacer(modifier = Modifier.height(8.dp))
         VolverButton(navController, showDialog)
     }
-
+    // Esto hace que aparezca el AlertDialog cuando corresponde
+    ventanaEmergente(
+        showDialog = showDialog,
+        selectedConcurso = selectedConcurso
+    )
 }
 
 
@@ -142,32 +146,3 @@ fun ListadoDeConcursos(
         }
     }
 }
-
-
-//////////////BOTON VOLVER///////////////
-@Composable
-fun VolverButton(
-    navController: NavController,
-    showDialog: MutableState<Boolean>
-) {
-    Button(
-        onClick = {
-            showDialog.value = true
-            navController.navigate("reportes")
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Volver"
-        )
-        Text("Volver")
-    }
-}
-
-
-
-
