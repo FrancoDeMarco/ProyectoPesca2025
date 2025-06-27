@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,6 +88,7 @@ fun ReportScreen(
         LazyColumn(modifier = Modifier.weight(1f)) {
             item {
                 Spacer(modifier = Modifier.height(24.dp))  // Espacio de 8dp entre los campos
+                TituloReportes()
                 Row(
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
@@ -113,15 +116,6 @@ fun ReportScreen(
                         textAlign = TextAlign.End
                     )
                 }
-                /*DatePickerComponent(  /////////FILTRO DE FECHAS
-                        fromDate = fromDate.value,
-                        onFromDateSelected = { fromDate.value = it },
-                        toDate = toDate.value,
-                        onToDateSelected = { toDate.value = it },
-                        onSearch = {
-                            reportViewModel.setFechasFiltro(fromDate.value, toDate.value)
-                        }
-                    )*/
                 Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
                 Divider(
                     color = Color(0xFF3E8B75),
@@ -284,123 +278,18 @@ fun ReportScreen(
     }
 }
 
-
-
-
-/*****Filtro de fechas******/
 @Composable
-fun DatePickerComponent(
-    fromDate: Date?,
-    onFromDateSelected: (Date?) -> Unit,
-    toDate: Date?,
-    onToDateSelected: (Date?) -> Unit,
-    onSearch: () -> Unit
-) {
-    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
-    val fromDateText = remember { mutableStateOf(fromDate?.let { dateFormatter.format(it) } ?: "") }
-    val toDateText = remember { mutableStateOf(toDate?.let { dateFormatter.format(it) } ?: "") }
-
-    val isFromDateValid = fromDateText.value.isDateFormatValid()
-    val isToDateValid = toDateText.value.isDateFormatValid()
-    val isDatesValid = isFromDateValid && isToDateValid && areDatesRealistic(fromDate, toDate) && areDaysValid(fromDateText.value) && areDaysValid(toDateText.value) && isToDateGreaterThanOrEqualFromDate(fromDateText.value, toDateText.value)
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TextField(
-            value = fromDateText.value,
-            onValueChange = { newText ->
-                fromDateText.value = newText
-                val parsedDate = try {
-                    dateFormatter.parse(newText)
-                } catch (e: ParseException) {
-                    null
-                }
-                onFromDateSelected(parsedDate)
-            },
-            placeholder = { Text(text = "dd/mm/aaaa") },
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        TextField(
-            value = toDateText.value,
-            onValueChange = { newText ->
-                toDateText.value = newText
-                val parsedDate = try {
-                    dateFormatter.parse(newText)
-                } catch (e: ParseException) {
-                    null
-                }
-                onToDateSelected(parsedDate)
-            },
-            placeholder = { Text(text = "dd/mm/aaaa") },
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Button(
-            onClick = { onSearch() },
-            modifier = Modifier
-                .padding(end = 16.dp),
-            enabled = isDatesValid
-        ) {
-            Text(text = "Buscar")
-        }
-    }
-}
-
-
-
-private fun String.isDateFormatValid(): Boolean {
-    return try {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.isLenient = false
-        val date = dateFormat.parse(this)
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH) + 1
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        year in 1900..2100 && month in 1..12 && day in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-    } catch (e: ParseException) {
-        false
-    }
-}
-
-private fun areDatesRealistic(fromDate: Date?, toDate: Date?): Boolean {
-    if (fromDate == null || toDate == null) {
-        return true
-    }
-    return fromDate <= toDate
-}
-
-private fun areDaysValid(dateText: String): Boolean {
-    return try {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.isLenient = false
-        val date = dateFormat.parse(dateText)
-        true
-    } catch (e: ParseException) {
-        false
-    }
-}
-
-private fun isToDateGreaterThanOrEqualFromDate(fromDateText: String, toDateText: String): Boolean {
-    return try {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.isLenient = false
-        val fromDate = dateFormat.parse(fromDateText)
-        val toDate = dateFormat.parse(toDateText)
-        toDate >= fromDate
-    } catch (e: ParseException) {
-        false
-    }
+fun TituloReportes() {
+    Text(
+        text = "Reportes",
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        textAlign = TextAlign.Center
+    )
 }
