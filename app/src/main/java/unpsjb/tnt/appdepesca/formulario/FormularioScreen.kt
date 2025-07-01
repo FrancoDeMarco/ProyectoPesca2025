@@ -12,9 +12,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.TextStyle
+import unpsjb.tnt.appdepesca.login.HeaderImage
 import unpsjb.tnt.appdepesca.reportes.ReportState
 import kotlin.Boolean
 
@@ -109,15 +112,15 @@ fun FormularioScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            HeaderImage(size = 200.dp) // usa un tamaño personalizado
             TituloReporte()
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
             NombreReporte(reportViewModel, state, isTitleValid)
+           // Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             DescripcionReporte(reportViewModel, state, isDescriptionValid)
+           // Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             FechaReporte(reportViewModel, dateState, isDateValid, navController)
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+           // Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
             VolverButton(navController, showDialog)
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
             AgregarButton(enabled = formValido) {
                 reportViewModel.createReport()
                 navController.navigate("reportes")
@@ -147,13 +150,23 @@ fun NombreReporte(
     state: ReportState,
     isTitleValid: MutableState<Boolean>
 ){
-    TextField(
+    OutlinedTextField(
         value = state.reportTitle,
         onValueChange = { newValue ->
             reportViewModel.changeTitle(newValue)
             isTitleValid.value = newValue.trim().isNotEmpty()
         },
-        placeholder = { Text(text = "Nombre del reporte") }
+        placeholder = { Text(text = "Nombre del reporte") },
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
     )
 }
 //////////////DESCRIPCION DEL REPORTE////
@@ -163,13 +176,23 @@ fun DescripcionReporte(
     state: ReportState,
     isDescriptionValid: MutableState<Boolean>
 ){
-    TextField(
+    OutlinedTextField(
         value = state.reportDescription,
         onValueChange = { newValue ->
             reportViewModel.changeDescription(newValue)
             isDescriptionValid.value = newValue.trim().isNotEmpty()
         },
-        placeholder = { Text(text = "Descripción") }
+        placeholder = { Text(text = "Descripción") },
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
     )
 }
 
@@ -181,7 +204,7 @@ fun FechaReporte(
     isDateValid: MutableState<Boolean>,
     navController: NavController
 ){
-    TextField(
+    OutlinedTextField(
         value = dateState.value.text,
         onValueChange = { newValue ->
             dateState.value = TextFieldValue(newValue)
@@ -201,6 +224,16 @@ fun FechaReporte(
             onDone = {
                 navController.navigate("reportes")
             }
+        ),
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
         )
     )
 }
@@ -244,10 +277,7 @@ fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
             disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
         )
     ) {
-        Text(
-            text = "Agregar Reporte",
-            fontSize = 20.sp
-        )
+        Text("Agregar Reporte")
     }
 }
 
