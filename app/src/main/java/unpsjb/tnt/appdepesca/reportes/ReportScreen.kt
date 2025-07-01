@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
+import unpsjb.tnt.appdepesca.login.HeaderImage
 import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -70,14 +71,9 @@ fun ReportScreen(
     formularioViewModel: FormularioViewModel,
     navController: NavController
 ) {
-    val fromDate = remember { mutableStateOf<Date?>(null) }
-    val toDate = remember { mutableStateOf<Date?>(null) }
-
     val reportes by reportViewModel.getAllReportesFlow().collectAsState(null)
-
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
-
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
 
     Column(
@@ -87,14 +83,19 @@ fun ReportScreen(
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             item {
-                Spacer(modifier = Modifier.height(24.dp))  // Espacio de 8dp entre los campos
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    HeaderImage(size = 100.dp)
+                }
                 TituloReportes()
                 Row(
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
                 ) {
-
                     Text(
                         text = "Titulo",
                         modifier = Modifier.weight(1f),
@@ -126,7 +127,6 @@ fun ReportScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             }
-
             reportes?.let { list ->
                 items(list) { reporte ->
                     ItemReporte(
@@ -163,7 +163,21 @@ fun ReportScreen(
                 .weight(1f)           // Ocupa 1/4 del ancho disponible
                 .aspectRatio(1f)      // Hace que el alto sea igual al ancho (cuadrado)
                 .padding(horizontal = 4.dp) // Espacio entre botones
-
+            Button(
+                onClick = { navController.navigate("formulario") },
+                modifier = buttonModifier.border(
+                    width = 2.dp,                   // grosor del borde
+                    color = Color(0xFF3E8B75),            // color del borde
+                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+                shape = RectangleShape // <- esto lo hace cuadrado
+            ) {
+                Text(
+                    text = "+",
+                    fontSize = 30.sp // <- ajustás el tamaño acá
+                )
+            }
             Button(
                 onClick = { navController.navigate("concurso") },
                 modifier = buttonModifier.border(
@@ -182,7 +196,6 @@ fun ReportScreen(
                         .padding(bottom = 16.dp)
                 )
             }
-
             Button(
                 onClick = { navController.navigate("reglamentos") },
                 modifier = buttonModifier.border(
@@ -201,23 +214,6 @@ fun ReportScreen(
                         .padding(bottom = 16.dp)
                 )
             }
-
-            Button(
-                onClick = { navController.navigate("formulario") },
-                modifier = buttonModifier.border(
-                    width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),            // color del borde
-                    shape = RectangleShape          // importante: que coincida con el shape del botón
-                ),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                shape = RectangleShape // <- esto lo hace cuadrado
-            ) {
-                Text(
-                    text = "+",
-                    fontSize = 30.sp // <- ajustás el tamaño acá
-                )
-            }
-
             Button(
                 onClick = { navController.navigate("login") },
                 modifier = buttonModifier.border(
@@ -236,8 +232,6 @@ fun ReportScreen(
             }
         }
     }
-
-
     if (showDialog.value) {
         ConfirmationDialog(
             onConfirm = {
@@ -249,7 +243,6 @@ fun ReportScreen(
             }
         )
     }
-
     if (selectedReport.value != null) {
         AlertDialog(
             onDismissRequest = {
@@ -277,7 +270,7 @@ fun ReportScreen(
         )
     }
 }
-
+//////////////TITULO/////////////////////
 @Composable
 fun TituloReportes() {
     Text(
