@@ -1,7 +1,6 @@
-package unpsjb.tnt.appdepesca.reportes
+package unpsjb.tnt.appdepesca.listado
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
-import unpsjb.tnt.appdepesca.formulario.ReportesViewModel
 import unpsjb.tnt.appdepesca.login.HeaderImage
 
 @Composable
@@ -60,12 +58,11 @@ fun ConfirmationDialog(
 }
 
 @Composable
-fun ReportScreen(
-    reportViewModel: ReportViewModel,
-    reportesViewModel: ReportesViewModel,
+fun ListadoReportesScreen(
+    listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
-    val reportes by reportViewModel.getAllReportesFlow().collectAsState(null)
+    val reportes by listadoReportesViewModel.getAllReportesFlow().collectAsState(null)
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
@@ -121,16 +118,19 @@ fun ReportScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             }
-            reportes?.let { list ->
+            reportes?.let { list -> //Listado de Reportes
                 items(list) { reporte ->
                     ItemReporte(
                         reporte = reporte,
-                        reportViewModel = reportViewModel,
+                        listadoReportesViewModel = listadoReportesViewModel,
                         modifier = Modifier.fillMaxWidth(),
                         onEdit = {
-                            Log.i("HomeScreen", "editar")
+                            listadoReportesViewModel.changeTitle(reporte.reportTitulo)
+                            listadoReportesViewModel.changeDescription(reporte.reportDescripcion)
+                            listadoReportesViewModel.changeDate(reporte.reportFecha)
+                            navController.navigate("editar_reporte")
                         },
-                        onDelete = {
+                        onDelete = { //Eliminar Reporte
                             reportToDelete.value = reporte
                             showDialog.value = true
                         },
@@ -229,7 +229,7 @@ fun ReportScreen(
     if (showDialog.value) {
         ConfirmationDialog(
             onConfirm = {
-                reportToDelete.value?.let { reportViewModel.deleteReporte(it) }
+                reportToDelete.value?.let { listadoReportesViewModel.deleteReporte(it) }
                 showDialog.value = false
             },
             onDismiss = {

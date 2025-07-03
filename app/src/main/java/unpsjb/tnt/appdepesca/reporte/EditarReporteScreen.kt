@@ -1,19 +1,11 @@
-package unpsjb.tnt.appdepesca.formulario
+package unpsjb.tnt.appdepesca.reporte
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,26 +14,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import unpsjb.tnt.appdepesca.reportes.ReportViewModel
+import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import unpsjb.tnt.appdepesca.login.HeaderImage
-import unpsjb.tnt.appdepesca.reportes.ReportState
-import java.util.Calendar
 import kotlin.Boolean
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
 fun EditarReporteScreen(
-    reportesViewModel: ReportesViewModel,
-    reportViewModel: ReportViewModel,
+    reporteViewModel: ReporteViewModel,
+    listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
-    val state = reportViewModel.state
+    val state = listadoReportesViewModel.state
     val showDialog = remember { mutableStateOf(false) }
-    val isLoading: Boolean by reportesViewModel.isLoading.observeAsState(initial = false)
+    val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
     var isDateValid = remember { mutableStateOf(false) }
     val isTitleValid = remember { mutableStateOf(false) }
@@ -63,12 +52,12 @@ fun EditarReporteScreen(
         ) {
             HeaderImage(size = 200.dp) // usa un tamaño personalizado
             TituloEditar()
-            NombreReporte(reportViewModel, state, isTitleValid)
-            DescripcionReporte(reportViewModel, state, isDescriptionValid)
-            FechaReporte(reportViewModel, dateState, isDateValid)
+            NombreReporte(listadoReportesViewModel, state, isTitleValid)
+            DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
+            FechaReporte(listadoReportesViewModel, dateState, isDateValid)
             VolverButton(navController, showDialog)
             EditarButton(enabled = formValido) {
-                reportViewModel.createReport()
+                listadoReportesViewModel.createReport()
                 navController.navigate("reportes")
             }
         }

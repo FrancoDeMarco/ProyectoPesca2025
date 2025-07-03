@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reportes
+package unpsjb.tnt.appdepesca.listado
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,12 +7,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
-import unpsjb.tnt.appdepesca.formulario.ReportesViewModel
+import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
 import java.util.Date
 
-class ReportViewModel(
-    private val dao: ReporteDAO,
-    private val reportesViewModel: ReportesViewModel
+class ListadoReportesViewModel(
+    private val dao: ReporteDAO
 ) : ViewModel() {
     private val _state = mutableStateOf(ReportState())
     val state: ReportState

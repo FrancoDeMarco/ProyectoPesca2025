@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.formulario
+package unpsjb.tnt.appdepesca.reporte
 
 
 import android.app.DatePickerDialog
@@ -23,26 +23,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import unpsjb.tnt.appdepesca.reportes.ReportViewModel
+import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import unpsjb.tnt.appdepesca.login.HeaderImage
-import unpsjb.tnt.appdepesca.reportes.ReportState
+import unpsjb.tnt.appdepesca.listado.ReportState
 import java.util.Calendar
 import kotlin.Boolean
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
 fun CrearReporteScreen(
-    reportesViewModel: ReportesViewModel,
-    reportViewModel: ReportViewModel,
+    reporteViewModel: ReporteViewModel,
+    listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
-    val state = reportViewModel.state
+    val state = listadoReportesViewModel.state
     val showDialog = remember { mutableStateOf(false) }
-    val isLoading: Boolean by reportesViewModel.isLoading.observeAsState(initial = false)
+    val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
     var isDateValid = remember { mutableStateOf(false) }
     val isTitleValid = remember { mutableStateOf(false) }
@@ -64,12 +64,12 @@ fun CrearReporteScreen(
         ) {
             HeaderImage(size = 200.dp) // usa un tamaño personalizado
             TituloReporte()
-            NombreReporte(reportViewModel, state, isTitleValid)
-            DescripcionReporte(reportViewModel, state, isDescriptionValid)
-            FechaReporte(reportViewModel, dateState, isDateValid)
+            NombreReporte(listadoReportesViewModel, state, isTitleValid)
+            DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
+            FechaReporte(listadoReportesViewModel, dateState, isDateValid)
             VolverButton(navController, showDialog)
             AgregarButton(enabled = formValido) {
-                reportViewModel.createReport()
+                listadoReportesViewModel.createReport()
                 navController.navigate("reportes")
             }
         }
@@ -114,14 +114,14 @@ fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
 //////////////NOMBRE DEL REPORTE/////////
 @Composable
 fun NombreReporte(
-    reportViewModel: ReportViewModel,
+    listadoReportesViewModel: ListadoReportesViewModel,
     state: ReportState,
     isTitleValid: MutableState<Boolean>
 ){
     OutlinedTextField(
         value = state.reportTitle,
         onValueChange = { newValue ->
-            reportViewModel.changeTitle(newValue)
+            listadoReportesViewModel.changeTitle(newValue)
             isTitleValid.value = newValue.trim().isNotEmpty()
         },
         placeholder = { Text(text = "Nombre del reporte") },
@@ -140,14 +140,14 @@ fun NombreReporte(
 //////////////DESCRIPCION DEL REPORTE////
 @Composable
 fun DescripcionReporte(
-    reportViewModel: ReportViewModel,
+    listadoReportesViewModel: ListadoReportesViewModel,
     state: ReportState,
     isDescriptionValid: MutableState<Boolean>
 ){
     OutlinedTextField(
         value = state.reportDescription,
         onValueChange = { newValue ->
-            reportViewModel.changeDescription(newValue)
+            listadoReportesViewModel.changeDescription(newValue)
             isDescriptionValid.value = newValue.trim().isNotEmpty()
         },
         placeholder = { Text(text = "Descripción") },
@@ -167,7 +167,7 @@ fun DescripcionReporte(
 //////////////FECHA DEL REPORTE//////////
 @Composable
 fun FechaReporte(
-    reportViewModel: ReportViewModel,
+    listadoReportesViewModel: ListadoReportesViewModel,
     dateState: MutableState<TextFieldValue>,
     isDateValid: MutableState<Boolean>,
 ) {
@@ -192,7 +192,7 @@ fun FechaReporte(
                             selectedDayOfMonth, selectedMonth + 1, selectedYear
                         )
                         dateState.value = TextFieldValue(selectedDate)
-                        reportViewModel.changeDate(selectedDate)
+                        listadoReportesViewModel.changeDate(selectedDate)
                         isDateValid.value = true
                     },
                     year, month, day

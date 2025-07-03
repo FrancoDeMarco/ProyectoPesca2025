@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reportes
+package unpsjb.tnt.appdepesca.listado
 
 import unpsjb.tnt.appdepesca.database.Reporte
 

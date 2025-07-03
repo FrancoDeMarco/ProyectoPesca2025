@@ -15,12 +15,13 @@ import unpsjb.tnt.appdepesca.Reglamentos.ReglamentosViewModel
 import unpsjb.tnt.appdepesca.concursos.ConcursoScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
 import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
-import unpsjb.tnt.appdepesca.formulario.CrearReporteScreen
-import unpsjb.tnt.appdepesca.formulario.ReportesViewModel
+import unpsjb.tnt.appdepesca.listado.ListadoReportesScreen
+import unpsjb.tnt.appdepesca.reporte.CrearReporteScreen
+import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
 import unpsjb.tnt.appdepesca.login.LoginScreen
 import unpsjb.tnt.appdepesca.login.LoginViewModel
-import unpsjb.tnt.appdepesca.reportes.ReportScreen
-import unpsjb.tnt.appdepesca.reportes.ReportViewModel
+import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
+import unpsjb.tnt.appdepesca.reporte.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 
 class MainActivity : ComponentActivity() {
@@ -36,10 +37,10 @@ class MainActivity : ComponentActivity() {
 
         val viewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ReportViewModel(dao, ReportesViewModel()) as T
+                return ListadoReportesViewModel(dao) as T
             }
         }
-        val reportViewModel: ReportViewModel by viewModels { viewModelFactory }
+        val listadoReportesViewModel: ListadoReportesViewModel by viewModels { viewModelFactory }
 
         setContent {
             ProyectoPesca2023Theme {
@@ -49,10 +50,10 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(LoginViewModel(), navController)
                     }
                     composable("home") {
-                        ReportScreen(reportViewModel, ReportesViewModel(), navController)
+                        ListadoReportesScreen(listadoReportesViewModel, navController)
                     }
                     composable("reportes") {
-                        ReportScreen(reportViewModel, ReportesViewModel(), navController)
+                        ListadoReportesScreen(listadoReportesViewModel, navController)
                     }
                     composable("reglamentos") {
                         ReglamentoScreen(ReglamentosViewModel(), navController)
@@ -61,9 +62,14 @@ class MainActivity : ComponentActivity() {
                         ConcursoScreen(ConcursosViewModel(), navController)
                     }
                     composable("formulario") {
-                        val reportesViewModel = ReportesViewModel()
-                        CrearReporteScreen(reportesViewModel, reportViewModel, navController)
+                        val reporteViewModel = ReporteViewModel()
+                        CrearReporteScreen(reporteViewModel, listadoReportesViewModel, navController)
                     }
+                    composable("editar_reporte") {
+                        val reporteViewModel = ReporteViewModel()
+                        EditarReporteScreen( reporteViewModel, listadoReportesViewModel, navController)
+                    }
+
                 }
             }
         }
