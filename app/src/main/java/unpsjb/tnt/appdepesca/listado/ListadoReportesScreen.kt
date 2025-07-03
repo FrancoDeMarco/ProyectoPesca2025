@@ -125,11 +125,10 @@ fun ListadoReportesScreen(
                         listadoReportesViewModel = listadoReportesViewModel,
                         modifier = Modifier.fillMaxWidth(),
                         onEdit = {
-                            listadoReportesViewModel.changeTitle(reporte.reportTitulo)
-                            listadoReportesViewModel.changeDescription(reporte.reportDescripcion)
-                            listadoReportesViewModel.changeDate(reporte.reportFecha)
+                            listadoReportesViewModel.loadReport(reporte) // <- precarga los datos del reporte
                             navController.navigate("editar_reporte")
                         },
+
                         onDelete = { //Eliminar Reporte
                             reportToDelete.value = reporte
                             showDialog.value = true

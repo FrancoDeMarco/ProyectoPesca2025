@@ -57,7 +57,7 @@ fun EditarReporteScreen(
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
             VolverButton(navController, showDialog)
             EditarButton(enabled = formValido) {
-                listadoReportesViewModel.createReport()
+                listadoReportesViewModel.updateReport()
                 navController.navigate("reportes")
             }
         }
@@ -69,7 +69,7 @@ fun EditarReporteScreen(
 @Composable
 fun TituloEditar() {
     Text(
-        text = "Nuevo Reporte",
+        text = "Editar Reporte",
         style = TextStyle(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,

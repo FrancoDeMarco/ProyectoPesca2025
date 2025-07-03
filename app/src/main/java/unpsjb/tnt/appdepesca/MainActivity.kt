@@ -69,7 +69,6 @@ class MainActivity : ComponentActivity() {
                         val reporteViewModel = ReporteViewModel()
                         EditarReporteScreen( reporteViewModel, listadoReportesViewModel, navController)
                     }
-
                 }
             }
         }

@@ -44,6 +44,7 @@ class ListadoReportesViewModel(
         _state.value = state.copy(reportDate = date)
     }
 
+    ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
         val newReportId = getNextId()
         val updatedReport = Reporte(
@@ -61,18 +62,50 @@ class ListadoReportesViewModel(
             reportDate = ""
         )
     }
+    fun getNextId(): Int {
+        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
+        return maxId + 1
+    }
 
+    /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
         viewModelScope.launch {
             dao.deleteReporte(reporte)
         }
     }
 
-    fun getNextId(): Int {
-        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
-        return maxId + 1
+    ////////////EDITAR REPORTE//////
+    fun loadReport(reporte: Reporte) {
+        _state.value = ReportState(
+            reportId = reporte.reportId,
+            reportTitle = reporte.reportTitulo,
+            reportDescription = reporte.reportDescripcion,
+            reportDate = reporte.reportFecha
+        )
+    }
+    fun updateReport() {
+        val updatedReport = Reporte(
+            reportId = state.reportId, // Usa el ID existente
+            reportTitulo = state.reportTitle,
+            reportDescripcion = state.reportDescription,
+            reportFecha = state.reportDate
+        )
+
+        viewModelScope.launch {
+            dao.updateReporte(updatedReport)
+        }
+
+        // Limpia el formulario después de actualizar
+        _state.value = state.copy(
+            reportId = 0,
+            reportTitle = "",
+            reportDescription = "",
+            reportDate = ""
+        )
     }
 
+
+    /////////////////FILTRADO DE FECHAS///////////////////////////////////
     private fun filterReportesByDates(
         reportes: List<Reporte>,
         fromDate: Date?,
