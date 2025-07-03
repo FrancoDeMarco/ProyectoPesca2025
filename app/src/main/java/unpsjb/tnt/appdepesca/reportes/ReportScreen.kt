@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +32,7 @@ import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
+import unpsjb.tnt.appdepesca.login.HeaderImage
 import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -68,14 +71,9 @@ fun ReportScreen(
     formularioViewModel: FormularioViewModel,
     navController: NavController
 ) {
-    val fromDate = remember { mutableStateOf<Date?>(null) }
-    val toDate = remember { mutableStateOf<Date?>(null) }
-
     val reportes by reportViewModel.getAllReportesFlow().collectAsState(null)
-
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
-
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
 
     Column(
@@ -85,13 +83,19 @@ fun ReportScreen(
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             item {
-                Spacer(modifier = Modifier.height(24.dp))  // Espacio de 8dp entre los campos
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    HeaderImage(size = 100.dp)
+                }
+                TituloReportes()
                 Row(
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
                 ) {
-
                     Text(
                         text = "Titulo",
                         modifier = Modifier.weight(1f),
@@ -113,15 +117,6 @@ fun ReportScreen(
                         textAlign = TextAlign.End
                     )
                 }
-                /*DatePickerComponent(  /////////FILTRO DE FECHAS
-                        fromDate = fromDate.value,
-                        onFromDateSelected = { fromDate.value = it },
-                        toDate = toDate.value,
-                        onToDateSelected = { toDate.value = it },
-                        onSearch = {
-                            reportViewModel.setFechasFiltro(fromDate.value, toDate.value)
-                        }
-                    )*/
                 Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
                 Divider(
                     color = Color(0xFF3E8B75),
@@ -132,7 +127,6 @@ fun ReportScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             }
-
             reportes?.let { list ->
                 items(list) { reporte ->
                     ItemReporte(
@@ -169,7 +163,21 @@ fun ReportScreen(
                 .weight(1f)           // Ocupa 1/4 del ancho disponible
                 .aspectRatio(1f)      // Hace que el alto sea igual al ancho (cuadrado)
                 .padding(horizontal = 4.dp) // Espacio entre botones
-
+            Button(
+                onClick = { navController.navigate("formulario") },
+                modifier = buttonModifier.border(
+                    width = 2.dp,                   // grosor del borde
+                    color = Color(0xFF3E8B75),            // color del borde
+                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                ),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+                shape = RectangleShape // <- esto lo hace cuadrado
+            ) {
+                Text(
+                    text = "+",
+                    fontSize = 30.sp // <- ajustás el tamaño acá
+                )
+            }
             Button(
                 onClick = { navController.navigate("concurso") },
                 modifier = buttonModifier.border(
@@ -188,7 +196,6 @@ fun ReportScreen(
                         .padding(bottom = 16.dp)
                 )
             }
-
             Button(
                 onClick = { navController.navigate("reglamentos") },
                 modifier = buttonModifier.border(
@@ -207,23 +214,6 @@ fun ReportScreen(
                         .padding(bottom = 16.dp)
                 )
             }
-
-            Button(
-                onClick = { navController.navigate("formulario") },
-                modifier = buttonModifier.border(
-                    width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),            // color del borde
-                    shape = RectangleShape          // importante: que coincida con el shape del botón
-                ),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                shape = RectangleShape // <- esto lo hace cuadrado
-            ) {
-                Text(
-                    text = "+",
-                    fontSize = 30.sp // <- ajustás el tamaño acá
-                )
-            }
-
             Button(
                 onClick = { navController.navigate("login") },
                 modifier = buttonModifier.border(
@@ -242,8 +232,6 @@ fun ReportScreen(
             }
         }
     }
-
-
     if (showDialog.value) {
         ConfirmationDialog(
             onConfirm = {
@@ -255,7 +243,6 @@ fun ReportScreen(
             }
         )
     }
-
     if (selectedReport.value != null) {
         AlertDialog(
             onDismissRequest = {
@@ -283,124 +270,19 @@ fun ReportScreen(
         )
     }
 }
-
-
-
-
-/*****Filtro de fechas******/
+//////////////TITULO/////////////////////
 @Composable
-fun DatePickerComponent(
-    fromDate: Date?,
-    onFromDateSelected: (Date?) -> Unit,
-    toDate: Date?,
-    onToDateSelected: (Date?) -> Unit,
-    onSearch: () -> Unit
-) {
-    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
-    val fromDateText = remember { mutableStateOf(fromDate?.let { dateFormatter.format(it) } ?: "") }
-    val toDateText = remember { mutableStateOf(toDate?.let { dateFormatter.format(it) } ?: "") }
-
-    val isFromDateValid = fromDateText.value.isDateFormatValid()
-    val isToDateValid = toDateText.value.isDateFormatValid()
-    val isDatesValid = isFromDateValid && isToDateValid && areDatesRealistic(fromDate, toDate) && areDaysValid(fromDateText.value) && areDaysValid(toDateText.value) && isToDateGreaterThanOrEqualFromDate(fromDateText.value, toDateText.value)
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TextField(
-            value = fromDateText.value,
-            onValueChange = { newText ->
-                fromDateText.value = newText
-                val parsedDate = try {
-                    dateFormatter.parse(newText)
-                } catch (e: ParseException) {
-                    null
-                }
-                onFromDateSelected(parsedDate)
-            },
-            placeholder = { Text(text = "dd/mm/aaaa") },
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        TextField(
-            value = toDateText.value,
-            onValueChange = { newText ->
-                toDateText.value = newText
-                val parsedDate = try {
-                    dateFormatter.parse(newText)
-                } catch (e: ParseException) {
-                    null
-                }
-                onToDateSelected(parsedDate)
-            },
-            placeholder = { Text(text = "dd/mm/aaaa") },
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 16.dp)
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Button(
-            onClick = { onSearch() },
-            modifier = Modifier
-                .padding(end = 16.dp),
-            enabled = isDatesValid
-        ) {
-            Text(text = "Buscar")
-        }
-    }
-}
-
-
-
-private fun String.isDateFormatValid(): Boolean {
-    return try {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.isLenient = false
-        val date = dateFormat.parse(this)
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH) + 1
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        year in 1900..2100 && month in 1..12 && day in 1..calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-    } catch (e: ParseException) {
-        false
-    }
-}
-
-private fun areDatesRealistic(fromDate: Date?, toDate: Date?): Boolean {
-    if (fromDate == null || toDate == null) {
-        return true
-    }
-    return fromDate <= toDate
-}
-
-private fun areDaysValid(dateText: String): Boolean {
-    return try {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.isLenient = false
-        val date = dateFormat.parse(dateText)
-        true
-    } catch (e: ParseException) {
-        false
-    }
-}
-
-private fun isToDateGreaterThanOrEqualFromDate(fromDateText: String, toDateText: String): Boolean {
-    return try {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        dateFormat.isLenient = false
-        val fromDate = dateFormat.parse(fromDateText)
-        val toDate = dateFormat.parse(toDateText)
-        toDate >= fromDate
-    } catch (e: ParseException) {
-        false
-    }
+fun TituloReportes() {
+    Text(
+        text = "Reportes",
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        textAlign = TextAlign.Center
+    )
 }

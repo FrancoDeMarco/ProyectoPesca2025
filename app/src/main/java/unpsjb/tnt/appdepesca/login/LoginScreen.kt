@@ -42,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -113,8 +114,6 @@ fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
@@ -271,12 +270,12 @@ fun Titulo() {
 
 // ======== IMAGEN DE CABECERA ========
 @Composable
-fun HeaderImage() {
+fun HeaderImage(size: Dp = 300.dp) {
     Image(
         painter = painterResource(R.drawable.fish),
         contentDescription = "Logo",
         modifier = Modifier
-            .size(300.dp)
+            .size(size)
             .padding(bottom = 16.dp)
     )
 }

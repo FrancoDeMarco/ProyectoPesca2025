@@ -1,20 +1,26 @@
 package unpsjb.tnt.appdepesca.formulario
 
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,8 +35,11 @@ import unpsjb.tnt.appdepesca.reportes.ReportViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import unpsjb.tnt.appdepesca.login.HeaderImage
 import unpsjb.tnt.appdepesca.reportes.ReportState
+import java.util.Calendar
 import kotlin.Boolean
 
 /* COLORES
@@ -109,15 +118,12 @@ fun FormularioScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            HeaderImage(size = 200.dp) // usa un tamaño personalizado
             TituloReporte()
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
             NombreReporte(reportViewModel, state, isTitleValid)
             DescripcionReporte(reportViewModel, state, isDescriptionValid)
-            FechaReporte(reportViewModel, dateState, isDateValid, navController)
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
+            FechaReporte(reportViewModel, dateState, isDateValid)
             VolverButton(navController, showDialog)
-            Spacer(modifier = Modifier.height(24.dp))  // Espacio de 24dp entre los campos
             AgregarButton(enabled = formValido) {
                 reportViewModel.createReport()
                 navController.navigate("reportes")
@@ -147,13 +153,23 @@ fun NombreReporte(
     state: ReportState,
     isTitleValid: MutableState<Boolean>
 ){
-    TextField(
+    OutlinedTextField(
         value = state.reportTitle,
         onValueChange = { newValue ->
             reportViewModel.changeTitle(newValue)
             isTitleValid.value = newValue.trim().isNotEmpty()
         },
-        placeholder = { Text(text = "Nombre del reporte") }
+        placeholder = { Text(text = "Nombre del reporte") },
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
     )
 }
 //////////////DESCRIPCION DEL REPORTE////
@@ -163,13 +179,23 @@ fun DescripcionReporte(
     state: ReportState,
     isDescriptionValid: MutableState<Boolean>
 ){
-    TextField(
+    OutlinedTextField(
         value = state.reportDescription,
         onValueChange = { newValue ->
             reportViewModel.changeDescription(newValue)
             isDescriptionValid.value = newValue.trim().isNotEmpty()
         },
-        placeholder = { Text(text = "Descripción") }
+        placeholder = { Text(text = "Descripción") },
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
     )
 }
 
@@ -179,31 +205,55 @@ fun FechaReporte(
     reportViewModel: ReportViewModel,
     dateState: MutableState<TextFieldValue>,
     isDateValid: MutableState<Boolean>,
-    navController: NavController
-){
-    TextField(
-        value = dateState.value.text,
-        onValueChange = { newValue ->
-            dateState.value = TextFieldValue(newValue)
-            reportViewModel.changeDate(newValue)
+) {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-            // Validar el formato de fecha utilizando una expresión regular
-            val regex =
-                """(0[1-9]|[12]\d|3[01])/(0[1-9]|1[0-2])/((19|20)\d\d)""".toRegex()
-            isDateValid.value = regex.matches(newValue) && isValidDate(newValue)
-        },
-        placeholder = { Text(text = "dd/MM/yyyy") },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                navController.navigate("reportes")
+    OutlinedTextField(
+        value = dateState.value.text,
+        onValueChange = {}, // no editable
+        readOnly = true,
+        placeholder = { Text("Fecha") },
+        singleLine = true,
+        trailingIcon = {
+            IconButton(onClick = {
+                DatePickerDialog(
+                    context,
+                    { _, selectedYear, selectedMonth, selectedDayOfMonth ->
+                        val selectedDate = "%02d/%02d/%04d".format(
+                            selectedDayOfMonth, selectedMonth + 1, selectedYear
+                        )
+                        dateState.value = TextFieldValue(selectedDate)
+                        reportViewModel.changeDate(selectedDate)
+                        isDateValid.value = true
+                    },
+                    year, month, day
+                ).apply {
+                    datePicker.maxDate = calendar.timeInMillis
+                }.show()
+            }) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Seleccionar fecha",
+                    tint = Color.White
+                )
             }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
         )
     )
 }
+
+
 //////////////BOTON VOLVER///////////////
 @Composable
 fun VolverButton(
@@ -244,10 +294,7 @@ fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
             disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
         )
     ) {
-        Text(
-            text = "Agregar Reporte",
-            fontSize = 20.sp
-        )
+        Text("Agregar Reporte")
     }
 }
 

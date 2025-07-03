@@ -24,6 +24,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+import unpsjb.tnt.appdepesca.formulario.VolverButton
 
 
 @Composable
@@ -37,32 +42,40 @@ fun ReglamentoScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(Color(0xFF9EEE9E))
+            .background(Color(0xFF1B2B24))
     ) {
-        Row(Modifier.fillMaxWidth()) {
+        Spacer(modifier = Modifier.height(8.dp))
+        TituloReglamentos()
+        Row(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+                .fillMaxWidth()
+        ) {
+
             Text(
                 text = "Reglamento",
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
-                    .wrapContentWidth(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.titleLarge
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFF3E8B75), // letra verde
+                textAlign = TextAlign.Center
             )
             Text(
                 text = "Lugar",
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
-                    .wrapContentWidth(Alignment.CenterHorizontally),
-                style = MaterialTheme.typography.titleLarge
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFF3E8B75), // letra verde
+                textAlign = TextAlign.Center
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
         Divider(
-            Modifier
+            color = Color(0xFF3E8B75),
+            thickness = 2.dp,
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(1.dp), color = Color.Gray
+                .padding(vertical = 8.dp)
         )
-
+        Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(viewModel.reglamentos) { reglamento ->
                 ReglamentoItem(reglamento = reglamento) {
@@ -73,21 +86,8 @@ fun ReglamentoScreen(
             }
         }
 
-        Button(
-            onClick = {
-                navController.navigate("reportes")
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFC3C3C))
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Volver"
-            )
-            Text("Volver")
-        }
+        ///////////VOLVER////////////////
+        VolverButton(navController, showDialog)
     }
 
     if (showDialog.value && selectedReglamento.value != null) {
@@ -124,4 +124,21 @@ fun ReglamentoScreen(
             }
         )
     }
+}
+
+//////////////TITULO/////////////////////
+@Composable
+fun TituloReglamentos() {
+    Text(
+        text = "Reglamentos",
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        textAlign = TextAlign.Center
+    )
 }
