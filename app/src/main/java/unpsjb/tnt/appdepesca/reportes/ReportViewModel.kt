@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
-import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
+import unpsjb.tnt.appdepesca.formulario.ReportesViewModel
 import java.util.Date
 
 class ReportViewModel(
     private val dao: ReporteDAO,
-    private val formularioViewModel: FormularioViewModel
+    private val reportesViewModel: ReportesViewModel
 ) : ViewModel() {
     private val _state = mutableStateOf(ReportState())
     val state: ReportState

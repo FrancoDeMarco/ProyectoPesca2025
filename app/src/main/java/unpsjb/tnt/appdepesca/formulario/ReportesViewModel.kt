@@ -10,7 +10,7 @@ import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.reportes.ReportViewModel
 
 
-class FormularioViewModel : ViewModel() {
+class ReportesViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -46,4 +46,6 @@ class FormularioViewModel : ViewModel() {
         }
     }
 }
+
+
 

@@ -15,8 +15,8 @@ import unpsjb.tnt.appdepesca.Reglamentos.ReglamentosViewModel
 import unpsjb.tnt.appdepesca.concursos.ConcursoScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
 import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
-import unpsjb.tnt.appdepesca.formulario.FormularioScreen
-import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
+import unpsjb.tnt.appdepesca.formulario.CrearReporteScreen
+import unpsjb.tnt.appdepesca.formulario.ReportesViewModel
 import unpsjb.tnt.appdepesca.login.LoginScreen
 import unpsjb.tnt.appdepesca.login.LoginViewModel
 import unpsjb.tnt.appdepesca.reportes.ReportScreen
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
 
         val viewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ReportViewModel(dao, FormularioViewModel()) as T
+                return ReportViewModel(dao, ReportesViewModel()) as T
             }
         }
         val reportViewModel: ReportViewModel by viewModels { viewModelFactory }
@@ -49,10 +49,10 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(LoginViewModel(), navController)
                     }
                     composable("home") {
-                        ReportScreen(reportViewModel, FormularioViewModel(), navController)
+                        ReportScreen(reportViewModel, ReportesViewModel(), navController)
                     }
                     composable("reportes") {
-                        ReportScreen(reportViewModel, FormularioViewModel(), navController)
+                        ReportScreen(reportViewModel, ReportesViewModel(), navController)
                     }
                     composable("reglamentos") {
                         ReglamentoScreen(ReglamentosViewModel(), navController)
@@ -61,8 +61,8 @@ class MainActivity : ComponentActivity() {
                         ConcursoScreen(ConcursosViewModel(), navController)
                     }
                     composable("formulario") {
-                        val formularioViewModel = FormularioViewModel()
-                        FormularioScreen(formularioViewModel, reportViewModel, navController)
+                        val reportesViewModel = ReportesViewModel()
+                        CrearReporteScreen(reportesViewModel, reportViewModel, navController)
                     }
                 }
             }

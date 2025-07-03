@@ -1,11 +1,19 @@
 package unpsjb.tnt.appdepesca.formulario
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,36 +25,23 @@ import androidx.compose.ui.unit.sp
 import unpsjb.tnt.appdepesca.reportes.ReportViewModel
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import unpsjb.tnt.appdepesca.login.HeaderImage
+import unpsjb.tnt.appdepesca.reportes.ReportState
+import java.util.Calendar
 import kotlin.Boolean
 
-/* COLORES
-
-// Fondo general
-val BackgroundColor = Color(0xFF1B2B24)
-
-/* Botones
-val ButtonActiveColor = Color(0xFF3E8B75)       // Botón habilitado (verde)
-val ButtonDisabledColor = Color(0xFF5D776C)     // Botón deshabilitado (gris oscuro)
-val ButtonTextEnabled = Color.White             // Texto blanco cuando está habilitado
-val ButtonTextDisabled = Color(0xFFAAAAAA)      // Texto gris claro cuando está deshabilitado
-*/
-// Texto general
-val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o palabras importantes
-
- */
-
-/****El EditarReporte, recibe los view model y el nav para trabajar sobre ellos.*/
-/*@Composable
-fun EditarReporte(
-    reporteViewModel: ReporteViewModel,
+/****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
+@Composable
+fun EditarReporteScreen(
+    reportesViewModel: ReportesViewModel,
     reportViewModel: ReportViewModel,
     navController: NavController
 ) {
     val state = reportViewModel.state
     val showDialog = remember { mutableStateOf(false) }
-    val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
+    val isLoading: Boolean by reportesViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
     var isDateValid = remember { mutableStateOf(false) }
     val isTitleValid = remember { mutableStateOf(false) }
@@ -85,7 +80,7 @@ fun EditarReporte(
 @Composable
 fun TituloEditar() {
     Text(
-        text = "Editar Reporte",
+        text = "Nuevo Reporte",
         style = TextStyle(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
@@ -95,7 +90,7 @@ fun TituloEditar() {
     )
 }
 
-//////////////BOTON EDITAR REPORTE//////
+//////////////BOTON AGREGAR REPORTE//////
 @Composable
 fun EditarButton(enabled: Boolean, onClick: () -> Unit) {
     Button(
@@ -111,6 +106,6 @@ fun EditarButton(enabled: Boolean, onClick: () -> Unit) {
             disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
         )
     ) {
-        Text("Editar Reporte")
+        Text("Agregar Reporte")
     }
-}*/
+}
