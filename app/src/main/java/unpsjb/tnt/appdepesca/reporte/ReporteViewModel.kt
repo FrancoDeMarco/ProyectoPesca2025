@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.formulario
+package unpsjb.tnt.appdepesca.reporte
 
 
 import androidx.lifecycle.LiveData
@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
-import unpsjb.tnt.appdepesca.reportes.ReportViewModel
+import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 
 
-class FormularioViewModel : ViewModel() {
+class ReporteViewModel : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -37,13 +37,15 @@ class FormularioViewModel : ViewModel() {
         _isLoading.value = isLoading
     }
 
-    fun createReport(dateState: String, reportViewModel: ReportViewModel) {
+    fun createReport(dateState: String, listadoReportesViewModel: ListadoReportesViewModel) {
         viewModelScope.launch {
             setLoading(true)
             nuevoReporte = nuevoReporte.copy(reportFecha = dateState)
-            reportViewModel.createReport()
+            listadoReportesViewModel.createReport()
             setLoading(false)
         }
     }
 }
+
+
 

@@ -1,7 +1,6 @@
-package unpsjb.tnt.appdepesca.reportes
+package unpsjb.tnt.appdepesca.listado
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +14,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,18 +23,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
-import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
 import unpsjb.tnt.appdepesca.login.HeaderImage
-import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
 fun ConfirmationDialog(
@@ -66,12 +58,11 @@ fun ConfirmationDialog(
 }
 
 @Composable
-fun ReportScreen(
-    reportViewModel: ReportViewModel,
-    formularioViewModel: FormularioViewModel,
+fun ListadoReportesScreen(
+    listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
-    val reportes by reportViewModel.getAllReportesFlow().collectAsState(null)
+    val reportes by listadoReportesViewModel.getAllReportesFlow().collectAsState(null)
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
@@ -127,16 +118,18 @@ fun ReportScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             }
-            reportes?.let { list ->
+            reportes?.let { list -> //Listado de Reportes
                 items(list) { reporte ->
                     ItemReporte(
                         reporte = reporte,
-                        reportViewModel = reportViewModel,
+                        listadoReportesViewModel = listadoReportesViewModel,
                         modifier = Modifier.fillMaxWidth(),
                         onEdit = {
-                            Log.i("HomeScreen", "editar")
+                            listadoReportesViewModel.loadReport(reporte) // <- precarga los datos del reporte
+                            navController.navigate("editar_reporte")
                         },
-                        onDelete = {
+
+                        onDelete = { //Eliminar Reporte
                             reportToDelete.value = reporte
                             showDialog.value = true
                         },
@@ -235,7 +228,7 @@ fun ReportScreen(
     if (showDialog.value) {
         ConfirmationDialog(
             onConfirm = {
-                reportToDelete.value?.let { reportViewModel.deleteReporte(it) }
+                reportToDelete.value?.let { listadoReportesViewModel.deleteReporte(it) }
                 showDialog.value = false
             },
             onDismiss = {

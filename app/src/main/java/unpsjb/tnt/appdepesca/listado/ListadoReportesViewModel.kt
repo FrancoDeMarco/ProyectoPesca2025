@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reportes
+package unpsjb.tnt.appdepesca.listado
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,12 +7,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
-import unpsjb.tnt.appdepesca.formulario.FormularioViewModel
+import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
 import java.util.Date
 
-class ReportViewModel(
-    private val dao: ReporteDAO,
-    private val formularioViewModel: FormularioViewModel
+class ListadoReportesViewModel(
+    private val dao: ReporteDAO
 ) : ViewModel() {
     private val _state = mutableStateOf(ReportState())
     val state: ReportState
@@ -45,6 +44,7 @@ class ReportViewModel(
         _state.value = state.copy(reportDate = date)
     }
 
+    ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
         val newReportId = getNextId()
         val updatedReport = Reporte(
@@ -53,6 +53,7 @@ class ReportViewModel(
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate
         )
+
         viewModelScope.launch {
             dao.insertReporte(updatedReport)
         }
@@ -62,18 +63,47 @@ class ReportViewModel(
             reportDate = ""
         )
     }
+    fun clearForm() {
+        _state.value = ReportState() // vuelve a estado inicial
+    }
+    fun getNextId(): Int {
+        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
+        return maxId + 1
+    }
 
+    /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
         viewModelScope.launch {
             dao.deleteReporte(reporte)
         }
     }
 
-    fun getNextId(): Int {
-        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
-        return maxId + 1
+
+
+    ////////////EDITAR REPORTE//////
+    fun loadReport(reporte: Reporte) {
+        _state.value = ReportState(
+            reportId = reporte.reportId,
+            reportTitle = reporte.reportTitulo,
+            reportDescription = reporte.reportDescripcion,
+            reportDate = reporte.reportFecha
+        )
+    }
+    fun updateReport() {
+        val updatedReport = Reporte(
+            reportId = state.reportId, // Usa el ID existente
+            reportTitulo = state.reportTitle,
+            reportDescripcion = state.reportDescription,
+            reportFecha = state.reportDate
+        )
+
+        viewModelScope.launch {
+            dao.updateReporte(updatedReport)
+        }
     }
 
+
+    /////////////////FILTRADO DE FECHAS///////////////////////////////////
     private fun filterReportesByDates(
         reportes: List<Reporte>,
         fromDate: Date?,

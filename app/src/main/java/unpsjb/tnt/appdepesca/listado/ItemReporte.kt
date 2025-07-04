@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reportes
+package unpsjb.tnt.appdepesca.listado
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun ItemReporte(
     reporte: Reporte,
-    reportViewModel: ReportViewModel,
+    listadoReportesViewModel: ListadoReportesViewModel,
     modifier: Modifier = Modifier,
     onEdit: (Reporte) -> Unit,
     onDelete: () -> Unit,
