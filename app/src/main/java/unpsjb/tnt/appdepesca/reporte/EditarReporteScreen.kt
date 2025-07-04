@@ -32,14 +32,12 @@ fun EditarReporteScreen(
     val showDialog = remember { mutableStateOf(false) }
     val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
-    /*var isDateValid = remember { mutableStateOf(false) }
-    val isTitleValid = remember { mutableStateOf(state.reportTitle.isNotBlank()) }
-    val isDescriptionValid = remember { mutableStateOf(state.reportDescription.isNotBlank()) }
-  */
+
     // Estados de validación
     val isTitleValid = remember { mutableStateOf(false) }
     val isDescriptionValid = remember { mutableStateOf(false) }
-    val isDateValid = remember { mutableStateOf(false) } ///POSIBLEMENTE LO PUEDA BORRAR
+    val isDateValid = remember { mutableStateOf(false) }
+    val formValido = isTitleValid.value && isDescriptionValid.value
 
     // Inicialización de los estados cuando se abre la pantalla
     LaunchedEffect(Unit) {
@@ -47,8 +45,6 @@ fun EditarReporteScreen(
         isDescriptionValid.value = state.reportDescription.isNotBlank()
         isDateValid.value = state.reportDate.isNotBlank()
     }
-
-    val formValido = isTitleValid.value && isDescriptionValid.value
 
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {

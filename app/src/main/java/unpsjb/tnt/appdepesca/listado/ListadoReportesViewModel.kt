@@ -94,14 +94,6 @@ class ListadoReportesViewModel(
         viewModelScope.launch {
             dao.updateReporte(updatedReport)
         }
-
-        // Limpia el formulario después de actualizar
-        _state.value = state.copy(
-            reportId = 0,
-            reportTitle = "",
-            reportDescription = "",
-            reportDate = ""
-        )
     }
 
 
