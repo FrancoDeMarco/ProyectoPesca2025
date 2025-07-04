@@ -43,11 +43,18 @@ fun CrearReporteScreen(
     val state = listadoReportesViewModel.state
     val showDialog = remember { mutableStateOf(false) }
     val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
-    val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
+    val dateState = remember { mutableStateOf(TextFieldValue("")) }
     var isDateValid = remember { mutableStateOf(false) }
     val isTitleValid = remember { mutableStateOf(false) }
     var isDescriptionValid = remember { mutableStateOf(false) }
     val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value
+
+    LaunchedEffect(Unit) {
+        listadoReportesViewModel.clearForm()
+    }
+    LaunchedEffect(state.reportDate) {
+        dateState.value = TextFieldValue(state.reportDate)
+    }
 
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
@@ -75,6 +82,8 @@ fun CrearReporteScreen(
         }
     }
 }
+
+
 
 
 //////////////TITULO/////////////////////

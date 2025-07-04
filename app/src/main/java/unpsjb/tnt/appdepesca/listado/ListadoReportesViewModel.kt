@@ -53,6 +53,7 @@ class ListadoReportesViewModel(
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate
         )
+
         viewModelScope.launch {
             dao.insertReporte(updatedReport)
         }
@@ -61,6 +62,9 @@ class ListadoReportesViewModel(
             reportDescription = "",
             reportDate = ""
         )
+    }
+    fun clearForm() {
+        _state.value = ReportState() // vuelve a estado inicial
     }
     fun getNextId(): Int {
         val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
@@ -73,6 +77,8 @@ class ListadoReportesViewModel(
             dao.deleteReporte(reporte)
         }
     }
+
+
 
     ////////////EDITAR REPORTE//////
     fun loadReport(reporte: Reporte) {
