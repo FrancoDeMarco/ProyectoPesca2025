@@ -32,10 +32,23 @@ fun EditarReporteScreen(
     val showDialog = remember { mutableStateOf(false) }
     val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
-    var isDateValid = remember { mutableStateOf(false) }
+    /*var isDateValid = remember { mutableStateOf(false) }
+    val isTitleValid = remember { mutableStateOf(state.reportTitle.isNotBlank()) }
+    val isDescriptionValid = remember { mutableStateOf(state.reportDescription.isNotBlank()) }
+  */
+    // Estados de validación
     val isTitleValid = remember { mutableStateOf(false) }
-    var isDescriptionValid = remember { mutableStateOf(false) }
-    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value
+    val isDescriptionValid = remember { mutableStateOf(false) }
+    val isDateValid = remember { mutableStateOf(false) } ///POSIBLEMENTE LO PUEDA BORRAR
+
+    // Inicialización de los estados cuando se abre la pantalla
+    LaunchedEffect(Unit) {
+        isTitleValid.value = state.reportTitle.isNotBlank()
+        isDescriptionValid.value = state.reportDescription.isNotBlank()
+        isDateValid.value = state.reportDate.isNotBlank()
+    }
+
+    val formValido = isTitleValid.value && isDescriptionValid.value
 
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
@@ -64,21 +77,6 @@ fun EditarReporteScreen(
     }
 }
 
-
-//////////////TITULO/////////////////////
-@Composable
-fun TituloEditar() {
-    Text(
-        text = "Editar Reporte",
-        style = TextStyle(
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF3E8B75)
-        ),
-        modifier = Modifier.padding(bottom = 16.dp)
-    )
-}
-
 //////////////BOTON AGREGAR REPORTE//////
 @Composable
 fun EditarButton(enabled: Boolean, onClick: () -> Unit) {
@@ -95,6 +93,20 @@ fun EditarButton(enabled: Boolean, onClick: () -> Unit) {
             disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
         )
     ) {
-        Text("Agregar Reporte")
+        Text("Editar Reporte")
     }
+}
+
+//////////////TITULO/////////////////////
+@Composable
+fun TituloEditar() {
+    Text(
+        text = "Editar Reporte",
+        style = TextStyle(
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
+        modifier = Modifier.padding(bottom = 16.dp)
+    )
 }
