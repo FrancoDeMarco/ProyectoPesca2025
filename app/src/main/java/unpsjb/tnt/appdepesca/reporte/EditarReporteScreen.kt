@@ -1,8 +1,14 @@
 package unpsjb.tnt.appdepesca.reporte
 
 import android.app.DatePickerDialog
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
@@ -24,8 +30,10 @@ import androidx.compose.ui.unit.sp
 import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import coil.compose.rememberAsyncImagePainter
 import unpsjb.tnt.appdepesca.listado.ReportState
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
@@ -74,6 +82,7 @@ fun EditarReporteScreen(
             EditarNombreReporte(listadoReportesViewModel, state, isTitleValid)
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
+            EditarImagenReporte(viewModel = listadoReportesViewModel)
             VolverButton(navController, showDialog)
             EditarButton(enabled = formValido) {
                 listadoReportesViewModel.updateReport()
@@ -223,4 +232,40 @@ fun TituloEditar() {
         ),
         modifier = Modifier.padding(bottom = 16.dp)
     )
+}
+
+/////////////////EDITAR IMAGEN//////////////////////
+@Composable
+fun EditarImagenReporte(viewModel: ListadoReportesViewModel) {
+    val context = LocalContext.current
+    val state = viewModel.state
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            viewModel.changeImage(it)
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // Mostrar la imagen si existe
+        state.reportImagenUri?.let { uriString ->
+            val imageUri = Uri.parse(uriString)
+            Image(
+                painter = rememberAsyncImagePainter(imageUri),
+                contentDescription = "Imagen del reporte",
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(2.dp, Color.White, RoundedCornerShape(16.dp))
+            )
+        }
+        Button(
+            onClick = { launcher.launch("image/*") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+        ) {
+            Text("Cambiar Imagen")
+        }
+    }
 }

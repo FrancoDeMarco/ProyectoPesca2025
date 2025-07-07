@@ -271,7 +271,7 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
         selectedUri?.let {
             uri.value = it
-            viewModel.changeImage(it.toString())
+            viewModel.changeImage(it)
         }
     }
 
