@@ -7,5 +7,6 @@ data class ReportState(
     val reportTitle: String = "",
     val reportDescription: String = "",
     val reportDate: String = "",
-    val report: List<Reporte> = emptyList()
+    val report: List<Reporte> = emptyList(),
+    val reportImagenUri: String? = null
 )

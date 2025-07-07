@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.0")
 
 
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Test
     testImplementation("junit:junit:4.13.2")

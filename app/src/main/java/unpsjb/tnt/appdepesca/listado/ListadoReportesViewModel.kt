@@ -58,18 +58,28 @@ class ListadoReportesViewModel(
             dao.insertReporte(updatedReport)
         }
         _state.value = state.copy(
+            reportId = 0, // <- importante
             reportTitle = "",
             reportDescription = "",
             reportDate = ""
         )
     }
-    fun clearForm() {
-        _state.value = ReportState() // vuelve a estado inicial
-    }
+
     fun getNextId(): Int {
         val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
         return maxId + 1
     }
+
+    fun clearForm() {
+        _state.value = ReportState() // vuelve a estado inicial
+    }
+
+
+    //para agregar la imagen
+    fun changeImage(uri: String) {
+        _state.value = state.copy(reportImagenUri = uri)
+    }
+
 
     /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
