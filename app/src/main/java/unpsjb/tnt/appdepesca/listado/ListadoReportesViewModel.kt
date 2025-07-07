@@ -57,12 +57,7 @@ class ListadoReportesViewModel(
         viewModelScope.launch {
             dao.insertReporte(updatedReport)
         }
-        _state.value = state.copy(
-            reportId = 0, // <- importante
-            reportTitle = "",
-            reportDescription = "",
-            reportDate = ""
-        )
+        clearForm() // función para limpiar todo
     }
 
     fun getNextId(): Int {
@@ -71,7 +66,12 @@ class ListadoReportesViewModel(
     }
 
     fun clearForm() {
-        _state.value = ReportState() // vuelve a estado inicial
+        _state.value = _state.value.copy(
+            reportId = 0,
+            reportTitle = "",
+            reportDescription = "",
+            reportDate = ""
+        )
     }
 
 
@@ -101,16 +101,17 @@ class ListadoReportesViewModel(
     }
     fun updateReport() {
         val updatedReport = Reporte(
-            reportId = state.reportId, // Usa el ID existente
+            reportId = state.reportId,
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate
         )
-
         viewModelScope.launch {
             dao.updateReporte(updatedReport)
         }
+        clearForm()
     }
+
 
 
     /////////////////FILTRADO DE FECHAS///////////////////////////////////
