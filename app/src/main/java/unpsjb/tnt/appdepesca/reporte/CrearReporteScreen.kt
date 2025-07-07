@@ -84,7 +84,7 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValid)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
-            //ImagenReporte(viewModel = listadoReportesViewModel)
+            ImagenReporte(viewModel = listadoReportesViewModel)
             VolverButton(navController, showDialog)
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
