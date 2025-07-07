@@ -32,6 +32,16 @@ import unpsjb.tnt.appdepesca.login.HeaderImage
 import unpsjb.tnt.appdepesca.listado.ReportState
 import java.util.Calendar
 import kotlin.Boolean
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import coil.compose.rememberAsyncImagePainter
+import androidx.compose.material.icons.filled.Photo
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
@@ -74,6 +84,7 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValid)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
+            ImagenReporte(viewModel = listadoReportesViewModel)
             VolverButton(navController, showDialog)
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
@@ -251,3 +262,40 @@ fun VolverButton(
         Text("Volver")
     }
 }
+
+//////////////BOTON AGREGAR IMAGEN///////////////
+@Composable
+fun ImagenReporte(viewModel: ListadoReportesViewModel) {
+    val context = LocalContext.current
+    val uri = remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
+        selectedUri?.let {
+            uri.value = it
+            viewModel.changeImage(it.toString())
+        }
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Button(
+            onClick = { launcher.launch("image/*") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+        ) {
+            Icon(Icons.Default.Photo, contentDescription = "Seleccionar imagen")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Seleccionar Imagen")
+        }
+
+        uri.value?.let {
+            Spacer(modifier = Modifier.height(8.dp))
+            Image(
+                painter = rememberAsyncImagePainter(it),
+                contentDescription = "Imagen del reporte",
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+

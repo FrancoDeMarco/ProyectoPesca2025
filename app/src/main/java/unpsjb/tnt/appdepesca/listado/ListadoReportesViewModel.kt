@@ -57,19 +57,29 @@ class ListadoReportesViewModel(
         viewModelScope.launch {
             dao.insertReporte(updatedReport)
         }
-        _state.value = state.copy(
+        clearForm() // función para limpiar todo
+    }
+
+    fun getNextId(): Int {
+        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
+        return maxId + 1
+    }
+
+    fun clearForm() {
+        _state.value = _state.value.copy(
+            reportId = 0,
             reportTitle = "",
             reportDescription = "",
             reportDate = ""
         )
     }
-    fun clearForm() {
-        _state.value = ReportState() // vuelve a estado inicial
+
+
+    //para agregar la imagen
+    fun changeImage(uri: String) {
+        _state.value = state.copy(reportImagenUri = uri)
     }
-    fun getNextId(): Int {
-        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
-        return maxId + 1
-    }
+
 
     /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
@@ -91,16 +101,17 @@ class ListadoReportesViewModel(
     }
     fun updateReport() {
         val updatedReport = Reporte(
-            reportId = state.reportId, // Usa el ID existente
+            reportId = state.reportId,
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate
         )
-
         viewModelScope.launch {
             dao.updateReporte(updatedReport)
         }
+        clearForm()
     }
+
 
 
     /////////////////FILTRADO DE FECHAS///////////////////////////////////
