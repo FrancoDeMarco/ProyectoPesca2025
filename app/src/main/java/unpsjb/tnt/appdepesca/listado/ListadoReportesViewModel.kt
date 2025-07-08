@@ -9,7 +9,9 @@ import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
 import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -17,9 +19,9 @@ class ListadoReportesViewModel(
     private val _state = mutableStateOf(ReportState())
     val state: ReportState
         get() = _state.value
-
     private val _fechasFiltro = MutableStateFlow<Pair<Date?, Date?>>(null to null)
     val fechasFiltro: StateFlow<Pair<Date?, Date?>> = _fechasFiltro
+
 
     init {
         viewModelScope.launch {
@@ -32,19 +34,15 @@ class ListadoReportesViewModel(
                 }
         }
     }
-
     fun changeTitle(title: String) {
         _state.value = state.copy(reportTitle = title)
     }
-
     fun changeDescription(description: String) {
         _state.value = state.copy(reportDescription = description)
     }
-
     fun changeDate(date: String) {
         _state.value = state.copy(reportDate = date)
     }
-
     ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
         val newReportId = getNextId()
@@ -54,18 +52,16 @@ class ListadoReportesViewModel(
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate
         )
-
+        println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
             dao.insertReporte(updatedReport)
         }
-        clearForm() // función para limpiar todo
+        clearForm()
     }
-
     fun getNextId(): Int {
         val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
         return maxId + 1
     }
-
     fun clearForm() {
         _state.value = _state.value.copy(
             reportId = 0,
@@ -74,24 +70,16 @@ class ListadoReportesViewModel(
             reportDate = ""
         )
     }
-
-
     //para agregar la imagen
     fun changeImage(uri: Uri) {
         _state.value = state.copy(reportImagenUri = uri.toString())
     }
-
-
-
     /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
         viewModelScope.launch {
             dao.deleteReporte(reporte)
         }
     }
-
-
-
     ////////////EDITAR REPORTE//////
     fun loadReport(reporte: Reporte) {
         _state.value = ReportState(
@@ -113,31 +101,31 @@ class ListadoReportesViewModel(
         }
         clearForm()
     }
-
-
-
     /////////////////FILTRADO DE FECHAS///////////////////////////////////
     private fun filterReportesByDates(
         reportes: List<Reporte>,
         fromDate: Date?,
         toDate: Date?
     ): List<Reporte> {
-        if (fromDate == null && toDate == null) {
-            return reportes
-        }
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
         return reportes.filter { reporte ->
-            val fechaReporte = reporte.reportFecha
-            (fromDate == null || fechaReporte >= fromDate.toString()) &&
-                    (toDate == null || fechaReporte <= toDate.toString())
+            val fechaReporte: Date? = try {
+                formatter.parse(reporte.reportFecha)
+            } catch (e: Exception) {
+                null
+            }
+
+            fechaReporte != null &&
+                    (fromDate == null || !fechaReporte.before(fromDate)) &&
+                    (toDate == null || !fechaReporte.after(toDate))
         }
     }
-
 
     //Función para obtener todos los reportes filtrados por fechas
     fun getAllReportesFlow(): Flow<List<Reporte>> {
         return dao.getAllReportes()
     }
-
     //Función para establecer las fechas de filtro
     fun setFechasFiltro(fromDate: Date?, toDate: Date?) {
         _fechasFiltro.value = fromDate to toDate
