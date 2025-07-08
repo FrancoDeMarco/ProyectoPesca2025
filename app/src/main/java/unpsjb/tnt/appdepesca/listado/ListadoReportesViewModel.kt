@@ -10,6 +10,7 @@ import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
 import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -109,19 +110,21 @@ class ListadoReportesViewModel(
     ): List<Reporte> {
         val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
+        val from = fromDate?.onlyDate()
+        val to = toDate?.onlyDate()
+
         return reportes.filter { reporte ->
             val fechaReporte: Date? = try {
-                formatter.parse(reporte.reportFecha)
+                formatter.parse(reporte.reportFecha)?.onlyDate()
             } catch (e: Exception) {
                 null
             }
 
             fechaReporte != null &&
-                    (fromDate == null || !fechaReporte.before(fromDate)) &&
-                    (toDate == null || !fechaReporte.after(toDate))
+                    (from == null || !fechaReporte.before(from)) &&
+                    (to == null || !fechaReporte.after(to))
         }
     }
-
     //Función para obtener todos los reportes filtrados por fechas
     fun getAllReportesFlow(): Flow<List<Reporte>> {
         return dao.getAllReportes()
@@ -129,5 +132,15 @@ class ListadoReportesViewModel(
     //Función para establecer las fechas de filtro
     fun setFechasFiltro(fromDate: Date?, toDate: Date?) {
         _fechasFiltro.value = fromDate to toDate
+    }
+    fun Date.onlyDate(): Date {
+        val calendar = Calendar.getInstance().apply {
+            time = this@onlyDate
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return calendar.time
     }
 }
