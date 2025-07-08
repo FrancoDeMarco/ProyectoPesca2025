@@ -1,5 +1,6 @@
 package unpsjb.tnt.appdepesca.listado
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.mutableStateOf
@@ -76,9 +77,10 @@ class ListadoReportesViewModel(
 
 
     //para agregar la imagen
-    fun changeImage(uri: String) {
-        _state.value = state.copy(reportImagenUri = uri)
+    fun changeImage(uri: Uri) {
+        _state.value = state.copy(reportImagenUri = uri.toString())
     }
+
 
 
     /////////////////////ELIMINAR REPORTE///////////////////
