@@ -1,6 +1,8 @@
 package unpsjb.tnt.appdepesca.listado
 
 
+import android.app.DatePickerDialog
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +32,11 @@ import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.Date
+
 
 @Composable
 fun ConfirmationDialog(
@@ -62,10 +70,15 @@ fun ListadoReportesScreen(
     listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
-    val reportes by listadoReportesViewModel.getAllReportesFlow().collectAsState(null)
+    val reportes = listadoReportesViewModel.state.report
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
+    //Variables para filtrar por fecha
+    val context = LocalContext.current
+    val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    val fromDate = remember { mutableStateOf<Date?>(null) }
+    val toDate = remember { mutableStateOf<Date?>(null) }
 
     Column(
         modifier = Modifier
@@ -82,6 +95,44 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
+                ///////////Esta parte es la que filtra por fecha
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(onClick = {
+                        showDatePicker(context) { selectedDate ->
+                            fromDate.value = selectedDate
+                            listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
+                        }
+                    }) {
+                        Text(text = "Desde: ${fromDate.value?.let { dateFormatter.format(it) } ?: "---"}")
+                    }
+
+                    Button(onClick = {
+                        showDatePicker(context) { selectedDate ->
+                            toDate.value = selectedDate
+                            listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
+                        }
+                    }) {
+                        Text(text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}")
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(
+                        onClick = {
+                            fromDate.value = null
+                            toDate.value = null
+                            listadoReportesViewModel.setFechasFiltro(null, null)
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                    ) {
+                        Text("Refrescar")
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
@@ -153,14 +204,14 @@ fun ListadoReportesScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             val buttonModifier = Modifier
-                .weight(1f)           // Ocupa 1/4 del ancho disponible
-                .aspectRatio(1f)      // Hace que el alto sea igual al ancho (cuadrado)
+                .weight(1f)                 // Ocupa 1/4 del ancho disponible
+                .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
                 .padding(horizontal = 4.dp) // Espacio entre botones
             Button(
                 onClick = { navController.navigate("formulario") },
                 modifier = buttonModifier.border(
                     width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),            // color del borde
+                    color = Color(0xFF3E8B75),      // color del borde
                     shape = RectangleShape          // importante: que coincida con el shape del botón
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
@@ -175,7 +226,7 @@ fun ListadoReportesScreen(
                 onClick = { navController.navigate("concurso") },
                 modifier = buttonModifier.border(
                     width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),           // color del borde
+                    color = Color(0xFF3E8B75),      // color del borde
                     shape = RectangleShape          // importante: que coincida con el shape del botón
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
@@ -193,7 +244,7 @@ fun ListadoReportesScreen(
                 onClick = { navController.navigate("reglamentos") },
                 modifier = buttonModifier.border(
                     width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),            // color del borde
+                    color = Color(0xFF3E8B75),      // color del borde
                     shape = RectangleShape          // importante: que coincida con el shape del botón
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
@@ -211,7 +262,7 @@ fun ListadoReportesScreen(
                 onClick = { navController.navigate("login") },
                 modifier = buttonModifier.border(
                     width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),            // color del borde
+                    color = Color(0xFF3E8B75),      // color del borde
                     shape = RectangleShape          // importante: que coincida con el shape del botón
                 ),
 
@@ -263,6 +314,27 @@ fun ListadoReportesScreen(
         )
     }
 }
+
+//BOTONES QUE MUESTRAN LAS FECHAS A FILTRAR
+fun showDatePicker(context: Context, onDateSelected: (Date) -> Unit) {
+    val calendar = Calendar.getInstance()
+    DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            val selectedCalendar = Calendar.getInstance().apply {
+                set(year, month, dayOfMonth)
+            }
+            onDateSelected(selectedCalendar.time)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).show()
+}
+
+
+
+
 //////////////TITULO/////////////////////
 @Composable
 fun TituloReportes() {
