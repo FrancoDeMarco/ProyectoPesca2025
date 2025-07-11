@@ -74,8 +74,7 @@ fun ListadoReportesScreen(
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
-    //Variables para filtrar por fecha
-    val context = LocalContext.current
+    val context = LocalContext.current                                      //Variables para filtrar por fecha
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val fromDate = remember { mutableStateOf<Date?>(null) }
     val toDate = remember { mutableStateOf<Date?>(null) }
@@ -95,33 +94,45 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
-                ///////////Esta parte es la que filtra por fecha
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+                    ///////////Esta parte es la que filtra por fecha
                     Button(onClick = {
-                        showDatePicker(context) { selectedDate ->
+                        showDatePicker(
+                            context=context,
+                            initialDate = fromDate.value
+                        ) { selectedDate ->
                             fromDate.value = selectedDate
-                            listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
+                            toDate.value = null // 💥 Borra la fecha Hasta
+                            listadoReportesViewModel.setFechasFiltro(fromDate.value, null)
                         }
                     }) {
                         Text(text = "Desde: ${fromDate.value?.let { dateFormatter.format(it) } ?: "---"}")
                     }
 
-                    Button(onClick = {
-                        showDatePicker(context) { selectedDate ->
-                            toDate.value = selectedDate
-                            listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
-                        }
-                    }) {
+
+                    Button(
+                        onClick = {
+                            showDatePicker(
+                                context = context,
+                                initialDate = toDate.value,          // mostrar la última fecha
+                                minDate = fromDate.value // no deja elegir fechas anteriores a "Desde"
+                            ) { selectedDate ->
+                                toDate.value = selectedDate
+                                listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
+                            }
+                        },
+                        enabled = fromDate.value != null // deshabilitado hasta que haya fecha "Desde"
+                    ) {
                         Text(text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}")
                     }
 
+                    //////////////////////////////////////
                     Spacer(modifier = Modifier.height(8.dp))
-
                     Button(
                         onClick = {
                             fromDate.value = null
@@ -316,9 +327,20 @@ fun ListadoReportesScreen(
 }
 
 //BOTONES QUE MUESTRAN LAS FECHAS A FILTRAR
-fun showDatePicker(context: Context, onDateSelected: (Date) -> Unit) {
+fun showDatePicker(
+    context: Context,
+    initialDate: Date? = null,
+    minDate: Date? = null, // <- nueva opción
+    onDateSelected: (Date) -> Unit
+) {
     val calendar = Calendar.getInstance()
-    DatePickerDialog(
+
+    // Si hay una fecha seleccionada, la usamos como inicial
+    initialDate?.let {
+        calendar.time = it
+    }
+
+    val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
             val selectedCalendar = Calendar.getInstance().apply {
@@ -329,8 +351,16 @@ fun showDatePicker(context: Context, onDateSelected: (Date) -> Unit) {
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
-    ).show()
+    )
+
+    // Aplicar fecha mínima si está definida
+    minDate?.let {
+        datePickerDialog.datePicker.minDate = it.time
+    }
+
+    datePickerDialog.show()
 }
+
 
 
 
