@@ -99,7 +99,7 @@ fun ImagenDesdeUri(uriString: String?) {
                     bitmap = it.asImageBitmap(),
                     contentDescription = "Imagen del reporte",
                     modifier = Modifier
-                        .fillMaxWidth(0.75f)    // Escala la imagen, sin afectar proporción
+                        .fillMaxWidth(0.5f)    // Cambia el tamano de la imagen pero sin que esta se vea cortada
                         .aspectRatio(it.width.toFloat() / it.height.toFloat())  // Mantiene la proporción original de la imagen
                         .padding(vertical = 8.dp),
                     contentScale = ContentScale.Fit //Muestra la imagen entera, sin recortar ni deformar
