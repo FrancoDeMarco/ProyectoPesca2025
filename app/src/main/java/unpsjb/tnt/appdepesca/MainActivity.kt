@@ -30,21 +30,20 @@ import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val database = Room.databaseBuilder(
             applicationContext,
             PescaRoomDatabase::class.java,
             "product_db3"
-        ).build()
+        )
+            .fallbackToDestructiveMigration() //Esta línea destruye la DB si el esquema cambia
+            .build()
         val dao = database.pescaDAO
-
         val viewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return ListadoReportesViewModel(dao) as T
             }
         }
         val listadoReportesViewModel: ListadoReportesViewModel by viewModels { viewModelFactory }
-
         setContent {
             ProyectoPesca2023Theme {
                 val navController = rememberNavController()
@@ -83,7 +82,6 @@ class MainActivity : ComponentActivity() {
                             listadoReportesViewModel
                         )
                     }
-
                 }
             }
         }

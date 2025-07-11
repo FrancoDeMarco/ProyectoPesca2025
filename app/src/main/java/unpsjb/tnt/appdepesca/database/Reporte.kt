@@ -10,5 +10,5 @@ data class Reporte(
     @ColumnInfo val reportTitulo: String,
     @ColumnInfo val reportDescripcion: String,
     @ColumnInfo val reportFecha: String,
-    //val reportImagenUri: String? = null
+    @ColumnInfo val reportImagenUri: String? = null
 )

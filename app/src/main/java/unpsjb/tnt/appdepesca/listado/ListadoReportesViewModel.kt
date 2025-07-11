@@ -51,7 +51,8 @@ class ListadoReportesViewModel(
             reportId = newReportId,
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
-            reportFecha = state.reportDate
+            reportFecha = state.reportDate,
+            reportImagenUri = state.reportImagenUri
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
@@ -87,7 +88,8 @@ class ListadoReportesViewModel(
             reportId = reporte.reportId,
             reportTitle = reporte.reportTitulo,
             reportDescription = reporte.reportDescripcion,
-            reportDate = reporte.reportFecha
+            reportDate = reporte.reportFecha,
+            reportImagenUri = reporte.reportImagenUri
         )
     }
     fun updateReport() {
@@ -95,7 +97,8 @@ class ListadoReportesViewModel(
             reportId = state.reportId,
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
-            reportFecha = state.reportDate
+            reportFecha = state.reportDate,
+            reportImagenUri = state.reportImagenUri
         )
         viewModelScope.launch {
             dao.updateReporte(updatedReport)
