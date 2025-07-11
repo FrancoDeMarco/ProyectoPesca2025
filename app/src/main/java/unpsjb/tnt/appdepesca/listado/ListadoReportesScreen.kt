@@ -100,7 +100,6 @@ fun ListadoReportesScreen(
                         .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ///////////Esta parte es la que filtra por fecha
                     Button(onClick = {
                         showDatePicker(
                             context=context,
@@ -113,8 +112,6 @@ fun ListadoReportesScreen(
                     }) {
                         Text(text = "Desde: ${fromDate.value?.let { dateFormatter.format(it) } ?: "---"}")
                     }
-
-
                     Button(
                         onClick = {
                             showDatePicker(
@@ -130,8 +127,6 @@ fun ListadoReportesScreen(
                     ) {
                         Text(text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}")
                     }
-
-                    //////////////////////////////////////
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
@@ -187,7 +182,7 @@ fun ListadoReportesScreen(
                         listadoReportesViewModel = listadoReportesViewModel,
                         modifier = Modifier.fillMaxWidth(),
                         onEdit = {
-                            listadoReportesViewModel.loadReport(reporte) // <- precarga los datos del reporte
+                            listadoReportesViewModel.loadReport(reporte) // precarga los datos del reporte
                             navController.navigate("editar_reporte")
                         },
 
@@ -221,27 +216,27 @@ fun ListadoReportesScreen(
             Button(
                 onClick = { navController.navigate("formulario") },
                 modifier = buttonModifier.border(
-                    width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),      // color del borde
-                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                    width = 2.dp,               // grosor del borde
+                    color = Color(0xFF3E8B75),  // color del borde
+                    shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                shape = RectangleShape // <- esto lo hace cuadrado
+                shape = RectangleShape  //esto lo hace cuadrado
             ) {
                 Text(
                     text = "+",
-                    fontSize = 30.sp // <- ajustás el tamaño acá
+                    fontSize = 30.sp    // ajustás el tamaño acá
                 )
             }
             Button(
                 onClick = { navController.navigate("concurso") },
                 modifier = buttonModifier.border(
-                    width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),      // color del borde
-                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                    width = 2.dp,               // grosor del borde
+                    color = Color(0xFF3E8B75),  // color del borde
+                    shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                shape = RectangleShape // <- esto lo hace cuadrado
+                shape = RectangleShape  // <- esto lo hace cuadrado
             ) {
                 Image(
                     painter = painterResource(R.drawable.concursos),
@@ -254,12 +249,12 @@ fun ListadoReportesScreen(
             Button(
                 onClick = { navController.navigate("reglamentos") },
                 modifier = buttonModifier.border(
-                    width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),      // color del borde
-                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                    width = 2.dp,               // grosor del borde
+                    color = Color(0xFF3E8B75),  // color del borde
+                    shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                shape = RectangleShape // <- esto lo hace cuadrado
+                shape = RectangleShape  // esto lo hace cuadrado
             ) {
                 Image(
                     painter = painterResource(R.drawable.reglamento),
@@ -272,9 +267,9 @@ fun ListadoReportesScreen(
             Button(
                 onClick = { navController.navigate("login") },
                 modifier = buttonModifier.border(
-                    width = 2.dp,                   // grosor del borde
-                    color = Color(0xFF3E8B75),      // color del borde
-                    shape = RectangleShape          // importante: que coincida con el shape del botón
+                    width = 2.dp,               // grosor del borde
+                    color = Color(0xFF3E8B75),  // color del borde
+                    shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
 
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
@@ -330,16 +325,13 @@ fun ListadoReportesScreen(
 fun showDatePicker(
     context: Context,
     initialDate: Date? = null,
-    minDate: Date? = null, // <- nueva opción
+    minDate: Date? = null,  // <- nueva opción
     onDateSelected: (Date) -> Unit
 ) {
     val calendar = Calendar.getInstance()
-
-    // Si hay una fecha seleccionada, la usamos como inicial
-    initialDate?.let {
+    initialDate?.let {  // Si hay una fecha seleccionada, la usamos como inicial
         calendar.time = it
     }
-
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
@@ -352,18 +344,11 @@ fun showDatePicker(
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     )
-
-    // Aplicar fecha mínima si está definida
-    minDate?.let {
+    minDate?.let {  // Aplicar fecha mínima si está definida
         datePickerDialog.datePicker.minDate = it.time
     }
-
     datePickerDialog.show()
 }
-
-
-
-
 
 //////////////TITULO/////////////////////
 @Composable
