@@ -21,7 +21,8 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import android.graphics.BitmapFactory
 import android.net.Uri
-
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 
 
 @Composable
@@ -98,9 +99,10 @@ fun ImagenDesdeUri(uriString: String?) {
                     bitmap = it.asImageBitmap(),
                     contentDescription = "Imagen del reporte",
                     modifier = Modifier
-                        .height(200.dp)
+                        .fillMaxWidth(0.75f)    // Escala la imagen, sin afectar proporción
+                        .aspectRatio(it.width.toFloat() / it.height.toFloat())  // Mantiene la proporción original de la imagen
                         .padding(vertical = 8.dp),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Fit //Muestra la imagen entera, sin recortar ni deformar
                 )
             }
         }
