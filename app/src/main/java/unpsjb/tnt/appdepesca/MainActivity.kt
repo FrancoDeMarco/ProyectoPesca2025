@@ -6,9 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.room.Room
 import unpsjb.tnt.appdepesca.Reglamentos.ReglamentoScreen
 import unpsjb.tnt.appdepesca.Reglamentos.ReglamentosViewModel
@@ -21,6 +23,7 @@ import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
 import unpsjb.tnt.appdepesca.login.LoginScreen
 import unpsjb.tnt.appdepesca.login.LoginViewModel
 import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
+import unpsjb.tnt.appdepesca.reporte.DetalleReporteScreen
 import unpsjb.tnt.appdepesca.reporte.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 
@@ -69,6 +72,18 @@ class MainActivity : ComponentActivity() {
                         val reporteViewModel = ReporteViewModel()
                         EditarReporteScreen( reporteViewModel, listadoReportesViewModel, navController)
                     }
+                    composable(
+                        "detalle_reporte/{reporteId}",
+                        arguments = listOf(navArgument("reporteId") { type = NavType.IntType })
+                    ) {
+                        val reporteId = it.arguments?.getInt("reporteId") ?: return@composable
+                        DetalleReporteScreen(
+                            reporteId = reporteId,
+                            navController = navController,
+                            listadoReportesViewModel
+                        )
+                    }
+
                 }
             }
         }

@@ -191,7 +191,7 @@ fun ListadoReportesScreen(
                             showDialog.value = true
                         },
                         onItemClick = {
-                            selectedReport.value = it
+                            navController.navigate("detalle_reporte/${reporte.reportId}")
                         }
                     )
                 }

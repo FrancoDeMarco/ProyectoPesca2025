@@ -9,5 +9,6 @@ data class Reporte(
     @PrimaryKey(autoGenerate = true) var reportId: Int,
     @ColumnInfo val reportTitulo: String,
     @ColumnInfo val reportDescripcion: String,
-    @ColumnInfo val reportFecha: String
+    @ColumnInfo val reportFecha: String,
+    //val reportImagenUri: String? = null
 )
