@@ -43,6 +43,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
@@ -336,4 +340,4 @@ fun MapaSeleccionUbicacion(
             )
         }
     }
-}//
+}

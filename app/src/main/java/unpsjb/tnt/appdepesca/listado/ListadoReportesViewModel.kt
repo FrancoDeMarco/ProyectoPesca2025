@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.google.android.gms.maps.model.LatLng
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -22,6 +23,12 @@ class ListadoReportesViewModel(
         get() = _state.value
     private val _fechasFiltro = MutableStateFlow<Pair<Date?, Date?>>(null to null)
     val fechasFiltro: StateFlow<Pair<Date?, Date?>> = _fechasFiltro
+    private val _ubicacionSeleccionada = mutableStateOf<LatLng?>(null)
+    val ubicacionSeleccionada: LatLng? get() = _ubicacionSeleccionada.value
+
+    fun setUbicacionSeleccionada(latLng: LatLng) {
+        _ubicacionSeleccionada.value = latLng
+    }
 
 
     init {
@@ -53,8 +60,8 @@ class ListadoReportesViewModel(
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
             reportImagenUri = state.reportImagenUri,
-            latitud = ubicacionSeleccionada?.latitude,
-            longitud = ubicacionSeleccionada?.longitude
+            latitud = _ubicacionSeleccionada.value?.latitude,
+            longitud = _ubicacionSeleccionada.value?.longitude
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {

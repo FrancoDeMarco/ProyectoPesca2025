@@ -18,7 +18,10 @@ class ReporteViewModel : ViewModel() {
         reportId = 0,
         reportTitulo = "",
         reportDescripcion = "",
-        reportFecha = ""
+        reportFecha = "",
+        reportImagenUri = null,
+        latitud = null,
+        longitud = null
     )
 
     fun changeTitle(title: String) {
