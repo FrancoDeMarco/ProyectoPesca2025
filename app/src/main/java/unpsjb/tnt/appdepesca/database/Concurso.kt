@@ -14,4 +14,3 @@ data class Concurso(
     @ColumnInfo val concursoBases: String,
     @ColumnInfo val concursoPremio: String,
 )
-
