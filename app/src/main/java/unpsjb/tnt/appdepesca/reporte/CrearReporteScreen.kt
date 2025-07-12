@@ -41,6 +41,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
@@ -59,6 +61,11 @@ fun CrearReporteScreen(
     var isDescriptionValid = remember { mutableStateOf(false) }
     var isImagenValid = remember { mutableStateOf(false) }
     val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value && isImagenValid.value
+    var ubicacionSeleccionada by remember { mutableStateOf<LatLng?>(null) }
+
+    MapaSeleccionUbicacion { latLng ->
+        ubicacionSeleccionada = latLng
+    }
 
     LaunchedEffect(Unit) {
         listadoReportesViewModel.clearForm()
@@ -302,3 +309,31 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableSta
     }
 }
 
+@Composable
+fun MapaSeleccionUbicacion(
+    onUbicacionSeleccionada: (LatLng) -> Unit
+) {
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(-43.3, -65.1), 10f) // ubicación inicial
+    }
+
+    var marcador by remember { mutableStateOf<LatLng?>(null) }
+
+    GoogleMap(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        cameraPositionState = cameraPositionState,
+        onMapClick = { latLng ->
+            marcador = latLng
+            onUbicacionSeleccionada(latLng)
+        }
+    ) {
+        marcador?.let {
+            Marker(
+                state = MarkerState(position = it),
+                title = "Ubicación seleccionada"
+            )
+        }
+    }
+}

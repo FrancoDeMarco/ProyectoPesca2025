@@ -52,7 +52,9 @@ class ListadoReportesViewModel(
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri
+            reportImagenUri = state.reportImagenUri,
+            latitud = ubicacionSeleccionada?.latitude,
+            longitud = ubicacionSeleccionada?.longitude
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
@@ -98,7 +100,9 @@ class ListadoReportesViewModel(
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri
+            reportImagenUri = state.reportImagenUri,
+            latitud = ubicacionSeleccionada?.latitude,
+            longitud = ubicacionSeleccionada?.longitude
         )
         viewModelScope.launch {
             dao.updateReporte(updatedReport)
