@@ -64,11 +64,16 @@ fun CrearReporteScreen(
     val isTitleValid = remember { mutableStateOf(false) }
     var isDescriptionValid = remember { mutableStateOf(false) }
     var isImagenValid = remember { mutableStateOf(false) }
-    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value && isImagenValid.value
-    var ubicacionSeleccionada by remember { mutableStateOf<LatLng?>(null) }
-
-    MapaSeleccionUbicacion { latLng ->
-        ubicacionSeleccionada = latLng
+    val isUbicacionValid = remember { mutableStateOf(false) }
+    val showMap = remember { mutableStateOf(false) }
+    LaunchedEffect(listadoReportesViewModel.ubicacionSeleccionada) {
+        isUbicacionValid.value = listadoReportesViewModel.ubicacionSeleccionada != null
+    }
+    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value && isImagenValid.value && isUbicacionValid.value
+    if (showMap.value) {
+        MapaSeleccionUbicacion { latLng ->
+            listadoReportesViewModel.setUbicacionSeleccionada(latLng)
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -97,6 +102,7 @@ fun CrearReporteScreen(
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
             ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
+            MapaButton(showMap)
             VolverButton(navController, showDialog)
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
@@ -339,5 +345,18 @@ fun MapaSeleccionUbicacion(
                 title = "Ubicación seleccionada"
             )
         }
+    }
+}
+
+@Composable
+fun MapaButton(showMap: MutableState<Boolean>) {
+    Button(
+        onClick = { showMap.value = !showMap.value },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+    ) {
+        Text(text = if (showMap.value) "Ocultar Mapa" else "Seleccionar Ubicación")
     }
 }
