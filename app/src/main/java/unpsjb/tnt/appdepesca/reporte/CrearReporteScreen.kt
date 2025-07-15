@@ -57,7 +57,8 @@ fun CrearReporteScreen(
     var isDateValid = remember { mutableStateOf(false) }
     val isTitleValid = remember { mutableStateOf(false) }
     var isDescriptionValid = remember { mutableStateOf(false) }
-    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value
+    var isImagenValid = remember { mutableStateOf(false) }
+    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value && isImagenValid.value
 
     LaunchedEffect(Unit) {
         listadoReportesViewModel.clearForm()
@@ -84,7 +85,7 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValid)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
-            ImagenReporte(viewModel = listadoReportesViewModel)
+            ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
             VolverButton(navController, showDialog)
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
@@ -265,13 +266,13 @@ fun VolverButton(
 
 //////////////BOTON AGREGAR IMAGEN///////////////
 @Composable
-fun ImagenReporte(viewModel: ListadoReportesViewModel) {
+fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableState<Boolean>) {
     val context = LocalContext.current
     val uri = remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
         selectedUri?.let {
             uri.value = it
-            viewModel.changeImage(it.toString())
+            viewModel.changeImage(it)
         }
     }
 
@@ -293,8 +294,10 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel) {
                 modifier = Modifier
                     .size(200.dp)
                     .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+
             )
+            isImagenValid.value = true
         }
     }
 }

@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.protolite.well.known.types)
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.7")
 
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
@@ -67,6 +68,9 @@ dependencies {
 
 
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    //para el filtrado por fechas
+    implementation("com.google.android.material:material:1.11.0")
 
     // Test
     testImplementation("junit:junit:4.13.2")

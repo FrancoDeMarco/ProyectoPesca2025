@@ -4,11 +4,11 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface RelgamentoDAO {
+interface ReglamentoDAO {
 
-    @Query("SELECT * FROM concurso_table")
+    @Query("SELECT * FROM reglamento_table")
     fun getAllReglamento(): Flow<List<Reglamento>>
 
-    @Query("SELECT * FROM concurso_table WHERE concursoId = :id")
+    @Query("SELECT * FROM reglamento_table WHERE reglamentoId = :id")
     suspend fun getReglamentoById(id: Int): Reglamento?
 }
