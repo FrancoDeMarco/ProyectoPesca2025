@@ -79,5 +79,6 @@ dependencies {
     //dependencias de google maps
     implementation("com.google.maps.android:maps-compose:4.3.3") // versión actual a julio 2025
     implementation("com.google.android.gms:play-services-maps:18.2.0")
-}
 
+    implementation ("androidx.constraintlayout:contraintlayout:2.0.2")
+}
