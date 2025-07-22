@@ -53,17 +53,58 @@ fun DetalleReporteScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF1B2B24))
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         NombreReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
-        FechaReporte(reporte)
-        Spacer(modifier = Modifier.height(8.dp))
-        DescripcionReporte(reporte)
-        Spacer(modifier = Modifier.height(8.dp))
         ImagenReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            FechaReporte(reporte)
+            Spacer(modifier = Modifier.height(8.dp))
+            DescripcionReporte(reporte)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
         BotonVolver(navController)
+    }
+}
+
+
+
+//////////////TITULO/////////////////////
+@Composable
+fun NombreReporte(reporte: Reporte) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        HeaderImage(size = 200.dp)
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = reporte.reportTitulo,
+        style = TextStyle(
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+fun ImagenReporte(reporte: Reporte) {
+    reporte.reportImagenUri?.let {
+        ImagenDesdeUri(it)
     }
 }
 
@@ -94,58 +135,34 @@ fun ImagenDesdeUri(uriString: String?) {
     }
 }
 
-//////////////TITULO/////////////////////
 @Composable
-fun NombreReporte(reporte: Reporte) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        HeaderImage(size = 200.dp)
-    }
-    Spacer(modifier = Modifier.height(16.dp))
+fun DescripcionReporte(reporte: Reporte){
     Text(
-        text = reporte.reportTitulo,
-        style = TextStyle(
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF3E8B75)
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        textAlign = TextAlign.Center
+        text = "Descripción:",
+        style = MaterialTheme.typography.titleMedium,
+        color = Color(0xFF3E8B75),
+        fontSize = 23.sp,
+    )
+    Text(
+        text = reporte.reportDescripcion,
+        color = Color.White,
+        fontSize = 23.sp,
     )
 }
 
 @Composable
 fun FechaReporte(reporte: Reporte){
     Text(
-        text = "Fecha: ${reporte.reportFecha}",
-        color = Color.White,
+        text = "Fecha: ",
+        color = Color(0xFF3E8B75),
         fontSize = 23.sp // <- tamaño
     )
-}
-
-@Composable
-fun DescripcionReporte(reporte: Reporte){
     Text(
-        text = "Descripción:",
-        style = MaterialTheme.typography.titleMedium,
-        color = Color(0xFF3E8B75)
+        text = "${reporte.reportFecha}",
+        color = Color.White,
+        fontSize = 23.sp,
+        textAlign = TextAlign.Center
     )
-    Text(
-        text = reporte.reportDescripcion,
-        color = Color.White
-    )
-}
-
-@Composable
-fun ImagenReporte(reporte: Reporte) {
-    reporte.reportImagenUri?.let {
-        ImagenDesdeUri(it)
-    }
 }
 
 @Composable
@@ -174,7 +191,7 @@ fun BotonVolver(navController: NavController){
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
                 Text(
-                    text = "<-- Volver",
+                    text = "<-- Poner una flecha",
                     fontSize = 23.sp // <- tamaño
                 )
             }
