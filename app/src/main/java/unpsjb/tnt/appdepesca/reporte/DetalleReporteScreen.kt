@@ -27,13 +27,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
 
@@ -190,9 +193,12 @@ fun BotonVolver(navController: NavController){
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
-                Text(
-                    text = "<-- Poner una flecha",
-                    fontSize = 23.sp // <- tamaño
+                Image(
+                    painter = painterResource(R.drawable.retroceso), //nombre de la imagen
+                    contentDescription = "Retroceso",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(bottom = 16.dp)
                 )
             }
         }
