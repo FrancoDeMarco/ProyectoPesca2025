@@ -24,6 +24,7 @@ import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -181,24 +182,23 @@ fun BotonVolver(navController: NavController){
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val buttonModifier = Modifier
             Button(
                 onClick = { navController.popBackStack() },
-                modifier = buttonModifier.border(
-                    width = 2.dp,               // grosor del borde
-                    color = Color(0xFF3E8B75),  // color del borde
-                    shape = RectangleShape      // importante: que coincida con el shape del botón
+                modifier = Modifier
+                    .size(88.dp) // fuerza cuadrado perfecto
+                    .border(
+                        width = 2.dp,               // grosor del borde
+                        color = Color(0xFF3E8B75),  // color del borde
+                        shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
-
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                shape = RectangleShape // <- esto lo hace cuadrado
+                shape = RectangleShape, // <- esto lo hace cuadrado
+                contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
             ) {
                 Image(
                     painter = painterResource(R.drawable.retroceso), //nombre de la imagen
                     contentDescription = "Retroceso",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .padding(bottom = 16.dp)
+                    modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
                 )
             }
         }
