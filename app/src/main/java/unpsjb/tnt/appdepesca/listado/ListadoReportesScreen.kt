@@ -271,13 +271,15 @@ fun ListadoReportesScreen(
                     color = Color(0xFF3E8B75),  // color del borde
                     shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
-
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
                 shape = RectangleShape // <- esto lo hace cuadrado
             ) {
-                Text(
-                    text = "Salir",
-                    fontSize = 23.sp // <- ajustás el tamaño acá
+                Image(
+                    painter = painterResource(R.drawable.salir), //nombre de la imagen
+                    contentDescription = "Salir",
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(bottom = 16.dp)
                 )
             }
         }
@@ -356,7 +358,7 @@ fun TituloReportes() {
     Text(
         text = "Reportes",
         style = TextStyle(
-            fontSize = 24.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF3E8B75)
         ),
