@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.room.Room
-import unpsjb.tnt.appdepesca.Reglamentos.ReglamentoScreen
+import unpsjb.tnt.appdepesca.Reglamentos.ListaReglamentosScreen
 import unpsjb.tnt.appdepesca.Reglamentos.ReglamentosViewModel
 import unpsjb.tnt.appdepesca.concursos.ConcursoScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
@@ -26,6 +26,10 @@ import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import unpsjb.tnt.appdepesca.reporte.DetalleReporteScreen
 import unpsjb.tnt.appdepesca.reporte.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
+import unpsjb.tnt.appdepesca.Reglamentos.DetalleReglamentoScreen
+import unpsjb.tnt.appdepesca.Reglamentos.DetalleReglamentoScreen
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +62,18 @@ class MainActivity : ComponentActivity() {
                         ListadoReportesScreen(listadoReportesViewModel, navController)
                     }
                     composable("reglamentos") {
-                        ReglamentoScreen(ReglamentosViewModel(), navController)
+                        ListaReglamentosScreen(ReglamentosViewModel(), navController)
+                    }
+                    composable(
+                        "detalleReglamento/{reglamentoId}",
+                        arguments = listOf(navArgument("reglamentoId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val reglamentoId = backStackEntry.arguments?.getInt("reglamentoId") ?: return@composable
+                        DetalleReglamentoScreen(
+                            reglamentoId = reglamentoId,
+                            viewModel = ReglamentosViewModel(),
+                            navController = navController
+                        )
                     }
                     composable("concurso") {
                         ConcursoScreen(ConcursosViewModel(), navController)
