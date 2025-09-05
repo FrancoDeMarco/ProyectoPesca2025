@@ -25,6 +25,9 @@ fun DetalleReglamentoScreen(
     viewModel: ReglamentosViewModel,
     navController: NavController
 ) {
+
+    Spacer(modifier = Modifier.height(16.dp))
+
     val reglamento = viewModel.reglamentos.find { it.reglamentoId == reglamentoId }
     Column(
         modifier = Modifier
@@ -44,15 +47,30 @@ fun DetalleReglamentoScreen(
 
         ///// LUGAR
         Text(
-            text = "Lugar: ${reglamento?.reglamentoLugar}",
+            text = "Lugar: ",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        )
+        Text(
+            "${reglamento?.reglamentoLugar}",
             fontSize = 18.sp,
             color = Color.White
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         /////FECHA
         Text(
-            text = "Fecha de Vigencia: ${reglamento?.relgamentoFecha}",
+            text = "Fecha de Vigencia: ",
             fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75)
+        )
+        Text(
+            text = "${reglamento?.relgamentoFecha}",
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = Color.White
         )
 
