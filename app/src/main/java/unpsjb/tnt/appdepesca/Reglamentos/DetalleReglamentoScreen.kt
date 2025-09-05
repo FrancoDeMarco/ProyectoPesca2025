@@ -99,7 +99,7 @@ fun DetalleReglamentoScreen(
             onClick = { navController.popBackStack() },
             modifier = Modifier
                 .size(88.dp) // fuerza cuadrado perfecto
-                .offset(x = 24.dp, y = (-32).dp) // manejar corrimiento del botón
+                .offset(x = 8.dp, y = (-15).dp) // manejar corrimiento del botón
                 .border(2.dp, Color(0xFF3E8B75), RectangleShape),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
             shape = RectangleShape, // <- esto lo hace cuadrado
