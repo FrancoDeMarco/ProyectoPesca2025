@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.Reglamentos
+package unpsjb.tnt.appdepesca.reglamentos
 
 import androidx.lifecycle.ViewModel
 import unpsjb.tnt.appdepesca.database.Reglamento

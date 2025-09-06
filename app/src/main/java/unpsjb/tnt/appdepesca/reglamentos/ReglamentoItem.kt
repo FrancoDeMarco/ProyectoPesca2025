@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.Reglamentos
+package unpsjb.tnt.appdepesca.reglamentos
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
