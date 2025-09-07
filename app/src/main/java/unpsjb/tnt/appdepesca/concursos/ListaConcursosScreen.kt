@@ -28,7 +28,6 @@ fun ListaConcursosScreen(
     navController: NavController
 ) {
     val showDialog = remember { mutableStateOf(false) }
-    val selectedConcurso = remember { mutableStateOf<Concurso?>(null) }
     Column(
         modifier = Modifier
             .fillMaxSize()

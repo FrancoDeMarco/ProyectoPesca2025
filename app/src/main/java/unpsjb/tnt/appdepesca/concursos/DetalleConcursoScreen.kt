@@ -40,12 +40,75 @@ fun DetalleConcursoScreen(
             .background(Color(0xFF1B2B24))
             .padding(16.dp),
     ) {
-        Text(
-            text = "${concurso?.concursoNombre}",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF3E8B75),
-        )
+
+        //////CONCURSO
+        Column {
+            Text(
+                text = "${concurso?.concursoNombre}",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF3E8B75),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        /////LUGAR
+        Column {
+            Text(
+                text = "${concurso?.concursoLugar}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        /////FECHA
+        Column {
+            Text(
+                text = "${concurso?.concursoFecha}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF3E8B75),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ////DESCRIPCIÓN
+        Column {
+            Text(
+                text = "${concurso?.concursoDescripcion}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //////BASES
+        Column {
+            Text(
+                text = "${concurso?.concursoBases}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF3E8B75),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //////PREMIO
+        Column {
+            Text(
+                text = "${concurso?.concursoPremio}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+            )
+        }
 
         /////BOTÓN DE RETROCESO
         Spacer(modifier = Modifier.weight(1f))
