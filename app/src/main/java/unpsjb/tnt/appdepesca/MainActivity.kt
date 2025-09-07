@@ -12,10 +12,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.room.Room
-import unpsjb.tnt.appdepesca.Reglamentos.ReglamentoScreen
-import unpsjb.tnt.appdepesca.Reglamentos.ReglamentosViewModel
-import unpsjb.tnt.appdepesca.concursos.ConcursoScreen
+import unpsjb.tnt.appdepesca.reglamentos.ListaReglamentosScreen
+import unpsjb.tnt.appdepesca.reglamentos.ReglamentosViewModel
+import unpsjb.tnt.appdepesca.concursos.ListaConcursosScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
+import unpsjb.tnt.appdepesca.concursos.DetalleConcursoScreen
 import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
 import unpsjb.tnt.appdepesca.listado.ListadoReportesScreen
 import unpsjb.tnt.appdepesca.reporte.CrearReporteScreen
@@ -26,6 +27,8 @@ import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import unpsjb.tnt.appdepesca.reporte.DetalleReporteScreen
 import unpsjb.tnt.appdepesca.reporte.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
+import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,10 +61,32 @@ class MainActivity : ComponentActivity() {
                         ListadoReportesScreen(listadoReportesViewModel, navController)
                     }
                     composable("reglamentos") {
-                        ReglamentoScreen(ReglamentosViewModel(), navController)
+                        ListaReglamentosScreen(ReglamentosViewModel(), navController)
+                    }
+                    composable(
+                        "detalleReglamento/{reglamentoId}",
+                        arguments = listOf(navArgument("reglamentoId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val reglamentoId = backStackEntry.arguments?.getInt("reglamentoId") ?: return@composable
+                        DetalleReglamentoScreen(
+                            reglamentoId = reglamentoId,
+                            viewModel = ReglamentosViewModel(),
+                            navController = navController
+                        )
                     }
                     composable("concurso") {
-                        ConcursoScreen(ConcursosViewModel(), navController)
+                        ListaConcursosScreen(ConcursosViewModel(), navController)
+                    }
+                    composable (
+                        "detalleconcurso/{concursoId}",
+                        arguments = listOf(navArgument ("concursoId"){type = NavType.IntType})
+                    ){ backStackEntry ->
+                        val concursoId = backStackEntry.arguments?.getInt("concursoId") ?: return@composable
+                        DetalleConcursoScreen(
+                            concursoId = concursoId,
+                            viewModel = ConcursosViewModel(),
+                            navController = navController
+                        )
                     }
                     composable("formulario") {
                         val reporteViewModel = ReporteViewModel()

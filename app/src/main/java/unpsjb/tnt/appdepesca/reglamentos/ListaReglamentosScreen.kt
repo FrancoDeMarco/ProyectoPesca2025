@@ -1,39 +1,35 @@
-package unpsjb.tnt.appdepesca.Reglamentos
+package unpsjb.tnt.appdepesca.reglamentos
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import unpsjb.tnt.appdepesca.database.Reglamento
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Button
-import androidx.compose.material3.AlertDialog
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import unpsjb.tnt.appdepesca.reporte.VolverButton
+import unpsjb.tnt.appdepesca.R
 
 
 @Composable
-fun ReglamentoScreen(
+fun ListaReglamentosScreen(
     viewModel: ReglamentosViewModel,
     navController: NavController
 ) {
-    val showDialog = remember { mutableStateOf(false) }
-    val selectedReglamento = remember { mutableStateOf<Reglamento?>(null) }
-
     Column(
         Modifier
             .fillMaxSize()
@@ -74,50 +70,27 @@ fun ReglamentoScreen(
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(viewModel.reglamentos) { reglamento ->
                 ReglamentoItem(reglamento = reglamento) {
-                    selectedReglamento.value = reglamento
-                    showDialog.value = true
+                    navController.navigate("detalleReglamento/${reglamento.reglamentoId}")
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
-
-        ///////////VOLVER////////////////
-        VolverButton(navController, showDialog)
-    }
-
-    if (showDialog.value && selectedReglamento.value != null) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog.value = false
-                selectedReglamento.value = null
-            },
-            title = {
-                Text(text = selectedReglamento.value?.reglamentoNombre ?: "")
-            },
-            text = {
-                Column(
-                    modifier = Modifier.verticalScroll(rememberScrollState())
-                ) {
-                    Text(text = "Lugar: ${selectedReglamento.value?.reglamentoLugar ?: ""}")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Fecha de Vigencia: ${selectedReglamento.value?.relgamentoFecha ?: ""}")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Descripción: ${selectedReglamento.value?.reglamentoDescripcion ?: ""}")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Enlaces: ${selectedReglamento.value?.reglamentoEnlaces?.joinToString(", ") ?: ""}")
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDialog.value = false
-                        selectedReglamento.value = null
-                    }
-                ) {
-                    Text(text = "Cerrar")
-                }
-            }
-        )
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier
+                .size(88.dp) // fuerza cuadrado perfecto
+                .offset(x = 24.dp, y = (-32).dp) // manejar corrimiento del botón
+                .border(2.dp, Color(0xFF3E8B75), RectangleShape),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+            shape = RectangleShape, // <- esto lo hace cuadrado
+            contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
+        ) {
+            Image(
+                painter = painterResource(R.drawable.retroceso), //nombre de la imagen
+                contentDescription = "Retroceso",
+                modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
+            )
+        }
     }
 }
 
