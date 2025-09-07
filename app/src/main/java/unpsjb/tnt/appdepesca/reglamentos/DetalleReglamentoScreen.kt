@@ -38,40 +38,29 @@ fun DetalleReglamentoScreen(
         ///// REGLAMENTO
         Text(
             text = "${reglamento?.reglamentoNombre}",
-            fontSize = 24.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF3E8B75),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         ///// LUGAR
         Text(
-            text = "Lugar: ",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF3E8B75)
-        )
-        Text(
             "${reglamento?.reglamentoLugar}",
-            fontSize = 18.sp,
-            color = Color.White
+            fontSize = 24.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         /////FECHA
         Text(
-            text = "Fecha de Vigencia: ",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF3E8B75)
-        )
-        Text(
             text = "${reglamento?.relgamentoFecha}",
-            fontSize = 18.sp,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.White
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF3E8B75),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -79,15 +68,9 @@ fun DetalleReglamentoScreen(
         ////DESCRIPCIÓN
         Column {
             Text(
-                text = "Descripción:",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF3E8B75)
-            )
-            Text(
                 text = "${reglamento?.reglamentoDescripcion}",
-                fontSize = 18.sp,
-                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
@@ -96,17 +79,12 @@ fun DetalleReglamentoScreen(
 
         ////ENLACES
         Column {
-            Text(
-                text = "Enlaces:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = Color(0xFF3E8B75)
-            )
             reglamento?.reglamentoEnlaces?.forEach { enlace ->
                 Text(
                     text = enlace,
-                    color = Color.White,
-                    fontSize = 18.sp,
+                    color = Color(0xFF3E8B75),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
