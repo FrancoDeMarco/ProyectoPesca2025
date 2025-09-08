@@ -75,25 +75,30 @@ fun ListaReglamentosScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .size(88.dp) // fuerza cuadrado perfecto
-                .offset(x = 24.dp, y = (-32).dp) // manejar corrimiento del botón
-                .border(2.dp, Color(0xFF3E8B75), RectangleShape),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-            shape = RectangleShape, // <- esto lo hace cuadrado
-            contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
-        ) {
-            Image(
-                painter = painterResource(R.drawable.retroceso), //nombre de la imagen
-                contentDescription = "Retroceso",
-                modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
-            )
-        }
+        BotonRetroceso(navController)
     }
 }
 
+//////////////BOTÓN DE RETROCESO//////////////////
+@Composable
+fun BotonRetroceso(navController: NavController) {
+    Button(
+        onClick = { navController.popBackStack() },
+        modifier = Modifier
+            .size(88.dp) // fuerza cuadrado perfecto
+            .offset(x = 24.dp, y = (-32).dp) // manejar corrimiento del botón
+            .border(2.dp, Color(0xFF3E8B75), RectangleShape),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+        shape = RectangleShape, // <- esto lo hace cuadrado
+        contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
+    ) {
+        Image(
+            painter = painterResource(R.drawable.retroceso), //nombre de la imagen
+            contentDescription = "Retroceso",
+            modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
+        )
+    }
+}
 //////////////TITULO/////////////////////
 @Composable
 fun TituloReglamentos() {

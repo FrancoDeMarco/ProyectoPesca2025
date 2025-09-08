@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reporte
+package unpsjb.tnt.appdepesca.reportes
 
 
 import android.app.DatePickerDialog
@@ -23,13 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import unpsjb.tnt.appdepesca.login.HeaderImage
-import unpsjb.tnt.appdepesca.listado.ReportState
 import java.util.Calendar
 import kotlin.Boolean
 import android.net.Uri

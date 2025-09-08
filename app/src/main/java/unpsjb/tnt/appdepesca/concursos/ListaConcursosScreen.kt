@@ -1,41 +1,38 @@
 package unpsjb.tnt.appdepesca.concursos
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import unpsjb.tnt.appdepesca.database.Concurso
-import unpsjb.tnt.appdepesca.reporte.VolverButton
-import kotlin.Boolean
+import unpsjb.tnt.appdepesca.R
 
 @Composable
 fun ListaConcursosScreen(
     viewModel: ConcursosViewModel,
     navController: NavController
 ) {
-    val showDialog = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .background(Color(0xFF1B2B24))
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+            .padding(horizontal = 16.dp)
+    ){
         Spacer(modifier = Modifier.height(8.dp))
         TituloConcurso()
         Spacer(modifier = Modifier.height(8.dp))
@@ -44,11 +41,31 @@ fun ListaConcursosScreen(
             navController = navController,
             modifier = Modifier.weight(1f) // ocupa solo el espacio restante dentro de Column
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        VolverButton(navController, showDialog)
+        BotonRetroceso(navController)
     }
 }
 
+
+/////BOTÓN DE RETROCESO
+@Composable
+fun BotonRetroceso(navController: NavController){
+    Button(
+        onClick = { navController.popBackStack() },
+        modifier = Modifier
+            .size(88.dp) // fuerza cuadrado perfecto
+            .offset(x = 24.dp, y = (-32).dp) // manejar corrimiento del botón
+            .border(2.dp, Color(0xFF3E8B75), RectangleShape),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+        shape = RectangleShape, // <- esto lo hace cuadrado
+        contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
+    ) {
+        Image(
+            painter = painterResource(R.drawable.retroceso), //nombre de la imagen
+            contentDescription = "Retroceso",
+            modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
+        )
+    }
+}
 
 //////////////TITULO/////////////////////
 @Composable
@@ -60,7 +77,10 @@ fun TituloConcurso() {
             fontWeight = FontWeight.Bold,
             color = Color(0xFF3E8B75)
         ),
-        modifier = Modifier.padding(bottom = 16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        textAlign = TextAlign.Center
     )
 }
 
