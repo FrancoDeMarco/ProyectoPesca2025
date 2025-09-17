@@ -45,7 +45,6 @@ fun EditarReporteScreen(
     navController: NavController
 ) {
     val state = listadoReportesViewModel.state
-    val showDialog = remember { mutableStateOf(false) }
     val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
 
@@ -81,7 +80,6 @@ fun EditarReporteScreen(
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
             EditarImagenReporte(viewModel = listadoReportesViewModel)
-            VolverButton(navController, showDialog)
             EditarButton(enabled = formValido) {
                 listadoReportesViewModel.updateReport()
                 navController.navigate("reportes")
