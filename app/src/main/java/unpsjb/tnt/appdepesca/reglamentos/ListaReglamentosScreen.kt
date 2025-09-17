@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.material3.Divider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,63 +31,75 @@ fun ListaReglamentosScreen(
     viewModel: ReglamentosViewModel,
     navController: NavController
 ) {
-    Column(
-        Modifier
+    Box(
+        modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1B2B24))
+            .background(color = Color(0xFF1B2B24))
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
-        TituloReglamentos()
-        Row(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 8.dp, end = 16.dp)
-                .fillMaxWidth()
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(Color(0xFF1B2B24))
         ) {
+            Spacer(modifier = Modifier.height(8.dp))
+            TituloReglamentos()
+            Row(
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+                    .fillMaxWidth()
+            ) {
 
-            Text(
-                text = "Reglamento",
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge,
-                color = Color(0xFF3E8B75), // letra verde
-                textAlign = TextAlign.Center
+                Text(
+                    text = "Reglamento",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color(0xFF3E8B75), // letra verde
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "Lugar",
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color(0xFF3E8B75), // letra verde
+                    textAlign = TextAlign.Center
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+            Divider(
+                color = Color(0xFF3E8B75),
+                thickness = 2.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
             )
-            Text(
-                text = "Lugar",
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge,
-                color = Color(0xFF3E8B75), // letra verde
-                textAlign = TextAlign.Center
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-        Divider(
-            color = Color(0xFF3E8B75),
-            thickness = 2.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        )
-        Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(viewModel.reglamentos) { reglamento ->
-                ReglamentoItem(reglamento = reglamento) {
-                    navController.navigate("detalleReglamento/${reglamento.reglamentoId}")
+            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(viewModel.reglamentos) { reglamento ->
+                    ReglamentoItem(reglamento = reglamento) {
+                        navController.navigate("detalleReglamento/${reglamento.reglamentoId}")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
-        BotonRetroceso(navController)
+        BotonRetroceso(
+            navController,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(x = 24.dp, y = (-32).dp)
+        )
     }
 }
 
 //////////////BOTÓN DE RETROCESO//////////////////
 @Composable
-fun BotonRetroceso(navController: NavController) {
+fun BotonRetroceso(
+    navController: NavController,
+    modifier: Modifier = Modifier) {
     Button(
         onClick = { navController.popBackStack() },
-        modifier = Modifier
+        modifier = modifier
             .size(88.dp) // fuerza cuadrado perfecto
-            .offset(x = 24.dp, y = (-32).dp) // manejar corrimiento del botón
             .border(2.dp, Color(0xFF3E8B75), RectangleShape),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
         shape = RectangleShape, // <- esto lo hace cuadrado

@@ -36,21 +36,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import unpsjb.tnt.appdepesca.R
 
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
 fun CrearReporteScreen(
-    reporteViewModel: ReporteViewModel,
     listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
     val state = listadoReportesViewModel.state
-    val showDialog = remember { mutableStateOf(false) }
-    val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue("")) }
     var isDateValid = remember { mutableStateOf(false) }
     val isTitleValid = remember { mutableStateOf(false) }
@@ -64,12 +65,11 @@ fun CrearReporteScreen(
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
     }
-
-    if (isLoading) {
-        Box(Modifier.fillMaxSize()) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
-        }
-    } else {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color(0xFF1B2B24))
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -84,17 +84,19 @@ fun CrearReporteScreen(
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
             ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
-            VolverButton(navController, showDialog)
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
                 navController.navigate("reportes")
             }
         }
+        VolverButton(
+            navController,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(x = 24.dp, y = (-32).dp)
+        )
     }
 }
-
-
-
 
 //////////////TITULO/////////////////////
 @Composable
@@ -156,6 +158,7 @@ fun NombreReporte(
         )
     )
 }
+
 //////////////DESCRIPCION DEL REPORTE////
 @Composable
 fun DescripcionReporte(
@@ -237,35 +240,32 @@ fun FechaReporte(
     )
 }
 
-
 //////////////BOTON VOLVER///////////////
 @Composable
 fun VolverButton(
     navController: NavController,
-    showDialog: MutableState<Boolean>
+    modifier: Modifier = Modifier
 ) {
     Button(
-        onClick = {
-            showDialog.value = true
-            navController.navigate("reportes")
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+        onClick = { navController.popBackStack() },
+        modifier = modifier
+            .size(88.dp) // fuerza cuadrado perfecto
+            .border(2.dp, Color(0xFF3E8B75), RectangleShape),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+        shape = RectangleShape, // <- esto lo hace cuadrado
+        contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
     ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Volver"
+        Image(
+            painter = painterResource(R.drawable.retroceso), //nombre de la imagen
+            contentDescription = "Retroceso",
+            modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
         )
-        Text("Volver")
     }
 }
 
 //////////////BOTON AGREGAR IMAGEN///////////////
 @Composable
 fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableState<Boolean>) {
-    val context = LocalContext.current
     val uri = remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
         selectedUri?.let {

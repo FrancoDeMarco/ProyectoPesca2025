@@ -89,8 +89,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("formulario") {
-                        val reporteViewModel = ReporteViewModel()
-                        CrearReporteScreen(reporteViewModel, listadoReportesViewModel, navController)
+                        CrearReporteScreen(listadoReportesViewModel, navController)
                     }
                     composable("editar_reporte") {
                         val reporteViewModel = ReporteViewModel()
