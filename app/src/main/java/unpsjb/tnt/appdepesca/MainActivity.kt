@@ -18,14 +18,14 @@ import unpsjb.tnt.appdepesca.concursos.ListaConcursosScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
 import unpsjb.tnt.appdepesca.concursos.DetalleConcursoScreen
 import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
-import unpsjb.tnt.appdepesca.listado.ListadoReportesScreen
-import unpsjb.tnt.appdepesca.reporte.CrearReporteScreen
-import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
+import unpsjb.tnt.appdepesca.reportes.ListadoReportesScreen
+import unpsjb.tnt.appdepesca.reportes.CrearReporteScreen
+import unpsjb.tnt.appdepesca.reportes.ReporteViewModel
 import unpsjb.tnt.appdepesca.login.LoginScreen
 import unpsjb.tnt.appdepesca.login.LoginViewModel
-import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
-import unpsjb.tnt.appdepesca.reporte.DetalleReporteScreen
-import unpsjb.tnt.appdepesca.reporte.EditarReporteScreen
+import unpsjb.tnt.appdepesca.reportes.ListadoReportesViewModel
+import unpsjb.tnt.appdepesca.reportes.DetalleReporteScreen
+import unpsjb.tnt.appdepesca.reportes.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
 
@@ -89,8 +89,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("formulario") {
-                        val reporteViewModel = ReporteViewModel()
-                        CrearReporteScreen(reporteViewModel, listadoReportesViewModel, navController)
+                        CrearReporteScreen(listadoReportesViewModel, navController)
                     }
                     composable("editar_reporte") {
                         val reporteViewModel = ReporteViewModel()

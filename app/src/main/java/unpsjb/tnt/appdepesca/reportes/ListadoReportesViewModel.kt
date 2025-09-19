@@ -1,14 +1,17 @@
-package unpsjb.tnt.appdepesca.listado
+package unpsjb.tnt.appdepesca.reportes
 
 import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
-import unpsjb.tnt.appdepesca.reporte.ReporteViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

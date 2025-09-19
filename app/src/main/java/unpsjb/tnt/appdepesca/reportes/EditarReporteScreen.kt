@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reporte
+package unpsjb.tnt.appdepesca.reportes
 
 import android.app.DatePickerDialog
 import android.net.Uri
@@ -27,14 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import coil.compose.rememberAsyncImagePainter
-import unpsjb.tnt.appdepesca.listado.ReportState
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
 import kotlin.Boolean
@@ -47,7 +45,6 @@ fun EditarReporteScreen(
     navController: NavController
 ) {
     val state = listadoReportesViewModel.state
-    val showDialog = remember { mutableStateOf(false) }
     val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
 
@@ -83,7 +80,6 @@ fun EditarReporteScreen(
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
             EditarImagenReporte(viewModel = listadoReportesViewModel)
-            VolverButton(navController, showDialog)
             EditarButton(enabled = formValido) {
                 listadoReportesViewModel.updateReport()
                 navController.navigate("reportes")

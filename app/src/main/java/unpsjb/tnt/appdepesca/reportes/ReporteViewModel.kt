@@ -1,4 +1,4 @@
-package unpsjb.tnt.appdepesca.reporte
+package unpsjb.tnt.appdepesca.reportes
 
 
 import androidx.lifecycle.LiveData
@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
-import unpsjb.tnt.appdepesca.listado.ListadoReportesViewModel
 
 
 class ReporteViewModel : ViewModel() {
