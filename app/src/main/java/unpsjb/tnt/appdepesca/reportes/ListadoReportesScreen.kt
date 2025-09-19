@@ -67,7 +67,7 @@ fun ConfirmationDialog(
 }
 
 @Composable
-fun ListadoReportesScreen(
+fun ListadoReportesScreen( //TODO modularizar el código
     listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
 ) {
@@ -88,6 +88,11 @@ fun ListadoReportesScreen(
     val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
         containerColor = Color(0xFF1B2B24)
     )
+    LaunchedEffect(Unit) {
+        fromDate.value = null
+        toDate.value = null
+        listadoReportesViewModel.setFechasFiltro(null, null)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -174,7 +179,6 @@ fun ListadoReportesScreen(
                         }
                     }
                 }
-
                 Row(
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
