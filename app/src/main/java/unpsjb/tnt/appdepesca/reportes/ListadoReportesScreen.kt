@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -87,7 +88,6 @@ fun ListadoReportesScreen(
     val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
         containerColor = Color(0xFF1B2B24)
     )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -103,24 +103,25 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     ///DESDE////
-                    Button(onClick = {
-                        showDatePicker(
-                            context=context,
-                            initialDate = fromDate.value
-                        ) { selectedDate ->
-                            fromDate.value = selectedDate
-                            toDate.value = null // 💥 Borra la fecha Hasta
-                            listadoReportesViewModel.setFechasFiltro(fromDate.value, null)
-                        }
-                    },
+                    Button(
+                        onClick = {
+                            showDatePicker(
+                                context = context,
+                                initialDate = fromDate.value
+                            ) { selectedDate ->
+                                fromDate.value = selectedDate
+                                toDate.value = null // 💥 Borra la fecha Hasta
+                                listadoReportesViewModel.setFechasFiltro(fromDate.value, null)
+                            }
+                        },
                         modifier = dateButtonModifier,
                         colors = dateButtonColors,
                         shape = RectangleShape  // forma
@@ -131,28 +132,31 @@ fun ListadoReportesScreen(
                         )
                     }
                     ///HASTA////
-                    if (fromDate.value != null){ //deshabilitado si no hay fecha "Desde"
-                    Button(
-                        onClick = {
-                            showDatePicker(
-                                context = context,
-                                initialDate = toDate.value,          // mostrar la última fecha
-                                minDate = fromDate.value // no deja elegir fechas anteriores a "Desde"
-                            ) { selectedDate ->
-                                toDate.value = selectedDate
-                                listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
-                            }
-                        },
-                        modifier = dateButtonModifier,
-                        colors = dateButtonColors,
-                        shape = RectangleShape, // forma
-                    ) {
-                        Text(
-                            text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}",
-                           color = Color.White
-                        )
-                    }
+                    if (fromDate.value != null) { //deshabilitado si no hay fecha "Desde"
+                        Button(
+                            onClick = {
+                                showDatePicker(
+                                    context = context,
+                                    initialDate = toDate.value,          // mostrar la última fecha
+                                    minDate = fromDate.value // no deja elegir fechas anteriores a "Desde"
+                                ) { selectedDate ->
+                                    toDate.value = selectedDate
+                                    listadoReportesViewModel.setFechasFiltro(
+                                        fromDate.value,
+                                        toDate.value
+                                    )
+                                }
+                            },
+                            modifier = dateButtonModifier,
+                            colors = dateButtonColors,
+                            shape = RectangleShape, // forma
+                        ) {
+                            Text(
+                                text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}",
+                                color = Color.White
+                            )
                         }
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     ///REFRESCAR////
                     if (fromDate.value != null) { //deshabilitado si no hay fecha "Desde"
@@ -170,6 +174,7 @@ fun ListadoReportesScreen(
                         }
                     }
                 }
+
                 Row(
                     modifier = Modifier
                         .padding(start = 16.dp, top = 8.dp, end = 16.dp)
@@ -229,9 +234,6 @@ fun ListadoReportesScreen(
             }
         }
     }
-
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()
