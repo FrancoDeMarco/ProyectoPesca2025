@@ -109,8 +109,20 @@ fun ListadoReportesScreen(
                             toDate.value = null // 💥 Borra la fecha Hasta
                             listadoReportesViewModel.setFechasFiltro(fromDate.value, null)
                         }
-                    }) {
-                        Text(text = "Desde: ${fromDate.value?.let { dateFormatter.format(it) } ?: "---"}")
+                    },
+                        modifier = Modifier
+                            .border(
+                                width = 2.dp,               // grosor del borde
+                                color = Color(0xFF3E8B75),  // color del borde
+                                shape = RectangleShape      // importante: que coincida con el shape del botón
+                            ),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+                        shape = RectangleShape  //esto lo hace cuadrado
+                    ) {
+                        Text(
+                            text = "Desde: ${fromDate.value?.let { dateFormatter.format(it) } ?: "---"}",
+                            color = Color.White
+                        )
                     }
                     Button(
                         onClick = {
