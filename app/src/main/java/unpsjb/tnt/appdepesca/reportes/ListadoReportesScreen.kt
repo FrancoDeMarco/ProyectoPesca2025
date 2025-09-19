@@ -78,6 +78,15 @@ fun ListadoReportesScreen(
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val fromDate = remember { mutableStateOf<Date?>(null) }
     val toDate = remember { mutableStateOf<Date?>(null) }
+    val dateButtonModifier = Modifier //variable para darle groso, color y forma al borde de los bootones
+        .border(
+            width = 2.dp,               // grosor
+            color = Color(0xFF3E8B75),  // color del borde
+            shape = RectangleShape      // forma
+        )
+    val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
+        containerColor = Color(0xFF1B2B24)
+    )
 
     Column(
         modifier = Modifier
@@ -94,12 +103,14 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+                    ///DESDE////
                     Button(onClick = {
                         showDatePicker(
                             context=context,
@@ -110,20 +121,17 @@ fun ListadoReportesScreen(
                             listadoReportesViewModel.setFechasFiltro(fromDate.value, null)
                         }
                     },
-                        modifier = Modifier
-                            .border(
-                                width = 2.dp,               // grosor del borde
-                                color = Color(0xFF3E8B75),  // color del borde
-                                shape = RectangleShape      // importante: que coincida con el shape del botón
-                            ),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-                        shape = RectangleShape  //esto lo hace cuadrado
+                        modifier = dateButtonModifier,
+                        colors = dateButtonColors,
+                        shape = RectangleShape  // forma
                     ) {
                         Text(
                             text = "Desde: ${fromDate.value?.let { dateFormatter.format(it) } ?: "---"}",
                             color = Color.White
                         )
                     }
+                    ///HASTA////
+                    if (fromDate.value != null){ //deshabilitado si no hay fecha "Desde"
                     Button(
                         onClick = {
                             showDatePicker(
@@ -135,20 +143,31 @@ fun ListadoReportesScreen(
                                 listadoReportesViewModel.setFechasFiltro(fromDate.value, toDate.value)
                             }
                         },
-                        enabled = fromDate.value != null // deshabilitado hasta que haya fecha "Desde"
+                        modifier = dateButtonModifier,
+                        colors = dateButtonColors,
+                        shape = RectangleShape, // forma
                     ) {
-                        Text(text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}")
+                        Text(
+                            text = "Hasta: ${toDate.value?.let { dateFormatter.format(it) } ?: "---"}",
+                           color = Color.White
+                        )
                     }
+                        }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            fromDate.value = null
-                            toDate.value = null
-                            listadoReportesViewModel.setFechasFiltro(null, null)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                    ) {
-                        Text("Refrescar")
+                    ///REFRESCAR////
+                    if (fromDate.value != null) { //deshabilitado si no hay fecha "Desde"
+                        Button(
+                            onClick = {
+                                fromDate.value = null
+                                toDate.value = null
+                                listadoReportesViewModel.setFechasFiltro(null, null)
+                            },
+                            modifier = dateButtonModifier,
+                            colors = dateButtonColors,
+                            shape = RectangleShape, // forma
+                        ) {
+                            Text("Refrescar")
+                        }
                     }
                 }
                 Row(
@@ -210,6 +229,9 @@ fun ListadoReportesScreen(
             }
         }
     }
+
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
