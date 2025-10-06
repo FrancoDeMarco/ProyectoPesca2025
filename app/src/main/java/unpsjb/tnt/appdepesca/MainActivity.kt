@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.room.Room
+import com.google.firebase.FirebaseApp
 import unpsjb.tnt.appdepesca.reglamentos.ListaReglamentosScreen
 import unpsjb.tnt.appdepesca.reglamentos.ReglamentosViewModel
 import unpsjb.tnt.appdepesca.concursos.ListaConcursosScreen
@@ -33,6 +34,7 @@ import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         val database = Room.databaseBuilder(
             applicationContext,
             PescaRoomDatabase::class.java,

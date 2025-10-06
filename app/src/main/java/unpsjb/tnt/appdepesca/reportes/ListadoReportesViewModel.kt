@@ -1,9 +1,11 @@
 package unpsjb.tnt.appdepesca.reportes
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +22,12 @@ import java.util.Locale
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
 ) : ViewModel() {
+    private val db = FirebaseFirestore.getInstance()
     private val _state = mutableStateOf(ReportState())
     val state: ReportState
         get() = _state.value
     private val _fechasFiltro = MutableStateFlow<Pair<Date?, Date?>>(null to null)
     val fechasFiltro: StateFlow<Pair<Date?, Date?>> = _fechasFiltro
-
 
     init {
         viewModelScope.launch {
@@ -38,15 +40,19 @@ class ListadoReportesViewModel(
                 }
         }
     }
+
     fun changeTitle(title: String) {
         _state.value = state.copy(reportTitle = title)
     }
+
     fun changeDescription(description: String) {
         _state.value = state.copy(reportDescription = description)
     }
+
     fun changeDate(date: String) {
         _state.value = state.copy(reportDate = date)
     }
+
     ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
         val newReportId = getNextId()
@@ -59,14 +65,17 @@ class ListadoReportesViewModel(
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
-            dao.insertReporte(updatedReport)
+            dao.insertReporte(updatedReport) //Actualiza la BD local
+            uploadReporteToFirestore(updatedReport) //Actualiza la BD en la nube
         }
         clearForm()
     }
+
     fun getNextId(): Int {
         val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
         return maxId + 1
     }
+
     fun clearForm() {
         _state.value = _state.value.copy(
             reportId = 0,
@@ -75,16 +84,19 @@ class ListadoReportesViewModel(
             reportDate = ""
         )
     }
+
     //para agregar la imagen
     fun changeImage(uri: Uri) {
         _state.value = state.copy(reportImagenUri = uri.toString())
     }
+
     /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
         viewModelScope.launch {
             dao.deleteReporte(reporte)
         }
     }
+
     ////////////EDITAR REPORTE//////
     fun loadReport(reporte: Reporte) {
         _state.value = ReportState(
@@ -95,6 +107,7 @@ class ListadoReportesViewModel(
             reportImagenUri = reporte.reportImagenUri
         )
     }
+
     fun updateReport() {
         val updatedReport = Reporte(
             reportId = state.reportId,
@@ -104,10 +117,12 @@ class ListadoReportesViewModel(
             reportImagenUri = state.reportImagenUri
         )
         viewModelScope.launch {
-            dao.updateReporte(updatedReport)
+            dao.updateReporte(updatedReport) //Actualiza la BD local
+            uploadReporteToFirestore(updatedReport)//Actualiza la BD en la nube
         }
         clearForm()
     }
+
     /////////////////FILTRADO DE FECHAS///////////////////////////////////
     private fun filterReportesByDates(
         reportes: List<Reporte>,
@@ -125,20 +140,22 @@ class ListadoReportesViewModel(
             } catch (e: Exception) {
                 null
             }
-
             fechaReporte != null &&
                     (from == null || !fechaReporte.before(from)) &&
                     (to == null || !fechaReporte.after(to))
         }
     }
+
     //Función para obtener todos los reportes filtrados por fechas
     fun getAllReportesFlow(): Flow<List<Reporte>> {
         return dao.getAllReportes()
     }
+
     //Función para establecer las fechas de filtro
     fun setFechasFiltro(fromDate: Date?, toDate: Date?) {
         _fechasFiltro.value = fromDate to toDate
     }
+
     fun Date.onlyDate(): Date {
         val calendar = Calendar.getInstance().apply {
             time = this@onlyDate
@@ -148,5 +165,22 @@ class ListadoReportesViewModel(
             set(Calendar.MILLISECOND, 0)
         }
         return calendar.time
+    }
+
+    fun uploadReporteToFirestore(reporte: Reporte) {
+        val data = hashMapOf(
+            "titulo" to reporte.reportTitulo,
+            "descripcion" to reporte.reportDescripcion,
+            "fecha" to reporte.reportFecha,
+            "imagenUri" to (reporte.reportImagenUri ?: "")
+        )
+        db.collection("reportes")
+            .add(data)
+            .addOnSuccessListener { documentReference ->
+                Log.d("Firestore", "Reporte subido con ID: ${documentReference}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error al subir reporte", e)
+            }
     }
 }
