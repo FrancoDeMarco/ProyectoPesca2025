@@ -1,23 +1,5 @@
 package unpsjb.tnt.appdepesca.login
 
-/* COLORES
-
-// Fondo general
-val BackgroundColor = Color(0xFF1B2B24)
-
-// Botones
-val ButtonActiveColor = Color(0xFF3E8B75)       // Botón habilitado (verde)
-val ButtonDisabledColor = Color(0xFF5D776C)     // Botón deshabilitado (gris oscuro)
-val ButtonTextEnabled = Color.White             // Texto blanco cuando está habilitado
-val ButtonTextDisabled = Color(0xFFAAAAAA)      // Texto gris claro cuando está deshabilitado
-
-// Texto general
-val PrimaryTextColor = Color(0xFF3E8B75)        // Color verde para títulos o palabras importantes
-
- */
-
-
-
 // ======== IMPORTS ========
 
 import androidx.compose.foundation.Image

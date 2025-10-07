@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
-import java.nio.file.WatchEvent
 
 @Composable
 fun ListaConcursosScreen(
