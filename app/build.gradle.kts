@@ -54,7 +54,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-tasks:18.1.0")
-    implementation(libs.androidx.navigation.compose.jvmstubs)
+    implementation("androidx.navigation:navigation-compose:2.8.3")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,6 +68,5 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
     implementation("androidx.compose.material:material-icons-extended:1.7.4")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
     implementation("io.coil-kt:coil-compose:2.6.0")
 }
