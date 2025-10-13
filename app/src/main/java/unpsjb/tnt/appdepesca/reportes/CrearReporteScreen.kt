@@ -85,6 +85,11 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValid)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
+            AgregarButton(enabled = formValido) {
+                listadoReportesViewModel.createReport()
+                listadoReportesViewModel.clearForm()
+                navController.navigate("reportes")
+            }
             ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
 
            /*****************************Mapa*******************/
@@ -122,11 +127,7 @@ fun CrearReporteScreen(
 
             /****************************************************/
 
-            AgregarButton(enabled = formValido) {
-                listadoReportesViewModel.createReport()
-                listadoReportesViewModel.clearForm()
-                navController.navigate("reportes")
-            }
+
         }
         VolverButton(
             navController,
@@ -134,6 +135,7 @@ fun CrearReporteScreen(
                 .align(Alignment.BottomStart)
                 .offset(x = 24.dp, y = (-32).dp)
         )
+
     }
 }
 

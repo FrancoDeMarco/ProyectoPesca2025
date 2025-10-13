@@ -184,7 +184,9 @@ class ListadoReportesViewModel(
             "titulo" to reporte.reportTitulo,
             "descripcion" to reporte.reportDescripcion,
             "fecha" to reporte.reportFecha,
-            "imagenUri" to (reporte.reportImagenUri ?: "")
+            "imagenUri" to (reporte.reportImagenUri ?: ""),
+            "latitud" to reporte.latitud,
+            "longitud" to reporte.longitud
         )
         db.collection("reportes")
             .add(data)
