@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -28,7 +29,14 @@ class ListadoReportesViewModel(
         get() = _state.value
     private val _fechasFiltro = MutableStateFlow<Pair<Date?, Date?>>(null to null)
     val fechasFiltro: StateFlow<Pair<Date?, Date?>> = _fechasFiltro
-
+    private val _latitud = MutableStateFlow<Double?>(null)
+    private val _longitud = MutableStateFlow<Double?>(null)
+    val latitud = _latitud.asStateFlow()
+    val longitud = _longitud.asStateFlow()
+    fun setUbicacion(lat: Double, lng: Double){
+        _latitud.value = lat
+        _longitud.value = lng
+    }
     init {
         viewModelScope.launch {
             dao.getAllReportes()
@@ -61,7 +69,9 @@ class ListadoReportesViewModel(
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri
+            reportImagenUri = state.reportImagenUri,
+            latitud = latitud.value,
+            longitud = longitud.value
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
@@ -114,7 +124,9 @@ class ListadoReportesViewModel(
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri
+            reportImagenUri = state.reportImagenUri,
+            latitud = latitud.value,
+            longitud = longitud.value
         )
         viewModelScope.launch {
             dao.updateReporte(updatedReport) //Actualiza la BD local
@@ -129,14 +141,14 @@ class ListadoReportesViewModel(
         fromDate: Date?,
         toDate: Date?
     ): List<Reporte> {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
+        //val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val from = fromDate?.onlyDate()
         val to = toDate?.onlyDate()
 
         return reportes.filter { reporte ->
             val fechaReporte: Date? = try {
-                formatter.parse(reporte.reportFecha)?.onlyDate()
+                dateFormatter.parse(reporte.reportFecha)?.onlyDate()
             } catch (e: Exception) {
                 null
             }

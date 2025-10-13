@@ -30,6 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
@@ -88,6 +90,7 @@ fun ListadoReportesScreen( //TODO modularizar el código
     val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
         containerColor = Color(0xFF1B2B24)
     )
+
     LaunchedEffect(Unit) {
         fromDate.value = null
         toDate.value = null

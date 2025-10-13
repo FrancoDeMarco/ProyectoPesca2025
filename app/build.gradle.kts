@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "unpsjb.tnt.appdepesca"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "unpsjb.tnt.appdepesca"
-        minSdk = 24
-        targetSdk = 35
+        minSdk = 26
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -34,7 +34,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -69,4 +69,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
     implementation("androidx.compose.material:material-icons-extended:1.7.4")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    //Google Maps
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.maps.android:maps-compose:4.4.1")
 }
