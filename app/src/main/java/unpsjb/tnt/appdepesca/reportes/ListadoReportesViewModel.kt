@@ -22,7 +22,8 @@ import java.util.Locale
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
-) : ViewModel() {
+) : ViewModel()
+{
     private val db = FirebaseFirestore.getInstance()
     private val _state = mutableStateOf(ReportState())
     val state: ReportState

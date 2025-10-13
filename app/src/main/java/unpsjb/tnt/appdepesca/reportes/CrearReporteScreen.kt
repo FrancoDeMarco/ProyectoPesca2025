@@ -85,49 +85,13 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValid)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             FechaReporte(listadoReportesViewModel, dateState, isDateValid)
+            ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
+            Mapa(listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
                 listadoReportesViewModel.clearForm()
                 navController.navigate("reportes")
             }
-            ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
-
-           /*****************************Mapa*******************/
-            Text(
-                text = "Selecciona la ubicación en el mapa",
-                color = Color.White,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            //var markerPosition: LatLng by remember { mutableStateOf(null) }
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(
-                    LatLng(-34.6037, -58.3816),
-                    10f
-                )
-            }
-            GoogleMap(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                cameraPositionState = cameraPositionState,
-                onMapClick = {latLng ->
-                    markerPosition = latLng
-                    listadoReportesViewModel.setUbicacion(latLng.latitude, latLng.longitude)
-                }
-            ){
-                        markerPosition?.let {
-                            Marker(
-                                state = MarkerState(position = it),
-                                title = "Ubicación seleccionada"
-                            )
-                        }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-            /****************************************************/
-
-
         }
         VolverButton(
             navController,
@@ -135,7 +99,6 @@ fun CrearReporteScreen(
                 .align(Alignment.BottomStart)
                 .offset(x = 24.dp, y = (-32).dp)
         )
-
     }
 }
 
@@ -337,5 +300,43 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableSta
             isImagenValid.value = viewModel.state.reportImagenUri != null//Con esto supuestamente ya no se pierde la imagen al volver a atrás
         }
     }
+}
+
+@Composable
+fun Mapa(
+    listadoReportesViewModel: ListadoReportesViewModel,
+    markerPosition: LatLng?,
+    onMarkerChange: (LatLng) -> Unit
+){
+    Text(
+        text = "Selecciona la ubicación en el mapa",
+        color = Color.White,
+        style = MaterialTheme.typography.bodyLarge
+    )
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(
+            LatLng(-34.6037, -58.3816),
+            10f
+        )
+    }
+    GoogleMap(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .clip(RoundedCornerShape(12.dp)),
+        cameraPositionState = cameraPositionState,
+        onMapClick = {latLng ->
+            onMarkerChange(latLng)
+            listadoReportesViewModel.setUbicacion(latLng.latitude, latLng.longitude)
+        }
+    ){
+        markerPosition?.let {
+            Marker(
+                state = MarkerState(position = it),
+                title = "Ubicación seleccionada"
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
