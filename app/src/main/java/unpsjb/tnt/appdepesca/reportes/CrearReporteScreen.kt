@@ -34,9 +34,12 @@ import coil.compose.rememberAsyncImagePainter
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -76,6 +79,7 @@ fun CrearReporteScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color(0xFF1B2B24))
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -92,13 +96,20 @@ fun CrearReporteScreen(
                 listadoReportesViewModel.clearForm()
                 navController.navigate("reportes")
             }
+            Spacer(modifier = Modifier.height(20.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp, start = 24.dp)
+            ){
+                VolverButton(
+                    navController,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .offset(x = -12.dp, y = (-32).dp)
+                )
+            }
         }
-        VolverButton(
-            navController,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .offset(x = 24.dp, y = (-32).dp)
-        )
     }
 }
 
