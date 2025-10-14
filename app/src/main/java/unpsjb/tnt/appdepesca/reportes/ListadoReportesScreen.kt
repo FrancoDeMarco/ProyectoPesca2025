@@ -95,7 +95,6 @@ fun ListadoReportesScreen(
                 ) {
                     Desde(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
                     Hasta(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
-                    Spacer(modifier = Modifier.height(8.dp))
                     Refrescar(fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors)
                 }
                 Row(
@@ -105,15 +104,7 @@ fun ListadoReportesScreen(
                 ) {
                     Cabecera()
                 }
-                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-                Divider(
-                    color = Color(0xFF3E8B75),
-                    thickness = 2.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+                LineaDivisoria()
             }
             ListaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
         }
@@ -516,4 +507,17 @@ fun ConfirmationDialog(
             }
         }
     )
+}
+
+@Composable
+fun LineaDivisoria(){
+    Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+    Divider(
+        color = Color(0xFF3E8B75),
+        thickness = 2.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    )
+    Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
 }

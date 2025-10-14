@@ -28,17 +28,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
+import com.google.android.gms.maps.model.LatLng
 
 
 @Composable
@@ -60,10 +69,12 @@ fun DetalleReporteScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        //Titulo y foto
         NombreReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
         ImagenReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
+        //Fecha y descripción
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start
@@ -73,6 +84,7 @@ fun DetalleReporteScreen(
             DescripcionReporte(reporte)
             Spacer(modifier = Modifier.height(8.dp))
         }
+        UbicacionReporte(reporte) //Mapa con ubicación
         BotonVolver(navController)
     }
 }
@@ -200,6 +212,39 @@ fun BotonVolver(navController: NavController){
                     modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun UbicacionReporte(reporte: Reporte){
+    reporte.latitud?.let { lat ->
+        reporte.longitud?.let { lng ->
+            Text(
+                text = "Ubicación:",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF3E8b75),
+                fontSize = 23.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val position = LatLng(lat, lng)
+            val cameraPositionState = rememberCameraPositionState{
+                CameraPosition.fromLatLngZoom(position, 12f)
+            }
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                cameraPositionState = cameraPositionState
+            ){
+                Marker(
+                    state = MarkerState(position = position),
+                    title = "Ubicación del reporte"
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
