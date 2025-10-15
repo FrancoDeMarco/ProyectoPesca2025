@@ -40,6 +40,8 @@ import kotlin.Boolean
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
 fun EditarReporteScreen(
+    //TODO agregar mapa.
+    //TODO Cuando edito un reporte y no selecciono ubicación, se borra el mapa del detalle.
     reporteViewModel: ReporteViewModel,
     listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController

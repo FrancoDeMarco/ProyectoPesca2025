@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.snapping.SnapPosition.Start.position
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,9 +29,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
@@ -64,17 +66,16 @@ fun DetalleReporteScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFF1B2B24))
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //Titulo y foto
         NombreReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
         ImagenReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
-        //Fecha y descripción
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start
@@ -88,8 +89,6 @@ fun DetalleReporteScreen(
         BotonVolver(navController)
     }
 }
-
-
 
 //////////////TITULO/////////////////////
 @Composable
@@ -227,10 +226,9 @@ fun UbicacionReporte(reporte: Reporte){
                 fontSize = 23.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
-
-            val position = LatLng(lat, lng)
+            val ubicacion = LatLng(lat, lng)
             val cameraPositionState = rememberCameraPositionState{
-                CameraPosition.fromLatLngZoom(position, 12f)
+                position = CameraPosition.fromLatLngZoom(ubicacion, 14f)
             }
             GoogleMap(
                 modifier = Modifier
@@ -240,7 +238,7 @@ fun UbicacionReporte(reporte: Reporte){
                 cameraPositionState = cameraPositionState
             ){
                 Marker(
-                    state = MarkerState(position = position),
+                    state = MarkerState(position = ubicacion),
                     title = "Ubicación del reporte"
                 )
             }
