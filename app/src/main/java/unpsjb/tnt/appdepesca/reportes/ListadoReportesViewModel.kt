@@ -158,10 +158,11 @@ class ListadoReportesViewModel(
                     (to == null || !fechaReporte.after(to))
         }
     }
-
-    //Función para obtener todos los reportes filtrados por fechas
-    fun getAllReportesFlow(): Flow<List<Reporte>> {
-        return dao.getAllReportes()
+    fun changeLocation (lat: Double, lng: Double){
+        _state.value = _state.value.copy(
+            reportLat = lat,
+            reportLng = lng
+        )
     }
 
     //Función para establecer las fechas de filtro
