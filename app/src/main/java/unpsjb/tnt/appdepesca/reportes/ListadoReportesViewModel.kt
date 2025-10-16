@@ -132,8 +132,8 @@ class ListadoReportesViewModel(
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
             reportImagenUri = state.reportImagenUri,
-            latitud = latitud.value,
-            longitud = longitud.value
+            latitud = state.reportLat,
+            longitud = state.reportLng
         )
         viewModelScope.launch {
             dao.updateReporte(updatedReport) //Actualiza la BD local
