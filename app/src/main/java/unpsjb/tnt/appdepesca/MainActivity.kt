@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -99,9 +100,24 @@ class MainActivity : ComponentActivity() {
                     composable("formulario") {
                         CrearReporteScreen(listadoReportesViewModel, navController)
                     }
-                    composable("editar_reporte") {
+                    composable(
+                        "editar_reporte/{reporteId}",
+                        arguments = listOf(navArgument ("reporteId") { type = NavType.IntType })
+                    ){ backStackEntry ->
+                        val reporteId = backStackEntry.arguments?.getInt("reporteId") ?: return@composable
                         val reporteViewModel: ReporteViewModel = viewModel()
-                        EditarReporteScreen( reporteViewModel, listadoReportesViewModel, navController)
+                        // Cargar reporte actual en el ViewModel antes de mostrar la pantalla
+                        LaunchedEffect(reporteId) {
+                            val reporte = listadoReportesViewModel.obtenerReportePorId(reporteId)
+                            if (reporte != null){
+                                listadoReportesViewModel.loadReport(reporte)
+                            }
+                        }
+                        EditarReporteScreen(
+                            reporteViewModel = reporteViewModel,
+                            listadoReportesViewModel = listadoReportesViewModel,
+                            navController = navController
+                        )
                     }
                     composable(
                         "detalle_reporte/{reporteId}",

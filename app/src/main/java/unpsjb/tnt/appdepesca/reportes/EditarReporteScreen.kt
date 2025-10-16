@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -279,45 +281,58 @@ fun EditarImagenReporte(viewModel: ListadoReportesViewModel) {
 
 /////////////////EDITAR UBICACIÓN//////////////////////
 @OptIn(MapsComposeExperimentalApi::class)
+val LatLngSaver: Saver<LatLng, Pair<Double, Double>> = Saver(
+    save = { Pair(it.latitude, it.longitude)},
+    restore = { LatLng(it.first, it.second) }
+)
 @Composable
 fun EditarMapaReporte(
     viewModel: ListadoReportesViewModel
 ) {
     val state = viewModel.state
-    val context = LocalContext.current
-    //Coordenadas iniciales
-    val lat = state.reportLat ?: -34.6037
-    val lng = state.reportLng ?: -58.3816
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(lat, lng), 12f)
-    }
-    var markerPosition by remember { mutableStateOf(LatLng(lat, lng)) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(250.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .border(2.dp, Color(0xFF3E8B75), RoundedCornerShape(16.dp))
-    ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            onMapClick = { latLng ->
-                markerPosition = latLng
-                viewModel.changeLocation(latLng.latitude, latLng.longitude)
-            }
-        ) {
-            Marker(
-                state = MarkerState(position = markerPosition),
-                title = "Ubicación del reporte",
-                snippet = "Tocá en otro lugar para movel el marcador"
-            )
+    //Solo dibujamos el mapa cuando ya existen coordenadas en el reporte.
+    val lat = state.reportLat
+    val lng = state.reportLng
+    if (lat != null && lng != null) {
+        // recordamos la posición del marcador
+        var markerPosition by remember { mutableStateOf(LatLng(lat, lng)) }
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(markerPosition, 12f)
         }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .border(2.dp, Color(0xFF3E8B75), RoundedCornerShape(16.dp))
+        ) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                onMapClick = { latLng ->
+                    markerPosition = latLng
+                    viewModel.changeLocation(latLng.latitude, latLng.longitude)
+                }
+            ) {
+                Marker(
+                    state = MarkerState(position = markerPosition),
+                    title = "Ubicación del reporte",
+                    snippet = "Tocá en otro lugar para movel el marcador"
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Lat: %.5f, Lng: %.5f".format(markerPosition.latitude, markerPosition.longitude),
+            color = Color.White,
+            fontSize = 14.sp
+        )
+    } else {
+        // Si no hay coordenadas, mostrmamos un mensaje opcional
+        Text(
+            text = "No hay ubicación registrada para este reporte.",
+            color = Color.Gray,
+            fontSize = 14.sp
+        )
     }
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(
-        text = "Lat: %.5f, Lng: %.5f".format(markerPosition.latitude, markerPosition.longitude),
-        color = Color.White,
-        fontSize = 14.sp
-    )
 }

@@ -108,14 +108,20 @@ class ListadoReportesViewModel(
         }
     }
 
+    fun obtenerReportePorId(id: Int): Reporte? {
+        return state.report?.find {it.reportId == id}
+    }
+
     ////////////EDITAR REPORTE//////
     fun loadReport(reporte: Reporte) {
-        _state.value = ReportState(
+        _state.value = _state.value.copy(
             reportId = reporte.reportId,
             reportTitle = reporte.reportTitulo,
             reportDescription = reporte.reportDescripcion,
             reportDate = reporte.reportFecha,
-            reportImagenUri = reporte.reportImagenUri
+            reportImagenUri = reporte.reportImagenUri,
+            reportLat = reporte.latitud,
+            reportLng = reporte.longitud
         )
     }
 

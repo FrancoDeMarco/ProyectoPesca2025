@@ -318,7 +318,7 @@ fun LazyListScope.ListaReportes(
                 modifier = Modifier.fillMaxWidth(),
                 onEdit = {
                     listadoReportesViewModel.loadReport(reporte) // precarga los datos del reporte
-                    navController.navigate("editar_reporte")
+                    navController.navigate("editar_reporte/${reporte.reportId}")
                 },
 
                 onDelete = { //Eliminar Reporte
