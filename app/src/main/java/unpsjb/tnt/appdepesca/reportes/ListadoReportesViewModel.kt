@@ -197,9 +197,10 @@ class ListadoReportesViewModel(
             "longitud" to (reporte.longitud ?: 0.0)
         )
         db.collection("reportes")
-            .add(data)
+            .document(reporte.reportId.toString()) //usa el mismo ID del reporte
+            .set(data)// reemplaza o crea seguún corresponda
             .addOnSuccessListener { documentReference ->
-                Log.d("Firestore", "Reporte subido con ID: ${documentReference}")
+                Log.d("Firestore", "Reporte actualizado o creadp con ID: ${reporte.reportId}")
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al subir reporte", e)

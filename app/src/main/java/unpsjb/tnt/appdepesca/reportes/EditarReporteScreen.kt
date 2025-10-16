@@ -100,6 +100,7 @@ fun EditarReporteScreen(
                 listadoReportesViewModel.updateReport()
                 navController.navigate("reportes")
             }
+            BotonVolver(navController)
         }
     }
 }
