@@ -105,6 +105,9 @@ fun ListadoReportesScreen(
                     Cabecera()
                 }
                 LineaDivisoria()
+                Button(onClick = { navController.navigate("mapa_reportes")}){
+                    Text("Ver en mapa")
+                }
             }
             ListaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
         }
