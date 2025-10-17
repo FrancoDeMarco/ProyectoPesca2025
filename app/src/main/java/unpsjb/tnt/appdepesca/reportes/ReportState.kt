@@ -9,4 +9,6 @@ data class ReportState(
     val reportDate: String = "",
     val report: List<Reporte> = emptyList(),
     val reportImagenUri: String? = null,
+    val reportLat: Double? = null,
+    val reportLng: Double? = null
 )

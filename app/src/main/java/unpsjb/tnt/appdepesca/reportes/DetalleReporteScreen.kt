@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.snapping.SnapPosition.Start.position
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,17 +29,27 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
+import com.google.android.gms.maps.model.LatLng
 
 
 @Composable
@@ -55,6 +66,7 @@ fun DetalleReporteScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFF1B2B24))
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -73,11 +85,10 @@ fun DetalleReporteScreen(
             DescripcionReporte(reporte)
             Spacer(modifier = Modifier.height(8.dp))
         }
+        UbicacionReporte(reporte) //Mapa con ubicación
         BotonVolver(navController)
     }
 }
-
-
 
 //////////////TITULO/////////////////////
 @Composable
@@ -200,6 +211,38 @@ fun BotonVolver(navController: NavController){
                     modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun UbicacionReporte(reporte: Reporte){
+    reporte.latitud?.let { lat ->
+        reporte.longitud?.let { lng ->
+            Text(
+                text = "Ubicación:",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF3E8b75),
+                fontSize = 23.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            val ubicacion = LatLng(lat, lng)
+            val cameraPositionState = rememberCameraPositionState{
+                position = CameraPosition.fromLatLngZoom(ubicacion, 14f)
+            }
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                cameraPositionState = cameraPositionState
+            ){
+                Marker(
+                    state = MarkerState(position = ubicacion),
+                    title = "Ubicación del reporte"
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

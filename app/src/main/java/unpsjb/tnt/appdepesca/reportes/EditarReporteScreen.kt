@@ -7,8 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.gestures.snapping.SnapPosition.Start.position
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
@@ -29,10 +33,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import coil.compose.rememberAsyncImagePainter
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
 import kotlin.Boolean
@@ -40,6 +53,7 @@ import kotlin.Boolean
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
 fun EditarReporteScreen(
+    //TODO Cuando edito un reporte y no selecciono ubicación, se borra el mapa del detalle.
     reporteViewModel: ReporteViewModel,
     listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController
@@ -70,6 +84,7 @@ fun EditarReporteScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color(0xFF1B2B24))
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -80,10 +95,12 @@ fun EditarReporteScreen(
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
             EditarImagenReporte(viewModel = listadoReportesViewModel)
+            EditarMapaReporte(listadoReportesViewModel)
             EditarButton(enabled = formValido) {
                 listadoReportesViewModel.updateReport()
                 navController.navigate("reportes")
             }
+            BotonVolver(navController)
         }
     }
 }
@@ -263,5 +280,63 @@ fun EditarImagenReporte(viewModel: ListadoReportesViewModel) {
         ) {
             Text("Cambiar Imagen")
         }
+    }
+}
+
+/////////////////EDITAR UBICACIÓN//////////////////////
+@OptIn(MapsComposeExperimentalApi::class)
+val LatLngSaver: Saver<LatLng, Pair<Double, Double>> = Saver(
+    save = { Pair(it.latitude, it.longitude)},
+    restore = { LatLng(it.first, it.second) }
+)
+@Composable
+fun EditarMapaReporte(
+    viewModel: ListadoReportesViewModel
+) {
+    val state = viewModel.state
+    //Solo dibujamos el mapa cuando ya existen coordenadas en el reporte.
+    val lat = state.reportLat
+    val lng = state.reportLng
+    if (lat != null && lng != null) {
+        // recordamos la posición del marcador
+        var markerPosition by remember { mutableStateOf(LatLng(lat, lng)) }
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(markerPosition, 12f)
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .border(2.dp, Color(0xFF3E8B75), RoundedCornerShape(16.dp))
+        ) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                onMapClick = { latLng ->
+                    markerPosition = latLng
+                    viewModel.changeLocation(latLng.latitude, latLng.longitude)
+                }
+            ) {
+                Marker(
+                    state = MarkerState(position = markerPosition),
+                    title = "Ubicación del reporte",
+                    snippet = "Tocá en otro lugar para movel el marcador"
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Lat: %.5f, Lng: %.5f".format(markerPosition.latitude, markerPosition.longitude),
+            color = Color.White,
+            fontSize = 14.sp
+        )
+    } else {
+        // Si no hay coordenadas, mostrmamos un mensaje opcional
+        Text(
+            text = "No hay ubicación registrada para este reporte.",
+            color = Color.Gray,
+            fontSize = 14.sp
+        )
     }
 }

@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,7 +56,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
-                        LoginScreen(LoginViewModel(), navController)
+                        val loginViewModel: LoginViewModel = viewModel()
+                        LoginScreen(loginViewModel, navController)
                     }
                     composable("home") {
                         ListadoReportesScreen(listadoReportesViewModel, navController)
@@ -63,39 +66,58 @@ class MainActivity : ComponentActivity() {
                         ListadoReportesScreen(listadoReportesViewModel, navController)
                     }
                     composable("reglamentos") {
-                        ListaReglamentosScreen(ReglamentosViewModel(), navController)
+                        val reglamentosViewModel: ReglamentosViewModel = viewModel()
+                        ListaReglamentosScreen(reglamentosViewModel, navController)
                     }
                     composable(
                         "detalleReglamento/{reglamentoId}",
                         arguments = listOf(navArgument("reglamentoId") { type = NavType.IntType })
                     ) { backStackEntry ->
                         val reglamentoId = backStackEntry.arguments?.getInt("reglamentoId") ?: return@composable
+                        val reglamentosViewModel: ReglamentosViewModel = viewModel ()
                         DetalleReglamentoScreen(
                             reglamentoId = reglamentoId,
-                            viewModel = ReglamentosViewModel(),
+                            viewModel = reglamentosViewModel,
                             navController = navController
                         )
                     }
                     composable("concurso") {
-                        ListaConcursosScreen(ConcursosViewModel(), navController)
+                        val concursosViewModel: ConcursosViewModel = viewModel()
+                        ListaConcursosScreen(concursosViewModel, navController)
                     }
                     composable (
                         "detalleconcurso/{concursoId}",
                         arguments = listOf(navArgument ("concursoId"){type = NavType.IntType})
                     ){ backStackEntry ->
                         val concursoId = backStackEntry.arguments?.getInt("concursoId") ?: return@composable
+                        val concursosViewModel: ConcursosViewModel = viewModel()
                         DetalleConcursoScreen(
                             concursoId = concursoId,
-                            viewModel = ConcursosViewModel(),
+                            viewModel = concursosViewModel,
                             navController = navController
                         )
                     }
                     composable("formulario") {
                         CrearReporteScreen(listadoReportesViewModel, navController)
                     }
-                    composable("editar_reporte") {
-                        val reporteViewModel = ReporteViewModel()
-                        EditarReporteScreen( reporteViewModel, listadoReportesViewModel, navController)
+                    composable(
+                        "editar_reporte/{reporteId}",
+                        arguments = listOf(navArgument ("reporteId") { type = NavType.IntType })
+                    ){ backStackEntry ->
+                        val reporteId = backStackEntry.arguments?.getInt("reporteId") ?: return@composable
+                        val reporteViewModel: ReporteViewModel = viewModel()
+                        // Cargar reporte actual en el ViewModel antes de mostrar la pantalla
+                        LaunchedEffect(reporteId) {
+                            val reporte = listadoReportesViewModel.obtenerReportePorId(reporteId)
+                            if (reporte != null){
+                                listadoReportesViewModel.loadReport(reporte)
+                            }
+                        }
+                        EditarReporteScreen(
+                            reporteViewModel = reporteViewModel,
+                            listadoReportesViewModel = listadoReportesViewModel,
+                            navController = navController
+                        )
                     }
                     composable(
                         "detalle_reporte/{reporteId}",

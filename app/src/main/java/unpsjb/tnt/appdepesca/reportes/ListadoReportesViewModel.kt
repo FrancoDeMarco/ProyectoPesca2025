@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -21,14 +22,22 @@ import java.util.Locale
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
-) : ViewModel() {
+) : ViewModel()
+{
     private val db = FirebaseFirestore.getInstance()
     private val _state = mutableStateOf(ReportState())
     val state: ReportState
         get() = _state.value
     private val _fechasFiltro = MutableStateFlow<Pair<Date?, Date?>>(null to null)
     val fechasFiltro: StateFlow<Pair<Date?, Date?>> = _fechasFiltro
-
+    private val _latitud = MutableStateFlow<Double?>(null)
+    private val _longitud = MutableStateFlow<Double?>(null)
+    val latitud = _latitud.asStateFlow()
+    val longitud = _longitud.asStateFlow()
+    fun setUbicacion(lat: Double, lng: Double){
+        _latitud.value = lat
+        _longitud.value = lng
+    }
     init {
         viewModelScope.launch {
             dao.getAllReportes()
@@ -61,7 +70,9 @@ class ListadoReportesViewModel(
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri
+            reportImagenUri = state.reportImagenUri,
+            latitud = latitud.value,
+            longitud = longitud.value
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
@@ -97,14 +108,20 @@ class ListadoReportesViewModel(
         }
     }
 
+    fun obtenerReportePorId(id: Int): Reporte? {
+        return state.report?.find {it.reportId == id}
+    }
+
     ////////////EDITAR REPORTE//////
     fun loadReport(reporte: Reporte) {
-        _state.value = ReportState(
+        _state.value = _state.value.copy(
             reportId = reporte.reportId,
             reportTitle = reporte.reportTitulo,
             reportDescription = reporte.reportDescripcion,
             reportDate = reporte.reportFecha,
-            reportImagenUri = reporte.reportImagenUri
+            reportImagenUri = reporte.reportImagenUri,
+            reportLat = reporte.latitud,
+            reportLng = reporte.longitud
         )
     }
 
@@ -114,7 +131,9 @@ class ListadoReportesViewModel(
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri
+            reportImagenUri = state.reportImagenUri,
+            latitud = state.reportLat,
+            longitud = state.reportLng
         )
         viewModelScope.launch {
             dao.updateReporte(updatedReport) //Actualiza la BD local
@@ -129,14 +148,14 @@ class ListadoReportesViewModel(
         fromDate: Date?,
         toDate: Date?
     ): List<Reporte> {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
+        //val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val from = fromDate?.onlyDate()
         val to = toDate?.onlyDate()
 
         return reportes.filter { reporte ->
             val fechaReporte: Date? = try {
-                formatter.parse(reporte.reportFecha)?.onlyDate()
+                dateFormatter.parse(reporte.reportFecha)?.onlyDate()
             } catch (e: Exception) {
                 null
             }
@@ -145,10 +164,11 @@ class ListadoReportesViewModel(
                     (to == null || !fechaReporte.after(to))
         }
     }
-
-    //Función para obtener todos los reportes filtrados por fechas
-    fun getAllReportesFlow(): Flow<List<Reporte>> {
-        return dao.getAllReportes()
+    fun changeLocation (lat: Double, lng: Double){
+        _state.value = _state.value.copy(
+            reportLat = lat,
+            reportLng = lng
+        )
     }
 
     //Función para establecer las fechas de filtro
@@ -172,12 +192,15 @@ class ListadoReportesViewModel(
             "titulo" to reporte.reportTitulo,
             "descripcion" to reporte.reportDescripcion,
             "fecha" to reporte.reportFecha,
-            "imagenUri" to (reporte.reportImagenUri ?: "")
+            "imagenUri" to (reporte.reportImagenUri ?: ""),
+            "latitud" to (reporte.latitud ?: 0.0),
+            "longitud" to (reporte.longitud ?: 0.0)
         )
         db.collection("reportes")
-            .add(data)
+            .document(reporte.reportId.toString()) //usa el mismo ID del reporte
+            .set(data)// reemplaza o crea seguún corresponda
             .addOnSuccessListener { documentReference ->
-                Log.d("Firestore", "Reporte subido con ID: ${documentReference}")
+                Log.d("Firestore", "Reporte actualizado o creadp con ID: ${reporte.reportId}")
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al subir reporte", e)
