@@ -201,7 +201,9 @@ fun BotonVolver(navController: NavController){
                         color = Color(0xFF3E8B75),  // color del borde
                         shape = RectangleShape      // importante: que coincida con el shape del botón
                 ),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                ),
                 shape = RectangleShape, // <- esto lo hace cuadrado
                 contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
             ) {

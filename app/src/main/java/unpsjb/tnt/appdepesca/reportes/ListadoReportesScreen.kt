@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,8 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
@@ -105,9 +104,8 @@ fun ListadoReportesScreen(
                     Cabecera()
                 }
                 LineaDivisoria()
-                Button(onClick = { navController.navigate("mapa_reportes")}){
-                    Text("Ver en mapa")
-                }
+                Mapa(navController)
+
             }
             ListaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
         }
@@ -523,4 +521,21 @@ fun LineaDivisoria(){
             .padding(vertical = 8.dp)
     )
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+}
+
+@Composable
+fun Mapa(
+    navController: NavController,
+){
+    IconButton(
+        onClick = { navController.navigate("mapa_reportes") },
+        modifier = Modifier.padding(bottom = 16.dp)
+    ) {
+        Image(
+            painter = painterResource(R.drawable.mapa),
+            contentDescription = "Mapa",
+            modifier = Modifier.size(75.dp)
+
+        )
+    }
 }
