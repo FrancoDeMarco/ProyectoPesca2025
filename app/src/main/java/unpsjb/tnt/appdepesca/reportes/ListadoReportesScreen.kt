@@ -85,6 +85,7 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
+                Mapa(navController)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -104,7 +105,6 @@ fun ListadoReportesScreen(
                     Cabecera()
                 }
                 LineaDivisoria()
-                Mapa(navController)
 
             }
             ListaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
