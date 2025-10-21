@@ -31,12 +31,14 @@ fun ListaConcursosScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+
             .background(color = Color(0xFF1B2B24))
     )
     {
         Column(
             modifier = Modifier
                 .background(Color(0xFF1B2B24))
+                .statusBarsPadding()
                 .padding(horizontal = 16.dp)
         ){
             Spacer(modifier = Modifier.height(8.dp))
