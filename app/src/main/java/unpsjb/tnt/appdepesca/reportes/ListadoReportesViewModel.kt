@@ -104,7 +104,8 @@ class ListadoReportesViewModel(
     /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
         viewModelScope.launch {
-            dao.deleteReporte(reporte)
+            dao.deleteReporte(reporte) // elimina el reporte de la BD local
+            deleteReporteFromSifrestore(reporte.reportId) // elimina el reporte de la BD en la nube
         }
     }
 
@@ -187,6 +188,7 @@ class ListadoReportesViewModel(
         return calendar.time
     }
 
+    /////////ACTUALIZA A LA BASE DE LA NUBE///////////
     fun uploadReporteToFirestore(reporte: Reporte) {
         val data = hashMapOf(
             "titulo" to reporte.reportTitulo,
@@ -198,12 +200,25 @@ class ListadoReportesViewModel(
         )
         db.collection("reportes")
             .document(reporte.reportId.toString()) //usa el mismo ID del reporte
-            .set(data)// reemplaza o crea seguún corresponda
+            .set(data)// reemplaza o crea según corresponda
             .addOnSuccessListener { documentReference ->
                 Log.d("Firestore", "Reporte actualizado o creadp con ID: ${reporte.reportId}")
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al subir reporte", e)
+            }
+    }
+
+    /////////ACTUALIZA A LA BASE DE LA NUBE///////////
+    fun deleteReporteFromSifrestore(reportId: Int){
+        db.collection("reportes")
+            .document(reportId.toString()) // usa el mismo ID del reporte
+            .delete()// elimina el reporte de la BD en la nube
+            .addOnSuccessListener {
+                Log.d("Firestore", "Reporte eliminado con ID: ${reportId}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error al eliminar reporte", e)
             }
     }
 }

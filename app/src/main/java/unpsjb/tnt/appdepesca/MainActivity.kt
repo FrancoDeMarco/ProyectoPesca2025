@@ -31,6 +31,7 @@ import unpsjb.tnt.appdepesca.reportes.DetalleReporteScreen
 import unpsjb.tnt.appdepesca.reportes.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
+import unpsjb.tnt.appdepesca.reportes.MapaReportesScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -128,6 +129,12 @@ class MainActivity : ComponentActivity() {
                             reporteId = reporteId,
                             navController = navController,
                             listadoReportesViewModel
+                        )
+                    }
+                    composable ("mapa_reportes"){
+                        MapaReportesScreen(
+                            listadoReportesViewModel = listadoReportesViewModel,
+                            navController = navController
                         )
                     }
                 }
