@@ -79,7 +79,8 @@ fun ListadoReportesScreen(
             item {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .statusBarsPadding(),
                     contentAlignment = Alignment.Center
                 ) {
                     HeaderImage(size = 100.dp)

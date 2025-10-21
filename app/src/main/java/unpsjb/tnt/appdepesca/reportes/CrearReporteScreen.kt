@@ -80,6 +80,7 @@ fun CrearReporteScreen(
                 .fillMaxSize()
                 .background(color = Color(0xFF1B2B24))
                 .verticalScroll(rememberScrollState())
+                .statusBarsPadding()
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)

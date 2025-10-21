@@ -40,6 +40,7 @@ fun ListaReglamentosScreen(
             Modifier
                 .fillMaxSize()
                 .background(Color(0xFF1B2B24))
+                .statusBarsPadding()
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             TituloReglamentos()

@@ -40,6 +40,7 @@ fun DetalleReglamentoScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF1B2B24))
+                .statusBarsPadding()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
