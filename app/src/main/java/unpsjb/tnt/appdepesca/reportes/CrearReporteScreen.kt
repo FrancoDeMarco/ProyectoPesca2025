@@ -39,7 +39,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -58,14 +57,20 @@ fun CrearReporteScreen(
 ) {
     val state = listadoReportesViewModel.state
     val dateState = remember { mutableStateOf(TextFieldValue("")) }
-    var isDateValid = remember { mutableStateOf(false) }
-    val isTitleValid = remember { mutableStateOf(false) }
-    var isDescriptionValid = remember { mutableStateOf(false) }
-    var isImagenValid = remember { mutableStateOf(false) }
-    val formValido = isDateValid.value && isTitleValid.value && isDescriptionValid.value && isImagenValid.value
+    val isTitleValido = remember { mutableStateOf(false) }
+    var isDescriptionValido = remember { mutableStateOf(false) }
+    var isDateValido = remember { mutableStateOf(false) }
+    var isImagenValido = remember { mutableStateOf(false) }
+    var isMapValido = remember { mutableStateOf(false) }
+    val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
     var markerPosition by remember {mutableStateOf<LatLng?>(null)}
     LaunchedEffect(Unit) {
         listadoReportesViewModel.clearForm()
+        isTitleValido.value = false
+        isDescriptionValido.value = false
+        isDateValido.value = false
+        isImagenValido.value = false
+        isMapValido.value = false
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -87,11 +92,11 @@ fun CrearReporteScreen(
         ) {
             HeaderImage(size = 200.dp) // usa un tamaño personalizado
             TituloReporte()
-            NombreReporte(listadoReportesViewModel, state, isTitleValid)
-            DescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
-            FechaReporte(listadoReportesViewModel, dateState, isDateValid)
-            ImagenReporte(viewModel = listadoReportesViewModel, isImagenValid)
-            Mapa(listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
+            NombreReporte(listadoReportesViewModel, state, isTitleValido)
+            DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
+            FechaReporte(listadoReportesViewModel, dateState, isDateValido)
+            ImagenReporte(viewModel = listadoReportesViewModel, isImagenValido)
+            Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
             AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
                 listadoReportesViewModel.clearForm()
@@ -107,7 +112,7 @@ fun CrearReporteScreen(
                     navController,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .offset(x = -12.dp, y = (-32).dp)
+                        .offset(x = (-12).dp, y = (-32).dp)
                 )
             }
         }
@@ -128,7 +133,7 @@ fun TituloReporte() {
     )
 }
 
-//////////////BOTON AGREGAR REPORTE//////
+//////////////BOTÓN AGREGAR REPORTE//////
 @Composable
 fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
     Button(
@@ -256,7 +261,7 @@ fun FechaReporte(
     )
 }
 
-//////////////BOTON VOLVER///////////////
+//////////////BOTÓN VOLVER///////////////
 @Composable
 fun VolverButton(
     navController: NavController,
@@ -279,7 +284,7 @@ fun VolverButton(
     }
 }
 
-//////////////BOTON AGREGAR IMAGEN///////////////
+//////////////BOTÓN AGREGAR IMAGEN///////////////
 @Composable
 fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableState<Boolean>) {
     val uri = remember { mutableStateOf<Uri?>(null) }
@@ -308,7 +313,6 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableSta
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
             )
-            //isImagenValid.value = true
             isImagenValid.value = viewModel.state.reportImagenUri != null//Con esto supuestamente ya no se pierde la imagen al volver a atrás
         }
     }
@@ -316,6 +320,7 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableSta
 
 @Composable
 fun Mapa(
+    isMapValid: MutableState<Boolean>,
     listadoReportesViewModel: ListadoReportesViewModel,
     markerPosition: LatLng?,
     onMarkerChange: (LatLng) -> Unit
@@ -340,6 +345,7 @@ fun Mapa(
         onMapClick = {latLng ->
             onMarkerChange(latLng)
             listadoReportesViewModel.setUbicacion(latLng.latitude, latLng.longitude)
+            isMapValid.value = true
         }
     ){
         markerPosition?.let {
