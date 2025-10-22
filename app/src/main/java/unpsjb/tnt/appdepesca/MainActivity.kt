@@ -32,6 +32,7 @@ import unpsjb.tnt.appdepesca.reportes.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
 import unpsjb.tnt.appdepesca.reportes.MapaReportesScreen
+import unpsjb.tnt.appdepesca.reportes.SeleccionarFotosScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -48,7 +49,11 @@ class MainActivity : ComponentActivity() {
         val dao = database.pescaDAO
         val viewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ListadoReportesViewModel(dao) as T
+                if (modelClass.isAssignableFrom(ListadoReportesViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return ListadoReportesViewModel(dao) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class: $modelClass")
             }
         }
         val listadoReportesViewModel: ListadoReportesViewModel by viewModels { viewModelFactory }
@@ -135,6 +140,12 @@ class MainActivity : ComponentActivity() {
                         MapaReportesScreen(
                             listadoReportesViewModel = listadoReportesViewModel,
                             navController = navController
+                        )
+                    }
+                    composable ("seleccionar_fotos"){
+                        SeleccionarFotosScreen(
+                            navController = navController,
+                            viewModel = listadoReportesViewModel,
                         )
                     }
                 }
