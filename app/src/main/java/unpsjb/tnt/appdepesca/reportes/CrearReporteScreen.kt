@@ -2,6 +2,9 @@ package unpsjb.tnt.appdepesca.reportes
 
 
 import android.app.DatePickerDialog
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -30,9 +33,14 @@ import kotlin.Boolean
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Photo
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import coil.compose.rememberAsyncImagePainter
 import unpsjb.tnt.appdepesca.R
 
 @Composable
@@ -80,7 +88,7 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValido)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
-            //ImagenReporte(viewModel = listadoReportesViewModel, isImagenValido)
+            AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
             //Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
             /*AgregarButton(enabled = formValido) {
                 listadoReportesViewModel.createReport()
@@ -100,7 +108,7 @@ fun CrearReporteScreen(
                         .offset(x = (-12).dp, y = (-32).dp)
                 )
             }
-            SiguienteFotos(navController, buttonModifier = Modifier)
+            Siguiente(navController, modifier = Modifier)
         }
     }
 }
@@ -271,13 +279,13 @@ fun VolverButton(
 }
 
 @Composable
-fun SiguienteFotos(
+fun Siguiente(
     navController: NavController,
-    buttonModifier: Modifier
+    modifier: Modifier
 ){
     Button(
-        onClick = { navController.navigate("seleccionar_fotos") },
-        modifier = buttonModifier.border(
+        onClick = { navController.navigate("seleccionar_ubicacion") },
+        modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
@@ -289,5 +297,41 @@ fun SiguienteFotos(
             text = "Siguiente",
             fontSize = 30.sp // tamaño
         )
+    }
+}
+
+@Composable
+fun AgregarFotoButton(
+    viewModel: ListadoReportesViewModel,
+    isImagenValido: MutableState<Boolean>
+){
+    val uri = remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
+        selectedUri?.let {
+            uri.value = it
+            viewModel.changeImage(it)
+        }
+    }
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Button(
+            onClick = { launcher.launch("image/*") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3E8B75))
+        ) {
+            Icon(Icons.Default.Photo, contentDescription = "Seleccionar imagen")
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Seleccionar Imagen")
+        }
+        uri.value?.let {
+            Spacer(modifier = Modifier.height(8.dp))
+            Image(
+                painter = rememberAsyncImagePainter(it),
+                contentDescription = "Imagen del reporte",
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop,
+            )
+            isImagenValido.value = viewModel.state.reportImagenUri != null//Con esto supuestamente ya no se pierde la imagen al volver a atrás
+        }
     }
 }
