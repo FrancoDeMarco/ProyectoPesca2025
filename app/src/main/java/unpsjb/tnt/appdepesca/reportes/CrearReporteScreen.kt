@@ -54,16 +54,16 @@ fun CrearReporteScreen(
     var isDescriptionValido = remember { mutableStateOf(false) }
     var isDateValido = remember { mutableStateOf(false) }
     var isImagenValido = remember { mutableStateOf(false) }
-    var isMapValido = remember { mutableStateOf(false) }
+
     //val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
     //var markerPosition by remember {mutableStateOf<LatLng?>(null)}
     LaunchedEffect(Unit) {
-        listadoReportesViewModel.clearForm()
+        //listadoReportesViewModel.clearForm()
         isTitleValido.value = false
         isDescriptionValido.value = false
         isDateValido.value = false
         isImagenValido.value = false
-        isMapValido.value = false
+        //isMapValido.value = false
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -90,11 +90,7 @@ fun CrearReporteScreen(
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
             AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
             //Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
-            /*AgregarButton(enabled = formValido) {
-                listadoReportesViewModel.createReport()
-                listadoReportesViewModel.clearForm()
-                navController.navigate("reportes")
-            }*/
+
             Spacer(modifier = Modifier.height(20.dp))
             Box(
                 modifier = Modifier
@@ -128,7 +124,7 @@ fun TituloReporte() {
 }
 
 //////////////BOTÓN AGREGAR REPORTE//////
-/*@Composable
+@Composable
 fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
@@ -145,7 +141,7 @@ fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
     ) {
         Text("Agregar Reporte")
     }
-}*/
+}
 
 //////////////NOMBRE DEL REPORTE/////////
 @Composable
