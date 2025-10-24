@@ -32,7 +32,8 @@ import unpsjb.tnt.appdepesca.reportes.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
 import unpsjb.tnt.appdepesca.reportes.MapaReportesScreen
-import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionScreen
+import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionCrearScreen
+import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionEditarScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -145,8 +146,14 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
-                    composable("seleccionar_ubicacion") {
-                        SeleccionarUbicacionScreen(
+                    composable("seleccionar_ubicacion_crear") {
+                        SeleccionarUbicacionCrearScreen(
+                            listadoReportesViewModel = listadoReportesViewModel,
+                            navController
+                        )
+                    }
+                    composable("seleccionar_ubicacion_editar") {
+                        SeleccionarUbicacionEditarScreen(
                             listadoReportesViewModel = listadoReportesViewModel,
                             navController
                         )

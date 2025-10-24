@@ -58,7 +58,7 @@ fun CrearReporteScreen(
     //val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
     //var markerPosition by remember {mutableStateOf<LatLng?>(null)}
     LaunchedEffect(Unit) {
-        //listadoReportesViewModel.clearForm()
+        listadoReportesViewModel.clearForm()
         isTitleValido.value = false
         isDescriptionValido.value = false
         isDateValido.value = false
@@ -104,7 +104,7 @@ fun CrearReporteScreen(
                         .offset(x = (-12).dp, y = (-32).dp)
                 )
             }
-            Siguiente(navController, modifier = Modifier)
+            SiguienteCrear(navController, modifier = Modifier)
         }
     }
 }
@@ -275,12 +275,12 @@ fun VolverButton(
 }
 
 @Composable
-fun Siguiente(
+fun SiguienteCrear(
     navController: NavController,
     modifier: Modifier
 ){
     Button(
-        onClick = { navController.navigate("seleccionar_ubicacion") },
+        onClick = { navController.navigate("seleccionar_ubicacion_crear") },
         modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde

@@ -86,7 +86,7 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
-                Mapa(navController)
+                MapaEditar(navController)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -525,7 +525,7 @@ fun LineaDivisoria(){
 }
 
 @Composable
-fun Mapa(
+fun MapaEditar(
     navController: NavController,
 ){
     IconButton(
