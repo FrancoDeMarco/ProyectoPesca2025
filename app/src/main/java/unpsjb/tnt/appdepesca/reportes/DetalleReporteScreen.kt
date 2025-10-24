@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,24 +18,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import android.graphics.BitmapFactory
-import android.net.Uri
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.snapping.SnapPosition.Start.position
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,10 +42,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import com.google.android.gms.maps.model.LatLng
+import androidx.core.net.toUri
 
 
 @Composable
@@ -85,8 +81,8 @@ fun DetalleReporteScreen(
             DescripcionReporte(reporte)
             Spacer(modifier = Modifier.height(8.dp))
         }
-        UbicacionReporte(reporte) //Mapa con ubicación
-        BotonVolver(navController)
+        UbicacionReporte(reporte, navController) //Mapa con ubicación
+        //BotonVolver(navController)
     }
 }
 
@@ -126,10 +122,10 @@ fun ImagenReporte(reporte: Reporte) {
 fun ImagenDesdeUri(uriString: String?) {
     val context = LocalContext.current
     if (uriString != null) {
-        val uri = Uri.parse(uriString)
+        val uri = uriString.toUri()
         val inputStream = try {
             context.contentResolver.openInputStream(uri)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
         inputStream?.use {
@@ -139,7 +135,7 @@ fun ImagenDesdeUri(uriString: String?) {
                     bitmap = it.asImageBitmap(),
                     contentDescription = "Imagen del reporte",
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)    // Cambia el tamano de la imagen pero sin que esta se vea cortada
+                        .fillMaxWidth(0.5f)    // Cambia el tamaño de la imagen pero sin que esta se vea cortada
                         .aspectRatio(it.width.toFloat() / it.height.toFloat())  // Mantiene la proporción original de la imagen
                         .padding(vertical = 8.dp),
                     contentScale = ContentScale.Fit //Muestra la imagen entera, sin recortar ni deformar
@@ -172,7 +168,7 @@ fun FechaReporte(reporte: Reporte){
         fontSize = 23.sp // <- tamaño
     )
     Text(
-        text = "${reporte.reportFecha}",
+        text = reporte.reportFecha,
         color = Color.White,
         fontSize = 23.sp,
         textAlign = TextAlign.Center
@@ -186,39 +182,27 @@ fun BotonVolver(navController: NavController){
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(
+        IconButton(
+            onClick = { navController.popBackStack() },
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .size(88.dp) // fuerza cuadrado perfecto
-                    .border(
-                        width = 2.dp,               // grosor del borde
-                        color = Color(0xFF3E8B75),  // color del borde
-                        shape = RectangleShape      // importante: que coincida con el shape del botón
-                ),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent
-                ),
-                shape = RectangleShape, // <- esto lo hace cuadrado
-                contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.retroceso), //nombre de la imagen
-                    contentDescription = "Retroceso",
-                    modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
+                .align(Alignment.BottomStart)
+                .size(64.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.7f),
+                    shape = CircleShape
                 )
-            }
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Retroceso",
+                tint = Color(0xFF3E8B75) // color del ícono
+            )
         }
     }
 }
 
 @Composable
-fun UbicacionReporte(reporte: Reporte){
+fun UbicacionReporte(reporte: Reporte, navController: NavController){
     reporte.latitud?.let { lat ->
         reporte.longitud?.let { lng ->
             Text(
@@ -229,13 +213,14 @@ fun UbicacionReporte(reporte: Reporte){
             )
             Spacer(modifier = Modifier.height(8.dp))
             val ubicacion = LatLng(lat, lng)
+
             val cameraPositionState = rememberCameraPositionState{
                 position = CameraPosition.fromLatLngZoom(ubicacion, 14f)
             }
             GoogleMap(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
+                    .height(400.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 cameraPositionState = cameraPositionState
             ){
@@ -244,7 +229,8 @@ fun UbicacionReporte(reporte: Reporte){
                     title = "Ubicación del reporte"
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            BotonVolver(navController)
+            //Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
