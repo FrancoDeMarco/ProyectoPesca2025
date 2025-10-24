@@ -32,6 +32,8 @@ import unpsjb.tnt.appdepesca.reportes.EditarReporteScreen
 import unpsjb.tnt.appdepesca.ui.theme.ProyectoPesca2023Theme
 import unpsjb.tnt.appdepesca.reglamentos.DetalleReglamentoScreen
 import unpsjb.tnt.appdepesca.reportes.MapaReportesScreen
+import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionCrearScreen
+import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionEditarScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -48,7 +50,11 @@ class MainActivity : ComponentActivity() {
         val dao = database.pescaDAO
         val viewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ListadoReportesViewModel(dao) as T
+                if (modelClass.isAssignableFrom(ListadoReportesViewModel::class.java)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return ListadoReportesViewModel(dao) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class: $modelClass")
             }
         }
         val listadoReportesViewModel: ListadoReportesViewModel by viewModels { viewModelFactory }
@@ -74,8 +80,9 @@ class MainActivity : ComponentActivity() {
                         "detalleReglamento/{reglamentoId}",
                         arguments = listOf(navArgument("reglamentoId") { type = NavType.IntType })
                     ) { backStackEntry ->
-                        val reglamentoId = backStackEntry.arguments?.getInt("reglamentoId") ?: return@composable
-                        val reglamentosViewModel: ReglamentosViewModel = viewModel ()
+                        val reglamentoId =
+                            backStackEntry.arguments?.getInt("reglamentoId") ?: return@composable
+                        val reglamentosViewModel: ReglamentosViewModel = viewModel()
                         DetalleReglamentoScreen(
                             reglamentoId = reglamentoId,
                             viewModel = reglamentosViewModel,
@@ -86,11 +93,12 @@ class MainActivity : ComponentActivity() {
                         val concursosViewModel: ConcursosViewModel = viewModel()
                         ListaConcursosScreen(concursosViewModel, navController)
                     }
-                    composable (
+                    composable(
                         "detalleconcurso/{concursoId}",
-                        arguments = listOf(navArgument ("concursoId"){type = NavType.IntType})
-                    ){ backStackEntry ->
-                        val concursoId = backStackEntry.arguments?.getInt("concursoId") ?: return@composable
+                        arguments = listOf(navArgument("concursoId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val concursoId =
+                            backStackEntry.arguments?.getInt("concursoId") ?: return@composable
                         val concursosViewModel: ConcursosViewModel = viewModel()
                         DetalleConcursoScreen(
                             concursoId = concursoId,
@@ -103,14 +111,15 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(
                         "editar_reporte/{reporteId}",
-                        arguments = listOf(navArgument ("reporteId") { type = NavType.IntType })
-                    ){ backStackEntry ->
-                        val reporteId = backStackEntry.arguments?.getInt("reporteId") ?: return@composable
+                        arguments = listOf(navArgument("reporteId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val reporteId =
+                            backStackEntry.arguments?.getInt("reporteId") ?: return@composable
                         val reporteViewModel: ReporteViewModel = viewModel()
                         // Cargar reporte actual en el ViewModel antes de mostrar la pantalla
                         LaunchedEffect(reporteId) {
                             val reporte = listadoReportesViewModel.obtenerReportePorId(reporteId)
-                            if (reporte != null){
+                            if (reporte != null) {
                                 listadoReportesViewModel.loadReport(reporte)
                             }
                         }
@@ -131,10 +140,22 @@ class MainActivity : ComponentActivity() {
                             listadoReportesViewModel
                         )
                     }
-                    composable ("mapa_reportes"){
+                    composable("mapa_reportes") {
                         MapaReportesScreen(
                             listadoReportesViewModel = listadoReportesViewModel,
                             navController = navController
+                        )
+                    }
+                    composable("seleccionar_ubicacion_crear") {
+                        SeleccionarUbicacionCrearScreen(
+                            listadoReportesViewModel = listadoReportesViewModel,
+                            navController
+                        )
+                    }
+                    composable("seleccionar_ubicacion_editar") {
+                        SeleccionarUbicacionEditarScreen(
+                            listadoReportesViewModel = listadoReportesViewModel,
+                            navController
                         )
                     }
                 }

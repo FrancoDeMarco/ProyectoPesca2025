@@ -2,6 +2,9 @@ package unpsjb.tnt.appdepesca.reportes
 
 
 import android.app.DatePickerDialog
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -27,27 +30,17 @@ import androidx.compose.ui.text.TextStyle
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
 import kotlin.Boolean
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import coil.compose.rememberAsyncImagePainter
-import androidx.compose.material.icons.filled.Photo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
+import coil.compose.rememberAsyncImagePainter
 import unpsjb.tnt.appdepesca.R
 
 @Composable
@@ -61,16 +54,16 @@ fun CrearReporteScreen(
     var isDescriptionValido = remember { mutableStateOf(false) }
     var isDateValido = remember { mutableStateOf(false) }
     var isImagenValido = remember { mutableStateOf(false) }
-    var isMapValido = remember { mutableStateOf(false) }
-    val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
-    var markerPosition by remember {mutableStateOf<LatLng?>(null)}
+
+    //val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
+    //var markerPosition by remember {mutableStateOf<LatLng?>(null)}
     LaunchedEffect(Unit) {
         listadoReportesViewModel.clearForm()
         isTitleValido.value = false
         isDescriptionValido.value = false
         isDateValido.value = false
         isImagenValido.value = false
-        isMapValido.value = false
+        //isMapValido.value = false
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -95,13 +88,9 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValido)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
-            ImagenReporte(viewModel = listadoReportesViewModel, isImagenValido)
-            Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
-            AgregarButton(enabled = formValido) {
-                listadoReportesViewModel.createReport()
-                listadoReportesViewModel.clearForm()
-                navController.navigate("reportes")
-            }
+            AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
+            //Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
+
             Spacer(modifier = Modifier.height(20.dp))
             Box(
                 modifier = Modifier
@@ -115,6 +104,7 @@ fun CrearReporteScreen(
                         .offset(x = (-12).dp, y = (-32).dp)
                 )
             }
+            SiguienteCrear(navController, modifier = Modifier)
         }
     }
 }
@@ -284,9 +274,33 @@ fun VolverButton(
     }
 }
 
-//////////////BOTÓN AGREGAR IMAGEN///////////////
 @Composable
-fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableState<Boolean>) {
+fun SiguienteCrear(
+    navController: NavController,
+    modifier: Modifier
+){
+    Button(
+        onClick = { navController.navigate("seleccionar_ubicacion_crear") },
+        modifier = modifier.border(
+            width = 2.dp,               // grosor del borde
+            color = Color(0xFF3E8B75),  // color del borde
+            shape = RectangleShape      // importante: que coincida con el shape del botón
+        ),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
+        shape = RectangleShape  //esto lo hace cuadrado
+    ) {
+        Text(
+            text = "Siguiente",
+            fontSize = 30.sp // tamaño
+        )
+    }
+}
+
+@Composable
+fun AgregarFotoButton(
+    viewModel: ListadoReportesViewModel,
+    isImagenValido: MutableState<Boolean>
+){
     val uri = remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
         selectedUri?.let {
@@ -313,47 +327,7 @@ fun ImagenReporte(viewModel: ListadoReportesViewModel, isImagenValid: MutableSta
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
             )
-            isImagenValid.value = viewModel.state.reportImagenUri != null//Con esto supuestamente ya no se pierde la imagen al volver a atrás
+            isImagenValido.value = viewModel.state.reportImagenUri != null//Con esto supuestamente ya no se pierde la imagen al volver a atrás
         }
     }
-}
-
-@Composable
-fun Mapa(
-    isMapValid: MutableState<Boolean>,
-    listadoReportesViewModel: ListadoReportesViewModel,
-    markerPosition: LatLng?,
-    onMarkerChange: (LatLng) -> Unit
-){
-    Text(
-        text = "Selecciona la ubicación en el mapa",
-        color = Color.White,
-        style = MaterialTheme.typography.bodyLarge
-    )
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(
-            LatLng(-34.6037, -58.3816),
-            10f
-        )
-    }
-    GoogleMap(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(250.dp)
-            .clip(RoundedCornerShape(12.dp)),
-        cameraPositionState = cameraPositionState,
-        onMapClick = {latLng ->
-            onMarkerChange(latLng)
-            listadoReportesViewModel.setUbicacion(latLng.latitude, latLng.longitude)
-            isMapValid.value = true
-        }
-    ){
-        markerPosition?.let {
-            Marker(
-                state = MarkerState(position = it),
-                title = "Ubicación seleccionada"
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(8.dp))
 }
