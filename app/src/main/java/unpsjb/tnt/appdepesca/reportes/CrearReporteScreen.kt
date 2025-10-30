@@ -39,9 +39,7 @@ import androidx.compose.material.icons.filled.Photo
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import coil.compose.rememberAsyncImagePainter
-import unpsjb.tnt.appdepesca.R
 
 @Composable
 fun CrearReporteScreen(
@@ -97,12 +95,7 @@ fun CrearReporteScreen(
                     .fillMaxWidth()
                     .padding(bottom = 32.dp, start = 24.dp)
             ){
-                VolverButton(
-                    navController,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .offset(x = (-12).dp, y = (-32).dp)
-                )
+                BotonVolver(navController)
             }
             SiguienteCrear(navController, modifier = Modifier)
         }
@@ -249,29 +242,6 @@ fun FechaReporte(
             unfocusedIndicatorColor = Color(0xFF3E8B75),
         )
     )
-}
-
-//////////////BOTÓN VOLVER///////////////
-@Composable
-fun VolverButton(
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = { navController.popBackStack() },
-        modifier = modifier
-            .size(88.dp) // fuerza cuadrado perfecto
-            .border(2.dp, Color(0xFF3E8B75), RectangleShape),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-        shape = RectangleShape, // <- esto lo hace cuadrado
-        contentPadding = PaddingValues(0.dp) // quita el padding interno por defecto
-    ) {
-        Image(
-            painter = painterResource(R.drawable.retroceso), //nombre de la imagen
-            contentDescription = "Retroceso",
-            modifier = Modifier.size(50.dp) // tamaño de la imagen dentro del botón
-        )
-    }
 }
 
 @Composable
