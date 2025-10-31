@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.compose.runtime.State
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -40,6 +41,16 @@ class ListadoReportesViewModel(
         _latitud.value = lat
         _longitud.value = lng
     }
+
+
+    private val _imagenSeleccionada = mutableStateOf<String?>(null)
+    val imagenSeleccionada: State<String?> = _imagenSeleccionada
+
+    fun setImagenSeleccionada(uri: String?){
+        _imagenSeleccionada.value = uri
+    }
+
+
     init {
         viewModelScope.launch {
             dao.getAllReportes()
@@ -99,8 +110,12 @@ class ListadoReportesViewModel(
             reportId = 0,
             reportTitle = "",
             reportDescription = "",
-            reportDate = ""
+            reportDate = "",
+            reportImagenUri = null,
+            reportLat = null,
+            reportLng = null
         )
+        limpiarImagenSeleccionada()
     }
 
     //para agregar la imagen
@@ -247,5 +262,9 @@ class ListadoReportesViewModel(
             e.printStackTrace()
             null
         }
+    }
+
+    fun limpiarImagenSeleccionada(){
+        _imagenSeleccionada.value = null
     }
 }
