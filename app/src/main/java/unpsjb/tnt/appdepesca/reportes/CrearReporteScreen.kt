@@ -61,11 +61,11 @@ fun CrearReporteScreen(
         }
     }
     LaunchedEffect(Unit) {
-        listadoReportesViewModel.clearForm()
-        isTitleValido.value = false
-        isDescriptionValido.value = false
-        isDateValido.value = false
-        isImagenValido.value = false
+        //listadoReportesViewModel.clearForm()
+        isTitleValido.value = listadoReportesViewModel.state.reportTitle.isNotEmpty()
+        isDescriptionValido.value = listadoReportesViewModel.state.reportDescription.isNotEmpty()
+        isDateValido.value = listadoReportesViewModel.state.reportDate.isNotEmpty()
+        isImagenValido.value = listadoReportesViewModel.state.reportImagenUri != null
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
