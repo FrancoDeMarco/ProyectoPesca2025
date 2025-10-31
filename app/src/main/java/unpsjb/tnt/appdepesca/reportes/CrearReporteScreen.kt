@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -31,13 +32,13 @@ import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
 import kotlin.Boolean
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberAsyncImagePainter
 
@@ -52,16 +53,19 @@ fun CrearReporteScreen(
     var isDescriptionValido = remember { mutableStateOf(false) }
     var isDateValido = remember { mutableStateOf(false) }
     var isImagenValido = remember { mutableStateOf(false) }
-
-    //val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
-    //var markerPosition by remember {mutableStateOf<LatLng?>(null)}
+    val formValido by remember(state) {
+        derivedStateOf {
+            state.reportDate.isNotBlank() &&
+                    state.reportTitle.isNotBlank() &&
+                    state.reportDescription.isNotBlank() &&
+                    !state.reportImagenUri.isNullOrBlank()
+        }
+    }
     LaunchedEffect(Unit) {
-        listadoReportesViewModel.clearForm()
-        isTitleValido.value = false
-        isDescriptionValido.value = false
-        isDateValido.value = false
-        isImagenValido.value = false
-        //isMapValido.value = false
+        isTitleValido.value = listadoReportesViewModel.state.reportTitle.isNotEmpty()
+        isDescriptionValido.value = listadoReportesViewModel.state.reportDescription.isNotEmpty()
+        isDateValido.value = listadoReportesViewModel.state.reportDate.isNotEmpty()
+        isImagenValido.value = listadoReportesViewModel.state.reportImagenUri?.isNotEmpty() == true
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -87,17 +91,49 @@ fun CrearReporteScreen(
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
             AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
-            //Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
-
             Spacer(modifier = Modifier.height(20.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp, start = 24.dp)
             ){
-                BotonVolver(navController)
+                BotonVolverCrear(navController, listadoReportesViewModel)
             }
-            SiguienteCrear(navController, modifier = Modifier)
+            SiguienteCrear(
+                navController = navController,
+                enabled = formValido,
+                modifier = Modifier)
+        }
+    }
+}
+
+@Composable
+fun BotonVolverCrear(
+    navController: NavController,
+    listadoReportesViewModel: ListadoReportesViewModel
+){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        IconButton(
+            onClick = {
+                listadoReportesViewModel.clearForm()
+                navController.popBackStack() },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .size(64.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.7f),
+                    shape = CircleShape
+                )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Retroceso",
+                tint = Color(0xFF3E8B75) // color del ícono
+            )
         }
     }
 }
@@ -247,21 +283,28 @@ fun FechaReporte(
 @Composable
 fun SiguienteCrear(
     navController: NavController,
+    enabled: Boolean,
     modifier: Modifier
 ){
     Button(
         onClick = { navController.navigate("seleccionar_ubicacion_crear") },
-        modifier = modifier.border(
-            width = 2.dp,               // grosor del borde
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // importante: que coincida con el shape del botón
+        enabled = enabled,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .height(56.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (enabled) Color(0xFF3E8B75) else Color (0xFF2E2E2E),
+            contentColor = Color.White,
+            disabledContainerColor = Color(0xFF2E2E2E),
+            disabledContentColor = Color.Gray
         ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-        shape = RectangleShape  //esto lo hace cuadrado
+        shape = RoundedCornerShape(12.dp),
+        border = if (!enabled) BorderStroke(2.dp, Color.Gray) else null
     ) {
         Text(
-            text = "Siguiente",
-            fontSize = 30.sp // tamaño
+            text = "Seleccionar Ubicación",
+            fontSize = 20.sp // tamaño
         )
     }
 }
