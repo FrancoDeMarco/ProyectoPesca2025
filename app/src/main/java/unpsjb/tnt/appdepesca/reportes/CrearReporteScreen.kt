@@ -33,8 +33,10 @@ import kotlin.Boolean
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
@@ -52,20 +54,19 @@ fun CrearReporteScreen(
     var isDescriptionValido = remember { mutableStateOf(false) }
     var isDateValido = remember { mutableStateOf(false) }
     var isImagenValido = remember { mutableStateOf(false) }
-    val formValido by remember {
+    val formValido by remember(state) {
         derivedStateOf {
-            isDateValido.value &&
-                    isTitleValido.value &&
-                    isDescriptionValido.value &&
-                    isImagenValido.value
+            state.reportDate.isNotBlank() &&
+                    state.reportTitle.isNotBlank() &&
+                    state.reportDescription.isNotBlank() &&
+                    !state.reportImagenUri.isNullOrBlank()
         }
     }
     LaunchedEffect(Unit) {
-        listadoReportesViewModel.clearForm()
-        isTitleValido.value = false
-        isDescriptionValido.value = false
-        isDateValido.value = false
-        isImagenValido.value = false
+        isTitleValido.value = listadoReportesViewModel.state.reportTitle.isNotEmpty()
+        isDescriptionValido.value = listadoReportesViewModel.state.reportDescription.isNotEmpty()
+        isDateValido.value = listadoReportesViewModel.state.reportDate.isNotEmpty()
+        isImagenValido.value = listadoReportesViewModel.state.reportImagenUri?.isNotEmpty() == true
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -97,12 +98,43 @@ fun CrearReporteScreen(
                     .fillMaxWidth()
                     .padding(bottom = 32.dp, start = 24.dp)
             ){
-                BotonVolver(navController)
+                BotonVolverCrear(navController, listadoReportesViewModel)
             }
             SiguienteCrear(
                 navController = navController,
                 enabled = formValido,
                 modifier = Modifier)
+        }
+    }
+}
+
+@Composable
+fun BotonVolverCrear(
+    navController: NavController,
+    listadoReportesViewModel: ListadoReportesViewModel
+){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        IconButton(
+            onClick = {
+                listadoReportesViewModel.clearForm()
+                navController.popBackStack() },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .size(64.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.7f),
+                    shape = CircleShape
+                )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Retroceso",
+                tint = Color(0xFF3E8B75) // color del ícono
+            )
         }
     }
 }

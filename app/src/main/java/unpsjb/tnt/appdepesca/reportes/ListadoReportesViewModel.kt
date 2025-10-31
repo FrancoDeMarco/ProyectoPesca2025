@@ -76,12 +76,17 @@ class ListadoReportesViewModel(
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
-            dao.insertReporte(updatedReport) //Actualiza la BD local
-            uploadReporteToFirestore(updatedReport) //Actualiza la BD en la nube
+            try{
+                dao.insertReporte(updatedReport) //Actualiza la BD local
+                uploadReporteToFirestore(updatedReport) //Actualiza la BD en la nube
+                clearForm() //Si salió bien, limpia el formulario
+                println("Reporte creado correctamente.")
+            }catch(e: Exception){
+                Log.e("createReport", "Error al crear el reporte", e)// si hay algún error no se limpia el formulario
+            }
         }
-        clearForm()
     }
-
+    
     fun getNextId(): Int {
         val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
         return maxId + 1
