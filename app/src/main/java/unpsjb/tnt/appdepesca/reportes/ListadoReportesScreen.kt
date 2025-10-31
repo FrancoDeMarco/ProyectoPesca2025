@@ -15,7 +15,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,7 +55,7 @@ fun ListadoReportesScreen(
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val fromDate = remember { mutableStateOf<Date?>(null) }
     val toDate = remember { mutableStateOf<Date?>(null) }
-    val dateButtonModifier = Modifier //variable para darle groso, color y forma al borde de los bootones
+    val dateButtonModifier = Modifier //variable para darle groso, color y forma al borde de los botones
         .border(
             width = 2.dp,               // grosor
             color = Color(0xFF3E8B75),  // color del borde
@@ -108,7 +108,7 @@ fun ListadoReportesScreen(
                 LineaDivisoria()
 
             }
-            ListaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
+            listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
         }
     }
     Box(
@@ -126,7 +126,7 @@ fun ListadoReportesScreen(
                 .weight(1f)                 // Ocupa 1/4 del ancho disponible
                 .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
                 .padding(horizontal = 4.dp) // Espacio entre botones
-            Agregar(navController, buttonModifier)
+            Agregar(navController, buttonModifier, listadoReportesViewModel)
             Concursos(navController, buttonModifier)
             Reglamentos(navController, buttonModifier)
             Salir(navController, buttonModifier)
@@ -189,7 +189,7 @@ fun Desde(
     fromDate: MutableState<Date?>,
     toDate: MutableState<Date?>,
     listadoReportesViewModel: ListadoReportesViewModel,
-    dateButtonModifier: Modifier,
+    modifier: Modifier,
     dateButtonColors: ButtonColors,
     dateFormatter: SimpleDateFormat
 ){
@@ -204,7 +204,7 @@ fun Desde(
                 listadoReportesViewModel.setFechasFiltro(fromDate.value, null)
             }
         },
-        modifier = dateButtonModifier,
+        modifier = modifier,
         colors = dateButtonColors,
         shape = RectangleShape  // forma
     ) {
@@ -223,7 +223,7 @@ fun Hasta(
     fromDate: MutableState<Date?>,
     toDate: MutableState<Date?>,
     listadoReportesViewModel: ListadoReportesViewModel,
-    dateButtonModifier: Modifier,
+    modifier: Modifier,
     dateButtonColors: ButtonColors,
     dateFormatter: SimpleDateFormat
 ){
@@ -242,7 +242,7 @@ fun Hasta(
                     )
                 }
             },
-            modifier = dateButtonModifier,
+            modifier = modifier,
             colors = dateButtonColors,
             shape = RectangleShape, // forma
         ) {
@@ -260,7 +260,7 @@ fun Refrescar(
     fromDate: MutableState<Date?>,
     toDate: MutableState<Date?>,
     listadoReportesViewModel: ListadoReportesViewModel,
-    dateButtonModifier: Modifier,
+    modifier: Modifier,
     dateButtonColors: ButtonColors,
 ){
     if (fromDate.value != null) { //deshabilitado si no hay fecha "Desde"
@@ -270,7 +270,7 @@ fun Refrescar(
                 toDate.value = null
                 listadoReportesViewModel.setFechasFiltro(null, null)
             },
-            modifier = dateButtonModifier,
+            modifier = modifier,
             colors = dateButtonColors,
             shape = RectangleShape, // forma
         ) {
@@ -305,7 +305,7 @@ fun RowScope.Cabecera(){
 }
 
 //////////////REPORTES/////////////////////
-fun LazyListScope.ListaReportes(
+fun LazyListScope.listaReportes(
     listadoReportesViewModel: ListadoReportesViewModel,
     reportes: List<Reporte>?,
     navController: NavController,
@@ -339,11 +339,15 @@ fun LazyListScope.ListaReportes(
 @Composable
 fun Agregar(
     navController: NavController,
-    buttonModifier: Modifier
+    modifier: Modifier,
+    listadoReportesViewModel: ListadoReportesViewModel
 ){
     Button(
-        onClick = { navController.navigate("formulario") },
-        modifier = buttonModifier.border(
+        onClick = {
+            navController.navigate("formulario")
+            listadoReportesViewModel.clearForm()
+        },
+        modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
@@ -361,11 +365,11 @@ fun Agregar(
 @Composable
 fun Concursos(
     navController: NavController,
-    buttonModifier: Modifier
+    modifier: Modifier
 ){
     Button(
         onClick = { navController.navigate("concurso") },
-        modifier = buttonModifier.border(
+        modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
@@ -386,11 +390,11 @@ fun Concursos(
 @Composable
 fun Reglamentos(
     navController: NavController,
-    buttonModifier: Modifier
+    modifier: Modifier
 ){
     Button(
         onClick = { navController.navigate("reglamentos") },
-        modifier = buttonModifier.border(
+        modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
@@ -411,11 +415,11 @@ fun Reglamentos(
 @Composable
 fun Salir(
     navController: NavController,
-    buttonModifier: Modifier
+    modifier: Modifier
 ){
     Button(
         onClick = { navController.navigate("login") },
-        modifier = buttonModifier.border(
+        modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
@@ -514,12 +518,12 @@ fun ConfirmationDialog(
 @Composable
 fun LineaDivisoria(){
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-    Divider(
-        color = Color(0xFF3E8B75),
-        thickness = 2.dp,
+    HorizontalDivider(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp),
+        thickness = 2.dp,
+        color = Color(0xFF3E8B75)
     )
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
 }

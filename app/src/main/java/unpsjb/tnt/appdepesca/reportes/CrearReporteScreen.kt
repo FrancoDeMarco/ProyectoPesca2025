@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Photo
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberAsyncImagePainter
+import java.io.File
 
 @Composable
 fun CrearReporteScreen(
@@ -62,10 +63,10 @@ fun CrearReporteScreen(
         }
     }
     LaunchedEffect(Unit) {
-        isTitleValido.value = listadoReportesViewModel.state.reportTitle.isNotEmpty()
-        isDescriptionValido.value = listadoReportesViewModel.state.reportDescription.isNotEmpty()
-        isDateValido.value = listadoReportesViewModel.state.reportDate.isNotEmpty()
-        isImagenValido.value = listadoReportesViewModel.state.reportImagenUri?.isNotEmpty() == true
+        isTitleValido.value = false
+        isDescriptionValido.value = false
+        isDateValido.value = false
+        isImagenValido.value = false
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -120,7 +121,9 @@ fun BotonVolverCrear(
         IconButton(
             onClick = {
                 listadoReportesViewModel.clearForm()
-                navController.popBackStack() },
+                listadoReportesViewModel.limpiarImagenSeleccionada()
+                navController.popBackStack()
+                      },
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .size(64.dp)
@@ -313,14 +316,21 @@ fun SiguienteCrear(
 fun AgregarFotoButton(
     viewModel: ListadoReportesViewModel,
     isImagenValido: MutableState<Boolean>
-){
-    val uri = remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
-        selectedUri?.let {
-            uri.value = it
-            viewModel.changeImage(it)
+) {
+    val context = LocalContext.current
+
+    // Launcher para seleccionar la imagen
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val ruta = viewModel.guardarImagenEnInterno(context, it)
+            viewModel.setImagenSeleccionada(ruta)
+            viewModel.changeImage(context, it)
+            isImagenValido.value = true
         }
     }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(
             onClick = { launcher.launch("image/*") },
@@ -330,17 +340,19 @@ fun AgregarFotoButton(
             Spacer(modifier = Modifier.width(8.dp))
             Text("Seleccionar Imagen")
         }
-        uri.value?.let {
-            Spacer(modifier = Modifier.height(8.dp))
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        val rutaImagen = viewModel.imagenSeleccionada.value
+        if (!rutaImagen.isNullOrBlank()) {
             Image(
-                painter = rememberAsyncImagePainter(it),
-                contentDescription = "Imagen del reporte",
+                painter = rememberAsyncImagePainter(model = File(rutaImagen)),
+                contentDescription = "Imagen seleccionada",
                 modifier = Modifier
                     .size(200.dp)
                     .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Crop
             )
-            isImagenValido.value = viewModel.state.reportImagenUri != null//Con esto supuestamente ya no se pierde la imagen al volver a atrás
         }
     }
 }

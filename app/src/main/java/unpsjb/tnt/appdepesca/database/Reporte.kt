@@ -10,7 +10,7 @@ data class Reporte(
     @ColumnInfo val reportTitulo: String,
     @ColumnInfo val reportDescripcion: String,
     @ColumnInfo val reportFecha: String,
-    @ColumnInfo val reportImagenUri: String? = null,
+    @ColumnInfo val reportImagenUri: String?,
     @ColumnInfo val latitud: Double?,
     @ColumnInfo val longitud: Double?
 )

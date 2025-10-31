@@ -1,12 +1,12 @@
 package unpsjb.tnt.appdepesca.reportes
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,10 +15,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.database.ReporteDAO
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.compose.runtime.State
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -38,6 +41,16 @@ class ListadoReportesViewModel(
         _latitud.value = lat
         _longitud.value = lng
     }
+
+
+    private val _imagenSeleccionada = mutableStateOf<String?>(null)
+    val imagenSeleccionada: State<String?> = _imagenSeleccionada
+
+    fun setImagenSeleccionada(uri: String?){
+        _imagenSeleccionada.value = uri
+    }
+
+
     init {
         viewModelScope.launch {
             dao.getAllReportes()
@@ -97,25 +110,30 @@ class ListadoReportesViewModel(
             reportId = 0,
             reportTitle = "",
             reportDescription = "",
-            reportDate = ""
+            reportDate = "",
+            reportImagenUri = null,
+            reportLat = null,
+            reportLng = null
         )
+        limpiarImagenSeleccionada()
     }
 
     //para agregar la imagen
-    fun changeImage(uri: Uri) {
-        _state.value = state.copy(reportImagenUri = uri.toString())
+    fun changeImage(context: Context, uri: Uri) {
+    val rutaInterna = guardarImagenEnInterno(context,uri)
+        _state.value = state.copy(reportImagenUri = rutaInterna)
     }
 
     /////////////////////ELIMINAR REPORTE///////////////////
     fun deleteReporte(reporte: Reporte) {
         viewModelScope.launch {
             dao.deleteReporte(reporte) // elimina el reporte de la BD local
-            deleteReporteFromSifrestore(reporte.reportId) // elimina el reporte de la BD en la nube
+            deleteReporteFromFirestore(reporte.reportId) // elimina el reporte de la BD en la nube
         }
     }
 
     fun obtenerReportePorId(id: Int): Reporte? {
-        return state.report?.find {it.reportId == id}
+        return state.report.find {it.reportId == id}
     }
 
     ////////////EDITAR REPORTE//////
@@ -162,7 +180,7 @@ class ListadoReportesViewModel(
         return reportes.filter { reporte ->
             val fechaReporte: Date? = try {
                 dateFormatter.parse(reporte.reportFecha)?.onlyDate()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
             fechaReporte != null &&
@@ -207,7 +225,7 @@ class ListadoReportesViewModel(
             .document(reporte.reportId.toString()) //usa el mismo ID del reporte
             .set(data)// reemplaza o crea según corresponda
             .addOnSuccessListener { documentReference ->
-                Log.d("Firestore", "Reporte actualizado o creadp con ID: ${reporte.reportId}")
+                Log.d("Firestore", "Reporte actualizado o creado con ID: ${reporte.reportId}")
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al subir reporte", e)
@@ -215,15 +233,38 @@ class ListadoReportesViewModel(
     }
 
     /////////ACTUALIZA A LA BASE DE LA NUBE///////////
-    fun deleteReporteFromSifrestore(reportId: Int){
+    fun deleteReporteFromFirestore(reportId: Int){
         db.collection("reportes")
             .document(reportId.toString()) // usa el mismo ID del reporte
             .delete()// elimina el reporte de la BD en la nube
             .addOnSuccessListener {
-                Log.d("Firestore", "Reporte eliminado con ID: ${reportId}")
+                Log.d("Firestore", "Reporte eliminado con ID: $reportId")
             }
             .addOnFailureListener { e ->
                 Log.e("Firestore", "Error al eliminar reporte", e)
             }
+    }
+
+    /////////GUARDA LA IMAGEN EN EL ALMACENAMIENTO INTERNO///////////
+    fun guardarImagenEnInterno(context: Context, uri: Uri): String? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val nombreArchivo = "reporte_${System.currentTimeMillis()}.jpg"
+            val archivoDestino = File(context.filesDir, nombreArchivo)
+            val outputStream = FileOutputStream(archivoDestino)
+
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+
+            archivoDestino.absolutePath // Ruta persistente
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun limpiarImagenSeleccionada(){
+        _imagenSeleccionada.value = null
     }
 }
