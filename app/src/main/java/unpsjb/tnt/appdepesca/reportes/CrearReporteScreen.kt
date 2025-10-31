@@ -314,11 +314,12 @@ fun AgregarFotoButton(
     viewModel: ListadoReportesViewModel,
     isImagenValido: MutableState<Boolean>
 ){
+    val context = LocalContext.current
     val uri = remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { selectedUri ->
         selectedUri?.let {
             uri.value = it
-            viewModel.changeImage(it)
+            viewModel.changeImage(context, it)
         }
     }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -39,6 +39,7 @@ import coil.compose.rememberAsyncImagePainter
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
 import kotlin.Boolean
+import androidx.core.net.toUri
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
@@ -84,8 +85,6 @@ fun EditarReporteScreen(
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
             EditarImagenReporte(viewModel = listadoReportesViewModel)
-           // EditarMapaReporte(listadoReportesViewModel)
-
             BotonVolver(navController)
             SiguienteEditar(navController, modifier = Modifier)
         }
@@ -221,9 +220,10 @@ fun TituloEditar() {
 @Composable
 fun EditarImagenReporte(viewModel: ListadoReportesViewModel) {
     val state = viewModel.state
+    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            viewModel.changeImage(it)
+            viewModel.changeImage(context, it)
         }
     }
 
@@ -233,7 +233,7 @@ fun EditarImagenReporte(viewModel: ListadoReportesViewModel) {
     ) {
         // Mostrar la imagen si existe
         state.reportImagenUri?.let { uriString ->
-            val imageUri = Uri.parse(uriString)
+            val imageUri = uriString.toUri()
             Image(
                 painter = rememberAsyncImagePainter(imageUri),
                 contentDescription = "Imagen del reporte",

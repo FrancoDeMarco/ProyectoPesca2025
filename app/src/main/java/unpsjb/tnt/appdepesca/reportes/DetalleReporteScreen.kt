@@ -15,12 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -45,7 +41,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import com.google.android.gms.maps.model.LatLng
-import androidx.core.net.toUri
+import coil.compose.rememberAsyncImagePainter
+import java.io.File
 
 
 @Composable
@@ -70,7 +67,23 @@ fun DetalleReporteScreen(
     ) {
         NombreReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
-        ImagenReporte(reporte)
+        /******************Imagen Reporte*******/
+        val rutaImagen = reporte.reportImagenUri
+        if (!rutaImagen.isNullOrBlank()){
+            val archivo = File(rutaImagen)
+            Image(
+                painter = rememberAsyncImagePainter(archivo),
+                contentDescription = "Imagen del reporte",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .padding(vertical = 8.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+        /*********************************************/
+        //ImagenReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -82,7 +95,6 @@ fun DetalleReporteScreen(
             Spacer(modifier = Modifier.height(8.dp))
         }
         UbicacionReporte(reporte, navController) //Mapa con ubicación
-        //BotonVolver(navController)
     }
 }
 
@@ -109,40 +121,6 @@ fun NombreReporte(reporte: Reporte) {
             .padding(bottom = 16.dp),
         textAlign = TextAlign.Center
     )
-}
-
-@Composable
-fun ImagenReporte(reporte: Reporte) {
-    reporte.reportImagenUri?.let {
-        ImagenDesdeUri(it)
-    }
-}
-
-@Composable
-fun ImagenDesdeUri(uriString: String?) {
-    val context = LocalContext.current
-    if (uriString != null) {
-        val uri = uriString.toUri()
-        val inputStream = try {
-            context.contentResolver.openInputStream(uri)
-        } catch (_: Exception) {
-            null
-        }
-        inputStream?.use {
-            val bitmap = BitmapFactory.decodeStream(it)
-            bitmap?.let {
-                Image(
-                    bitmap = it.asImageBitmap(),
-                    contentDescription = "Imagen del reporte",
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)    // Cambia el tamaño de la imagen pero sin que esta se vea cortada
-                        .aspectRatio(it.width.toFloat() / it.height.toFloat())  // Mantiene la proporción original de la imagen
-                        .padding(vertical = 8.dp),
-                    contentScale = ContentScale.Fit //Muestra la imagen entera, sin recortar ni deformar
-                )
-            }
-        }
-    }
 }
 
 @Composable
