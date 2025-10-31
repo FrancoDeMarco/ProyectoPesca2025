@@ -52,16 +52,20 @@ fun CrearReporteScreen(
     var isDescriptionValido = remember { mutableStateOf(false) }
     var isDateValido = remember { mutableStateOf(false) }
     var isImagenValido = remember { mutableStateOf(false) }
-
-    //val formValido = isDateValido.value && isTitleValido.value && isDescriptionValido.value && isImagenValido.value && isMapValido.value
-    //var markerPosition by remember {mutableStateOf<LatLng?>(null)}
+    val formValido by remember {
+        derivedStateOf {
+            isDateValido.value &&
+                    isTitleValido.value &&
+                    isDescriptionValido.value &&
+                    isImagenValido.value
+        }
+    }
     LaunchedEffect(Unit) {
         listadoReportesViewModel.clearForm()
         isTitleValido.value = false
         isDescriptionValido.value = false
         isDateValido.value = false
         isImagenValido.value = false
-        //isMapValido.value = false
     }
     LaunchedEffect(state.reportDate) {
         dateState.value = TextFieldValue(state.reportDate)
@@ -87,8 +91,6 @@ fun CrearReporteScreen(
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
             AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
-            //Mapa(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition})
-
             Spacer(modifier = Modifier.height(20.dp))
             Box(
                 modifier = Modifier
@@ -97,7 +99,10 @@ fun CrearReporteScreen(
             ){
                 BotonVolver(navController)
             }
-            SiguienteCrear(navController, modifier = Modifier)
+            SiguienteCrear(
+                navController = navController,
+                enabled = formValido,
+                modifier = Modifier)
         }
     }
 }
@@ -247,16 +252,24 @@ fun FechaReporte(
 @Composable
 fun SiguienteCrear(
     navController: NavController,
+    enabled: Boolean,
     modifier: Modifier
 ){
     Button(
         onClick = { navController.navigate("seleccionar_ubicacion_crear") },
-        modifier = modifier.border(
-            width = 2.dp,               // grosor del borde
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // importante: que coincida con el shape del botón
+        enabled = enabled,
+        modifier = modifier
+            .border(
+                width = 2.dp,               // grosor del borde
+                //color = Color(0xFF3E8B75),  // color del borde
+                color = if (enabled) Color(0xFF3E8B75) else Color.Gray,
+                shape = RectangleShape      // importante: que coincida con el shape del botón
+            ),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (enabled) Color(0xFF1B2B24) else Color (0xFF2E2E2E),
+            disabledContainerColor = Color(0xFF2E2E2E),
+            disabledContentColor = Color.Gray
         ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
         shape = RectangleShape  //esto lo hace cuadrado
     ) {
         Text(
