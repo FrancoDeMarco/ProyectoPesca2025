@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import coil.compose.rememberAsyncImagePainter
@@ -51,19 +51,24 @@ fun EditarReporteScreen(
     val state = listadoReportesViewModel.state
     val isLoading: Boolean by reporteViewModel.isLoading.observeAsState(initial = false)
     val dateState = remember { mutableStateOf(TextFieldValue(state.reportDate)) }
-
     // Estados de validación
     val isTitleValid = remember { mutableStateOf(false) }
     val isDescriptionValid = remember { mutableStateOf(false) }
     val isDateValid = remember { mutableStateOf(false) }
-
+    val formValido by remember(state) {
+        derivedStateOf {
+            state.reportDate.isNotBlank() &&
+                    state.reportTitle.isNotBlank() &&
+                    state.reportDescription.isNotBlank() &&
+                    !state.reportImagenUri.isNullOrBlank()
+        }
+    }
     // Inicialización de los estados cuando se abre la pantalla
     LaunchedEffect(Unit) {
         isTitleValid.value = state.reportTitle.isNotBlank()
         isDescriptionValid.value = state.reportDescription.isNotBlank()
         isDateValid.value = state.reportDate.isNotBlank()
     }
-
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -74,7 +79,7 @@ fun EditarReporteScreen(
                 .fillMaxSize()
                 .background(color = Color(0xFF1B2B24))
                 .verticalScroll(rememberScrollState())
-                .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -85,8 +90,8 @@ fun EditarReporteScreen(
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
             EditarImagenReporte(viewModel = listadoReportesViewModel)
+            SiguienteEditar(navController, modifier = Modifier, enabled = formValido)
             BotonVolver(navController)
-            SiguienteEditar(navController, modifier = Modifier)
         }
 
     }
@@ -255,21 +260,28 @@ fun EditarImagenReporte(viewModel: ListadoReportesViewModel) {
 @Composable
 fun SiguienteEditar(
     navController: NavController,
+    enabled: Boolean,
     modifier: Modifier
 ){
     Button(
         onClick = { navController.navigate("seleccionar_ubicacion_editar") },
-        modifier = modifier.border(
-            width = 2.dp,               // grosor del borde
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // importante: que coincida con el shape del botón
+        enabled = enabled,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .height(56.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (enabled) Color(0xFF3E8B75) else Color (0xFF2E2E2E),
+            contentColor = Color.White,
+            disabledContainerColor = Color(0xFF2E2E2E),
+            disabledContentColor = Color.Gray
         ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-        shape = RectangleShape  //esto lo hace cuadrado
+        shape = RoundedCornerShape(12.dp),
+        border = if (!enabled) BorderStroke(2.dp, Color.Gray) else null
     ) {
         Text(
-            text = "Siguiente",
-            fontSize = 30.sp // tamaño
+            text = "Seleccionar Ubicación",
+            fontSize = 20.sp // tamaño
         )
     }
 }
