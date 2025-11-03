@@ -115,6 +115,7 @@ fun ListadoReportesScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .navigationBarsPadding() // evita conflicto con la parte inferior de la pantalla
     ) {
         Row(
             modifier = Modifier
