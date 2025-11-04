@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -58,11 +61,7 @@ fun SeleccionarUbicacionCrearScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            CrearUbicacion(
-                isMapValido,
-                listadoReportesViewModel,
-                markerPosition = markerPosition,
-                onMarkerChange = { newPosition -> markerPosition = newPosition })
+            CrearUbicacion(isMapValido, listadoReportesViewModel, markerPosition = markerPosition, onMarkerChange = { newPosition -> markerPosition = newPosition })
             AgregarButton(enabled = isMapValido.value) {
                 listadoReportesViewModel.createReport()
                 listadoReportesViewModel.clearForm()
@@ -117,3 +116,22 @@ fun CrearUbicacion(
     Spacer(modifier = Modifier.height(8.dp))
 }
 
+//////////////BOTÓN AGREGAR REPORTE//////
+@Composable
+fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier
+            .width(250.dp)
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF3E8B75),             // Botón habilitado (verde)
+            disabledContainerColor = Color(0xFF5D776C),     // Botón deshabilitado (gris oscuro)
+            contentColor = Color.White,                     // texto en blanco
+            disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
+        )
+    ) {
+        Text("Agregar Reporte")
+    }
+}

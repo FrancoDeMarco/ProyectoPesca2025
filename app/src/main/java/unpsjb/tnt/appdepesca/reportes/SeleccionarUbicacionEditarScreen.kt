@@ -1,16 +1,17 @@
 package unpsjb.tnt.appdepesca.reportes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -78,34 +81,32 @@ fun EditarUbicacion(
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(markerPosition, 12f)
         }
-        Column(
+        Text(
+            text = "Selecciona la nueva ubicación en el mapa.",
+            style = TextStyle(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF3E8B75)
+            ),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        GoogleMap(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(250.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .border(2.dp, Color(0xFF3E8B75), RoundedCornerShape(16.dp))
-        ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                onMapClick = { latLng ->
-                    markerPosition = latLng
-                    viewModel.changeLocation(latLng.latitude, latLng.longitude)
-                }
-            ) {
-                Marker(
-                    state = MarkerState(position = markerPosition),
-                    title = "Ubicación del reporte",
-                    snippet = "Tocá en otro lugar para movel el marcador"
-                )
+                .fillMaxHeight(0.9f)
+                .clip(RoundedCornerShape(12.dp)),
+            cameraPositionState = cameraPositionState,
+            onMapClick = { latLng ->
+                markerPosition = latLng
+                viewModel.changeLocation(latLng.latitude, latLng.longitude)
             }
+        ) {
+            Marker(
+                state = MarkerState(position = markerPosition),
+                title = "Ubicación del reporte",
+                snippet = "Tocá en otro lugar para movel el marcador"
+            )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Lat: %.5f, Lng: %.5f".format(markerPosition.latitude, markerPosition.longitude),
-            color = Color.White,
-            fontSize = 14.sp
-        )
     } else {
         // Si no hay coordenadas, mostrmamos un mensaje opcional
         Text(
@@ -114,15 +115,16 @@ fun EditarUbicacion(
             fontSize = 14.sp
         )
     }
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
-//////////////BOTON AGREGAR REPORTE//////
+//////////////BOTON EDITAR REPORTE//////
 @Composable
 fun EditarButton( onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth()
+            .width(250.dp)
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF3E8B75),             // Botón habilitado (verde)

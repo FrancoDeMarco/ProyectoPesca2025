@@ -92,18 +92,9 @@ fun CrearReporteScreen(
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
             AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
-            Spacer(modifier = Modifier.height(20.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp, start = 24.dp)
-            ){
-                BotonVolverCrear(navController, listadoReportesViewModel)
-            }
-            SiguienteCrear(
-                navController = navController,
-                enabled = formValido,
-                modifier = Modifier)
+            SiguienteCrear(navController = navController, enabled = formValido, modifier = Modifier)
+            //Spacer(modifier = Modifier.height(20.dp))
+            BotonVolverCrear(navController, listadoReportesViewModel)
         }
     }
 }
@@ -155,25 +146,7 @@ fun TituloReporte() {
     )
 }
 
-//////////////BOTÓN AGREGAR REPORTE//////
-@Composable
-fun AgregarButton(enabled: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF3E8B75),             // Botón habilitado (verde)
-            disabledContainerColor = Color(0xFF5D776C),     // Botón deshabilitado (gris oscuro)
-            contentColor = Color.White,                     // texto en blanco
-            disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
-        )
-    ) {
-        Text("Agregar Reporte")
-    }
-}
+
 
 //////////////NOMBRE DEL REPORTE/////////
 @Composable
