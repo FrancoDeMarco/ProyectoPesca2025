@@ -81,11 +81,10 @@ fun DetalleReporteScreen(
                     .height(250.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .padding(vertical = 8.dp),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Fit
             )
         }
         /*********************************************/
-        //ImagenReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -210,7 +209,6 @@ fun UbicacionReporte(reporte: Reporte, navController: NavController){
                 )
             }
             BotonVolver(navController)
-            //Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
