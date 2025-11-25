@@ -418,8 +418,32 @@ fun Salir(
     navController: NavController,
     modifier: Modifier
 ){
+    var showDialog by remember { mutableStateOf(false) }
+    if (showDialog){
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Salir") },
+            text = { Text("¿Está seguro que desea cerrar sesión?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    navController.navigate("login"){
+                        popUpTo("home") { inclusive = true }
+                    }
+                }) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false}) {
+                    Text("No")
+                }
+            }
+        )
+    }
     Button(
-        onClick = { navController.navigate("login") },
+        //onClick = { navController.navigate("login") },
+        onClick = { showDialog = true },
         modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
