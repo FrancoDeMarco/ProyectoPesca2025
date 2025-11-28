@@ -12,8 +12,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import unpsjb.tnt.appdepesca.concursos.InfoCard
 import unpsjb.tnt.appdepesca.reportes.BotonVolver
+import unpsjb.tnt.appdepesca.ui.components.InfoCard
 
 @Composable
 fun DetalleReglamentoScreen(
