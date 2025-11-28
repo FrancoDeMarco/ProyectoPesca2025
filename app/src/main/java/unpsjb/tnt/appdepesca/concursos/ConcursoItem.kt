@@ -1,11 +1,12 @@
 package unpsjb.tnt.appdepesca.concursos
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,18 +16,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import unpsjb.tnt.appdepesca.database.Concurso
+import unpsjb.tnt.appdepesca.reglamentos.clickAnimation
 
 @Composable
 fun ConcursoItem(concurso: Concurso, onItemClick: () -> Unit) {
-    androidx.compose.material3.Card (
+    Card (
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
-            .clickable { onItemClick()},
-        colors = androidx.compose.material3.CardDefaults.cardColors(
+            .clickAnimation(onClick = onItemClick),
+        colors = CardDefaults.cardColors(
             containerColor = Color(0xFF223029)
         ),
-        elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ){
         Column(modifier = Modifier.padding(16.dp)){
             // Nombre del concurso

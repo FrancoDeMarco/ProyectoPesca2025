@@ -1,6 +1,10 @@
 package unpsjb.tnt.appdepesca.reglamentos
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +15,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import unpsjb.tnt.appdepesca.database.Reglamento
+import androidx.compose.runtime.getValue
 
 @Composable
 fun ReglamentoItem(reglamento: Reglamento, onItemSelected: () -> Unit) {
@@ -22,7 +29,7 @@ fun ReglamentoItem(reglamento: Reglamento, onItemSelected: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 6.dp)
-            .clickable { onItemSelected() },
+            .clickAnimation(onClick = onItemSelected),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF223029)
         ),
@@ -47,4 +54,23 @@ fun ReglamentoItem(reglamento: Reglamento, onItemSelected: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun Modifier.clickAnimation(onClick: () -> Unit): Modifier {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.97f else 1f,
+        animationSpec = tween(120),
+        label = "scaleAnim"
+    )
+    return this
+        .scale(scale)
+        .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick
+        )
 }

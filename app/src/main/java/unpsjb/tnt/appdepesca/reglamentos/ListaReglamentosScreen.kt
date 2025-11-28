@@ -43,8 +43,8 @@ fun ListaReglamentosScreen(
                 }
             }
         }
+        BotonVolver(navController)
     }
-    BotonVolver(navController)
 }
 
 //////////////TITULO/////////////////////
