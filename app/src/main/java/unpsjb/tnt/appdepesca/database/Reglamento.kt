@@ -9,7 +9,7 @@ data class Reglamento(
     @PrimaryKey(autoGenerate = true) val reglamentoId: Int,
     @ColumnInfo val reglamentoNombre: String,
     @ColumnInfo val reglamentoLugar: String,
-    @ColumnInfo val relgamentoFecha: String,
+    @ColumnInfo val reglamentoFecha: String,
     @ColumnInfo val reglamentoDescripcion: String,
     @ColumnInfo val reglamentoEnlaces: List<String>
 )
