@@ -26,6 +26,7 @@ import unpsjb.tnt.appdepesca.reportes.CrearReporteScreen
 import unpsjb.tnt.appdepesca.reportes.ReporteViewModel
 import unpsjb.tnt.appdepesca.login.LoginScreen
 import unpsjb.tnt.appdepesca.login.LoginViewModel
+import unpsjb.tnt.appdepesca.registro.RegistroScreen
 import unpsjb.tnt.appdepesca.reportes.ListadoReportesViewModel
 import unpsjb.tnt.appdepesca.reportes.DetalleReporteScreen
 import unpsjb.tnt.appdepesca.reportes.EditarReporteScreen
@@ -137,7 +138,7 @@ class MainActivity : ComponentActivity() {
                         DetalleReporteScreen(
                             reporteId = reporteId,
                             navController = navController,
-                            listadoReportesViewModel
+                            listadoReportesViewModel = listadoReportesViewModel
                         )
                     }
                     composable("mapa_reportes") {
@@ -149,14 +150,17 @@ class MainActivity : ComponentActivity() {
                     composable("seleccionar_ubicacion_crear") {
                         SeleccionarUbicacionCrearScreen(
                             listadoReportesViewModel = listadoReportesViewModel,
-                            navController
+                            navController = navController
                         )
                     }
                     composable("seleccionar_ubicacion_editar") {
                         SeleccionarUbicacionEditarScreen(
                             listadoReportesViewModel = listadoReportesViewModel,
-                            navController
+                            navController = navController
                         )
+                    }
+                    composable("registro"){
+                        RegistroScreen(navController)
                     }
                 }
             }
