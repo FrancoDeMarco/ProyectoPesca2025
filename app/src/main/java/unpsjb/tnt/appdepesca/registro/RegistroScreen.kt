@@ -22,21 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
-
 @Composable
 fun RegistroScreen(
     navController: NavController,
     viewModel: RegistroViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ){
     val state by viewModel.state.collectAsState()
-
     LaunchedEffect(state.registered) {
         if (state.registered){
             navController.popBackStack() //  volver al login
-
         }
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,18 +41,20 @@ fun RegistroScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text("Crear Cuenta", style = MaterialTheme.typography.headlineMedium)
-
         Spacer(Modifier.height(24.dp))
-
+        OutlinedTextField(
+            value = state.username,
+            onValueChange = { viewModel.onUsernameChange (it) },
+            label = { Text("Nombre de Usuario")},
+            modifier = Modifier.fillMaxWidth()
+        )
         OutlinedTextField(
             value = state.email,
             onValueChange = {viewModel.onEmailChange(it) },
             label = {Text("Email")},
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(Modifier.height(16.dp))
-
         OutlinedTextField(
             value = state.password,
             onValueChange = {viewModel.onPasswordChange(it) },
@@ -64,9 +62,7 @@ fun RegistroScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(Modifier.height(16.dp))
-
         OutlinedTextField(
             value = state.repeatPassword,
             onValueChange = {viewModel.onRepeatPasswordChange(it) },
@@ -74,9 +70,7 @@ fun RegistroScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(Modifier.height(16.dp))
-
         Button(
             onClick = { viewModel.register()},
             enabled = !state.loading,
@@ -91,7 +85,6 @@ fun RegistroScreen(
                 Text("Registrarse")
             }
         }
-
         if (state.error != null) {
             Spacer(Modifier.height(16.dp))
             Text(
@@ -99,9 +92,7 @@ fun RegistroScreen(
                 color = MaterialTheme.colorScheme.error
             )
         }
-
         Spacer(Modifier.height(16.dp))
-
         TextButton(onClick = {
             navController.popBackStack()
         }){
