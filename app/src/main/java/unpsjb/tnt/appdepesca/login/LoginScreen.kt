@@ -32,7 +32,10 @@ import kotlinx.coroutines.launch
 
 // ======== PANTALLA PRINCIPAL ========
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    navController: NavController
+) {
     Box(
         Modifier
             .fillMaxSize()
