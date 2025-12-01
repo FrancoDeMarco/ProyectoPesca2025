@@ -46,13 +46,15 @@ fun RegistroScreen(
             value = state.username,
             onValueChange = { viewModel.onUsernameChange (it) },
             label = { Text("Nombre de Usuario")},
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
         OutlinedTextField(
             value = state.email,
             onValueChange = {viewModel.onEmailChange(it) },
             label = {Text("Email")},
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
         Spacer(Modifier.height(16.dp))
         OutlinedTextField(
