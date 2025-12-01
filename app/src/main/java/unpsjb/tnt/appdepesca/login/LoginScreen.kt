@@ -4,7 +4,6 @@ package unpsjb.tnt.appdepesca.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -23,26 +22,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import kotlinx.coroutines.launch
-import unpsjb.tnt.appdepesca.theme.ProyectoPesca2025Theme
 
 
 // ======== PANTALLA PRINCIPAL ========
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    navController: NavController
+) {
     Box(
         Modifier
             .fillMaxSize()
             .background(color = Color(0xFF1B2B24))
             .padding(16.dp),
     ) {
-        Login(viewModel) {
+        Login(viewModel, navController) {
             navController.navigate("home")
         }
     }
@@ -50,20 +50,20 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
 
 // ======== LoginScreen ========
 @Composable
-fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
+fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSuccesfull: () -> Unit) {
 
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
-    val passwordVisible = remember { mutableStateOf(false) }
     val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val isInvalid: Boolean by viewModel.isInvalid.observeAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
 
     if (isInvalid) {
-        Box(Modifier.fillMaxSize()) {
-            ShowAlertDialog()
-        }
+            ShowAlertDialog {
+                viewModel.resetInvalid()
+            }
+
     }
 
     if (isLoading) {
@@ -82,19 +82,22 @@ fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
             Titulo()
             EmailField(email) { viewModel.onLoginChanged(it, password) }
             Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            PasswordField(password, passwordVisible.value) {
+            PasswordField(password) {
                 viewModel.onLoginChanged(email, it)
             }
             Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             LoginButton(loginEnable) {
                 coroutineScope.launch {
-                    viewModel.onLoginSelected()
-                    if (validarCredenciales(email, password)) {
+                    val success = viewModel.onLoginSelected()
+                    if (success) {
                         onLoginSuccesfull()
-                    } else {
-                        viewModel.credencialesNoValidas()
                     }
                 }
+            }
+            TextButton(onClick = {
+                navController.navigate("registro")
+            }) {
+                Text("Crear cuenta")
             }
         }
     }
@@ -102,27 +105,17 @@ fun Login(viewModel: LoginViewModel, onLoginSuccesfull: () -> Unit) {
 
 // ======== ALERT DIALOG ========
 @Composable
-fun ShowAlertDialog() {
-    val showDialog = remember { mutableStateOf(true) }
-
-    if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = { showDialog.value = false },
-            title = { Text(text = "Error") },
-            text = { Text(text = "Usuario o contraseña incorrecta.") },
-            confirmButton = {
-                Button(onClick = { showDialog.value = false }) {
-                    Text("Cerrar")
-                }
-            }
-        )
-    }
+fun ShowAlertDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Error") },
+        text = { Text(text = "Usuario o contraseña incorrecta.") },
+        confirmButton = {
+            Button(onClick = onDismiss) { Text("Cerrar") }
+        }
+    )
 }
 
-// ======== VALIDACIÓN ========
-fun validarCredenciales(usuario: String, password: String): Boolean {
-    return usuario == "admin@gmail.com" && password == "administrador"
-}
 
 // ======== BOTÓN DE LOGIN ========
 @Composable
@@ -146,19 +139,6 @@ fun LoginButton(enabled: Boolean, onClick: () -> Unit) {
         )
     }
 }
-
-// ======== "¿OLVIDASTE TU CONTRASEÑA?" ========
-@Composable
-fun ForgotPassword(modifier: Modifier) {
-    Text(
-        text = "¿Olvidaste la contraseña?",
-        modifier = modifier.clickable { },
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color(0xFFE1EDE7)
-    )
-}
-
 
 // ======== CAMPO EMAIL ========
 @Composable
@@ -192,16 +172,17 @@ fun EmailField(email: String, onTextChanged: (String) -> Unit) {
 
 // ======== CAMPO CONTRASEÑA ========
 @Composable
-fun PasswordField(password: String, passwordVisible: Boolean, onTextChanged: (String) -> Unit) {
-    val visible = remember { mutableStateOf(passwordVisible) }
+fun PasswordField(password: String, onTextChanged: (String) -> Unit) {
+    var visible by remember { mutableStateOf(false) }
     var focusState by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = password,
         onValueChange = onTextChanged,
-        modifier =  Modifier.fillMaxWidth()
-                    .onFocusChanged { focusState = it.isFocused }, // <- Detecta foco,
+        modifier =  Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState = it.isFocused }, // <- Detecta foco,
         singleLine = true,
-        visualTransformation = if (visible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
         label = {
@@ -213,10 +194,10 @@ fun PasswordField(password: String, passwordVisible: Boolean, onTextChanged: (St
         },
         trailingIcon = { // ícono del ojo
             if (focusState) { // <- Solo muestra el ícono si hay foco
-                IconButton(onClick = { visible.value = !visible.value }) {
+                IconButton(onClick = { visible = !visible }) {
                     Icon(
-                        imageVector = if (visible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (visible.value) "Ocultar contraseña" else "Mostrar contraseña",
+                        imageVector = if (visible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (visible) "Ocultar contraseña" else "Mostrar contraseña",
                         tint = Color.White // Esto lo hace blanco
                     )
                 }
@@ -260,32 +241,4 @@ fun HeaderImage(size: Dp = 300.dp) {
             .size(size)
             .padding(bottom = 16.dp)
     )
-}
-
-//================PREVIEW==============
-@Composable
-fun LoginScreenPreviewUI() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFF1B2B24)) // mismo color que LoginScreen real
-            .padding(horizontal = 16.dp, vertical = 64.dp), // mismo padding que Login()
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        HeaderImage()
-        Titulo()
-        EmailField(email = "", onTextChanged = {})
-        PasswordField(password = "", passwordVisible = false, onTextChanged = {})
-        LoginButton(enabled = true, onClick = {})
-        ForgotPassword(Modifier.align(Alignment.CenterHorizontally))
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginScreenVisualPreview() {
-    ProyectoPesca2025Theme {
-        LoginScreenPreviewUI()
-    }
 }
