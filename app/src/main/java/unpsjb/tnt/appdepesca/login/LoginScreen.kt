@@ -65,7 +65,6 @@ fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSucces
             }
 
     }
-
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -82,9 +81,7 @@ fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSucces
             Titulo()
             EmailField(email) { viewModel.onLoginChanged(it, password) }
             Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            PasswordField(password) {
-                viewModel.onLoginChanged(email, it)
-            }
+            PasswordField(password) { viewModel.onLoginChanged(email, it) }
             Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             LoginButton(loginEnable) {
                 coroutineScope.launch {
@@ -147,10 +144,8 @@ fun RegisterButton(onClick: () -> Unit) {
             .fillMaxWidth()
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF3E8B75),             // activo (verde)
-            //disabledContainerColor = Color(0xFF5D776C),     // grisáceo oscuro cuando está deshabilitado
-            contentColor = Color.White,                     // texto en blanco
-            //disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
+            containerColor = Color(0xFF3E8B75),// activo (verde)
+            contentColor = Color.White,// texto en blanco
         ),
     ) {
         Text(
