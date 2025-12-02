@@ -53,7 +53,7 @@ fun ListadoReportesScreen(
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
     val context = LocalContext.current                                      //Variables para filtrar por fecha
-    val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val fromDate = remember { mutableStateOf<Date?>(null) }
     val toDate = remember { mutableStateOf<Date?>(null) }
     val dateButtonModifier = Modifier //variable para darle groso, color y forma al borde de los botones
@@ -325,7 +325,6 @@ fun LazyListScope.listaReportes(
         items(list) { reporte ->
             ItemReporte(
                 reporte = reporte,
-                listadoReportesViewModel = listadoReportesViewModel,
                 modifier = Modifier.fillMaxWidth(),
                 onEdit = {
                     listadoReportesViewModel.loadReport(reporte) // precarga los datos del reporte

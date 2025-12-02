@@ -19,13 +19,12 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun ItemReporte(
     reporte: Reporte,
-    listadoReportesViewModel: ListadoReportesViewModel,
     modifier: Modifier = Modifier,
     onEdit: (Reporte) -> Unit,
     onDelete: () -> Unit,
     onItemClick: (Reporte) -> Unit // Agregado: Función para mostrar detalles del reporte
 ) {
-    Row(modifier = modifier.clickable { onItemClick(reporte) }) { // Modificado: Agregado el listener de clic
+    Row(modifier = modifier.clickable { onItemClick(reporte) }) { // Modificado: Agregado el listener de click
         Text(
             text = reporte.reportTitulo,
             modifier = Modifier.weight(1f),
