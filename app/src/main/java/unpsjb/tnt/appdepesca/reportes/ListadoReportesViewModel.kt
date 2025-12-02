@@ -22,6 +22,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.compose.runtime.State
+import com.google.firebase.auth.FirebaseAuth
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -120,7 +121,7 @@ class ListadoReportesViewModel(
 
     //para agregar la imagen
     fun changeImage(context: Context, uri: Uri) {
-    val rutaInterna = guardarImagenEnInterno(context,uri)
+        val rutaInterna = guardarImagenEnInterno(context,uri)
         _state.value = state.copy(reportImagenUri = rutaInterna)
     }
 
@@ -213,13 +214,16 @@ class ListadoReportesViewModel(
 
     /////////ACTUALIZA A LA BASE DE LA NUBE///////////
     fun uploadReporteToFirestore(reporte: Reporte) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
         val data = hashMapOf(
             "titulo" to reporte.reportTitulo,
             "descripcion" to reporte.reportDescripcion,
             "fecha" to reporte.reportFecha,
             "imagenUri" to (reporte.reportImagenUri ?: ""),
             "latitud" to (reporte.latitud ?: 0.0),
-            "longitud" to (reporte.longitud ?: 0.0)
+            "longitud" to (reporte.longitud ?: 0.0),
+            "userId" to uid // necesario para filtrar
         )
         db.collection("reportes")
             .document(reporte.reportId.toString()) //usa el mismo ID del reporte
@@ -266,5 +270,39 @@ class ListadoReportesViewModel(
 
     fun limpiarImagenSeleccionada(){
         _imagenSeleccionada.value = null
+    }
+
+    fun cargarReportesDesdeFirestore(userId: String){
+        db.collection("reportes")
+            .whereEqualTo("userId", userId) //Filtra solo reportes del usuario
+            .addSnapshotListener { snapshot, error ->
+                if (error != null){
+                    Log.e("Firestore", "Error escuchando reportes", error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null){
+                    val lista = snapshot.documents.mapNotNull { doc ->
+                        try {
+                            Reporte(
+                                reportId = doc.id.toInt(),
+                                reportTitulo = doc.getString("titulo")?:"",
+                                reportDescripcion = doc.getString("descripcion") ?: "",
+                                reportFecha = doc.getString("fecha")?:"",
+                                reportImagenUri = doc.getString("imagenUri"),
+                                latitud = doc.getDouble("latitud"),
+                                longitud = doc.getDouble("longitud")
+                            )
+                        } catch (e: Exception){
+                            Log.e("Firestore", "Error parseando documento", e)
+                            null
+                        }
+                    }
+
+                    //Actualizar Room para que la UI lo tome desde Room
+                    viewModelScope.launch {
+                        dao.replaceAll(lista)
+                    }
+                }
+            }
     }
 }

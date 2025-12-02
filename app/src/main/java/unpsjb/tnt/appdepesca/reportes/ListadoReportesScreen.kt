@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
@@ -69,6 +70,13 @@ fun ListadoReportesScreen(
         fromDate.value = null
         toDate.value = null
         listadoReportesViewModel.setFechasFiltro(null, null)
+    }
+    //cargar los reportes desde Firestore
+    LaunchedEffect(Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null){
+            listadoReportesViewModel.cargarReportesDesdeFirestore(userId)
+        }
     }
     Column(
         modifier = Modifier
