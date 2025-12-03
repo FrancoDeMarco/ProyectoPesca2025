@@ -22,6 +22,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.compose.runtime.State
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -118,10 +121,19 @@ class ListadoReportesViewModel(
         limpiarImagenSeleccionada()
     }
 
-    //para agregar la imagen
+    //Para agregar la imagen
     fun changeImage(context: Context, uri: Uri) {
-    val rutaInterna = guardarImagenEnInterno(context,uri)
-        _state.value = state.copy(reportImagenUri = rutaInterna)
+        viewModelScope.launch {
+            //1) Subir a Firebase Storage
+            val downloadUrl = subirImagenAFirebase(uri)
+            if (downloadUrl != null) {
+                _state.value = state.copy(reportImagenUri = downloadUrl)
+            } else {
+                //2) Si falla Firebase, usamos copia interna (fallback opcional)
+                val rutaInterna = guardarImagenEnInterno(context, uri)
+                _state.value = state.copy(reportImagenUri = rutaInterna)
+            }
+        }
     }
 
     /////////////////////ELIMINAR REPORTE///////////////////
@@ -266,5 +278,24 @@ class ListadoReportesViewModel(
 
     fun limpiarImagenSeleccionada(){
         _imagenSeleccionada.value = null
+    }
+
+    private suspend fun subirImagenAFirebase(localUri: Uri): String? {
+        return try{
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anon"
+            val filename = "reporte_${System.currentTimeMillis()}.jpg"
+
+            val storageRef = FirebaseStorage.getInstance()
+                .reference
+                .child("reportes/$userId/$filename")
+
+            storageRef.putFile(localUri).await()
+
+            //URL pública para ve la imagen siempre
+            storageRef.downloadUrl.await().toString()
+        }catch (e: Exception){
+            Log.e("FirebaseStorage", "Error subiendo imagen", e)
+            null
+        }
     }
 }
