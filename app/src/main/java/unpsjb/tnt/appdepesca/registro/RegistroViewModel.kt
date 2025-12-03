@@ -16,7 +16,13 @@ data class RegisterUiState(
     val loading: Boolean = false,
     val error: String? = null,
     val registered: Boolean = false
-)
+){
+    val formValid: Boolean
+        get() = username.isNotBlank()
+                && email.isNotBlank()
+                && password.length >= 6
+                && password == repeatPassword
+}
 
 
 class RegistroViewModel: ViewModel() {

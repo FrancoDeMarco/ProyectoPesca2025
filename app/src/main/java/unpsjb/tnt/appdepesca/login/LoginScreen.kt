@@ -65,7 +65,6 @@ fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSucces
             }
 
     }
-
     if (isLoading) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -82,9 +81,7 @@ fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSucces
             Titulo()
             EmailField(email) { viewModel.onLoginChanged(it, password) }
             Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            PasswordField(password) {
-                viewModel.onLoginChanged(email, it)
-            }
+            PasswordField(password) { viewModel.onLoginChanged(email, it) }
             Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
             LoginButton(loginEnable) {
                 coroutineScope.launch {
@@ -94,11 +91,9 @@ fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSucces
                     }
                 }
             }
-            TextButton(onClick = {
-                navController.navigate("registro")
-            }) {
-                Text("Crear cuenta")
-            }
+            RegisterButton(
+                onClick = { navController.navigate("registro")}
+            )
         }
     }
 }
@@ -135,6 +130,26 @@ fun LoginButton(enabled: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = "Iniciar sesión",
+            fontSize = 20.sp,
+        )
+    }
+}
+
+// ======== BOTÓN DE REGISTRO ========
+@Composable
+fun RegisterButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF3E8B75),// activo (verde)
+            contentColor = Color.White,// texto en blanco
+        ),
+    ) {
+        Text(
+            text = "Crear cuenta",
             fontSize = 20.sp,
         )
     }
