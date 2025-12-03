@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -19,12 +18,26 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.sp
 import unpsjb.tnt.appdepesca.login.HeaderImage
 
@@ -67,8 +80,8 @@ fun Registro(viewModel: RegistroViewModel, navController: NavController){
         CampoPassword(password = state.password, onPasswordChange = { viewModel.onPasswordChange(it)})
         Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
         RepetirPasswordField(repeatPassword = state.repeatPassword, onRepeatPasswordChange = { viewModel.onRepeatPasswordChange(it)})
-        Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-        RegistrarseButton(loading = state.loading, onClick = { viewModel.register()})
+        Spacer(modifier = Modifier.height(16.dp))  // Espacio de 16dp entre los campos
+        RegistrarseButton(botonHabilitado = state.formValid, onClick = { viewModel.register()})
         MensajeDeError(error = state.error)
         Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
         TengoCuentaButton(navController)
@@ -98,24 +111,55 @@ fun NombreField(
     OutlinedTextField(
         value = username,
         onValueChange = { onUsernameChange (it) },
-        label = { Text("Nombre de Usuario")},
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        label = {
+            Text(
+                text = "Nombre de Usuario",
+                color = Color(0xFF3E8B75),
+                fontSize = 20.sp
+            )
+        },
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
     )
 }
 
 // ======== EMAIL ========
 @Composable
-fun CampoEmail(
-    email: String,
-    onEmailChange: (String) -> Unit
-){
+fun CampoEmail(email: String, onEmailChange: (String) -> Unit){
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,
-        label = {Text("Email")},
         modifier = Modifier.fillMaxWidth(),
-        singleLine = true
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
+        label = {
+            Text(
+                text = "Email",
+                color = Color(0xFF3E8B75),
+                fontSize = 20.sp
+            )
+        },
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
     )
 }
 
@@ -125,12 +169,45 @@ fun CampoPassword(
     password: String,
     onPasswordChange: (String) -> Unit
 ){
+    var visible by remember { mutableStateOf(false) }
+    var focusState by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = {Text("Contraseña")},
-        visualTransformation = PasswordVisualTransformation(),
-        modifier = Modifier.fillMaxWidth()
+        modifier =  Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState = it.isFocused }, // <- Detecta foco,
+        singleLine = true,
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
+        label = {
+            Text(
+                text = "Contraseña",
+                color = Color(0xFF3E8B75),
+                fontSize = 20.sp
+            )
+        },
+        trailingIcon = { // ícono del ojo
+            if (focusState) { // <- Solo muestra el ícono si hay foco
+                IconButton(onClick = { visible = !visible }) {
+                    Icon(
+                        imageVector = if (visible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (visible) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = Color.White // Esto lo hace blanco
+                    )
+                }
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
+
     )
 }
 
@@ -140,37 +217,72 @@ fun RepetirPasswordField(
     repeatPassword: String,
     onRepeatPasswordChange: (String) -> Unit
 ){
+    var visible by remember { mutableStateOf(false) }
+    var focusState by remember { mutableStateOf(false) }
+
     OutlinedTextField(
         value = repeatPassword,
         onValueChange = onRepeatPasswordChange,
-        label = {Text("Repetir Contraseña")},
-        visualTransformation = PasswordVisualTransformation(),
-        modifier = Modifier.fillMaxWidth()
+        modifier =  Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState = it.isFocused }, // <- Detecta foco,
+        singleLine = true,
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        textStyle = TextStyle(fontSize = 20.sp), // Cambia el tamaño del texto ingresado
+        label = {Text(
+            text = "Repetir Contraseña",
+            color = Color(0xFF3E8B75),
+            fontSize = 20.sp
+        )
+        },
+        trailingIcon = { // ícono del ojo
+            if (focusState) { // <- Solo muestra el ícono si hay foco
+                IconButton(onClick = { visible = !visible }) {
+                    Icon(
+                        imageVector = if (visible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (visible) "Ocultar contraseña" else "Mostrar contraseña",
+                        tint = Color.White // Esto lo hace blanco
+                    )
+                }
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFF1B2B24),
+            unfocusedContainerColor = Color(0xFF1B2B24),
+            focusedTextColor = Color(0xFFFFFFFF),
+            unfocusedTextColor = Color(0xFFFFFFFF),
+            focusedIndicatorColor = Color(0xFFFFFFFF),
+            unfocusedIndicatorColor = Color(0xFF3E8B75),
+        )
+
     )
 }
 
 // ======== BOTÓN PARA REGISTRARSE ========
 @Composable
-fun RegistrarseButton(
-    loading: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+fun RegistrarseButton(botonHabilitado: Boolean, onClick: () -> Unit,
 ){
     Button(
         onClick = onClick,
-        enabled = !loading,
-        modifier = modifier.fillMaxWidth()
+        enabled = botonHabilitado,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF3E8B75),             // activo (verde)
+            disabledContainerColor = Color(0xFF5D776C),     // grisáceo oscuro cuando está deshabilitado
+            contentColor = Color.White,                     // texto en blanco
+            disabledContentColor = Color(0xFFAAAAAA)        // texto gris claro cuando está deshabilitado
+        ),
     ) {
-        if (loading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(22.dp),
-                strokeWidth = 2.dp
-            )
-        } else {
-            Text("Registrarse")
-        }
+        Text(
+            text = "Registrarse",
+            fontSize = 20.sp,
+        )
     }
 }
+
 
 // ======== MENSAJES DE ERROR ========
 @Composable
