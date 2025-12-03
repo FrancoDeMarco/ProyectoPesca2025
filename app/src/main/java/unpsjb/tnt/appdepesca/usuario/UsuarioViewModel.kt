@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 class UsuarioViewModel : ViewModel() {
     private val _username = MutableStateFlow<String?>(null)
     val username = _username.asStateFlow()
-
     fun cargarUsuario(uid: String){
         Firebase.firestore.collection("usuarios")
             .document(uid)

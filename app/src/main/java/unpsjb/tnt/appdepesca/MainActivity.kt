@@ -39,7 +39,15 @@ import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionEditarScreen
 import unpsjb.tnt.appdepesca.ui.components.LayoutBase
 import unpsjb.tnt.appdepesca.usuario.UsuarioViewModel
 
-
+/*
+* Archivos sobre los que trabajar para que se vea el nombre de usuario
+* LayoutBase.kt
+* UserCorner.kt
+* ListadoReportesScreen.kt
+* UsuariosViewModel
+* MainActivity
+* LoginScreen
+* */
 class MainActivity : ComponentActivity() {
     val usuarioViewModel: UsuarioViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,17 +95,17 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 val vm: LoginViewModel = viewModel()
-                LoginScreen(vm, navController)
+                LoginScreen(vm, navController, usuarioViewModel)
 
             }
             composable("home") {
                 LayoutBase(usuarioVM) {
-                    ListadoReportesScreen(listadoReportesVM, navController)
+                    ListadoReportesScreen(listadoReportesVM, navController, usuarioVM)
                 }
             }
             composable("reportes") {
                 LayoutBase(usuarioVM) {
-                    ListadoReportesScreen(listadoReportesVM, navController)
+                    ListadoReportesScreen(listadoReportesVM, navController, usuarioVM)
                 }
             }
             composable("reglamentos") {
@@ -121,21 +129,25 @@ class MainActivity : ComponentActivity() {
             }
             composable("concurso") {
                 val concursosViewModel: ConcursosViewModel = viewModel()
-                ListaConcursosScreen(concursosViewModel, navController)
+                LayoutBase(usuarioVM) {
+                    ListaConcursosScreen(concursosViewModel, navController)
+                }
+
             }
-            composable(
-                "detalleconcurso/{concursoId}",
+            composable("detalleconcurso/{concursoId}",
                 arguments = listOf(navArgument("concursoId") { type = NavType.IntType })
             ) { backStackEntry ->
-                val concursoId =
-                    backStackEntry.arguments?.getInt("concursoId") ?: return@composable
+                val concursoId = backStackEntry.arguments?.getInt("concursoId") ?: return@composable
                 val concursosViewModel: ConcursosViewModel = viewModel()
-                DetalleConcursoScreen(
-                    concursoId = concursoId,
-                    viewModel = concursosViewModel,
-                    navController = navController
-                )
+                LayoutBase(usuarioVM) {
+                    DetalleConcursoScreen(
+                        concursoId = concursoId,
+                        viewModel = concursosViewModel,
+                        navController = navController
+                    )
+                }
             }
+
             composable("formulario") {
                 CrearReporteScreen(listadoReportesVM, navController)
             }
@@ -164,29 +176,39 @@ class MainActivity : ComponentActivity() {
                 arguments = listOf(navArgument("reporteId") { type = NavType.IntType })
             ) {
                 val reporteId = it.arguments?.getInt("reporteId") ?: return@composable
-                DetalleReporteScreen(
-                    reporteId = reporteId,
-                    navController = navController,
-                    listadoReportesViewModel = listadoReportesVM
-                )
+                LayoutBase(usuarioVM) {
+                    DetalleReporteScreen(
+                        reporteId = reporteId,
+                        navController = navController,
+                        listadoReportesViewModel = listadoReportesVM
+                    )
+                }
+
             }
             composable("mapa_reportes") {
-                MapaReportesScreen(
-                    listadoReportesViewModel = listadoReportesVM,
-                    navController = navController
-                )
+                LayoutBase(usuarioVM) {
+                    MapaReportesScreen(
+                        listadoReportesViewModel = listadoReportesVM,
+                        navController = navController
+                    )
+                }
             }
+
             composable("seleccionar_ubicacion_crear") {
-                SeleccionarUbicacionCrearScreen(
-                    listadoReportesViewModel = listadoReportesVM,
-                    navController = navController
-                )
+                LayoutBase(usuarioVM){
+                    SeleccionarUbicacionCrearScreen(
+                        listadoReportesViewModel = listadoReportesVM,
+                        navController = navController
+                    )
+                }
             }
             composable("seleccionar_ubicacion_editar") {
-                SeleccionarUbicacionEditarScreen(
-                    listadoReportesViewModel = listadoReportesVM,
-                    navController = navController
-                )
+                LayoutBase(usuarioVM) {
+                    SeleccionarUbicacionEditarScreen(
+                        listadoReportesViewModel = listadoReportesVM,
+                        navController = navController
+                    )
+                }
             }
             composable("registro"){
                 RegistroScreen(navController)

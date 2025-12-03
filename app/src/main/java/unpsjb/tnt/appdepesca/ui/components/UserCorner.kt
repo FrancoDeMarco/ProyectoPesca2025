@@ -15,7 +15,7 @@ fun UserCorner(username: String?){
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(30.dp)
         ){
             Text(
                 text = "$username",
@@ -23,4 +23,4 @@ fun UserCorner(username: String?){
             )
         }
     }
-}
+}//
