@@ -45,7 +45,7 @@ import kotlin.Boolean
 @Composable
 fun ListadoReportesScreen(
     listadoReportesViewModel: ListadoReportesViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val reportes = listadoReportesViewModel.state.report
     val showDialog = remember { mutableStateOf(false) }

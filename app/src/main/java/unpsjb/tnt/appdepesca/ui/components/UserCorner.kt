@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -15,11 +16,13 @@ fun UserCorner(username: String?){
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(30.dp)
         ){
             Text(
-                text = "$username",
+                text = "Bienvenido, $username",
                 modifier = Modifier.align(Alignment.TopEnd)
+                    .padding(top = 10.dp, end = 0.dp),
+                color = Color.White
             )
         }
     }

@@ -17,4 +17,4 @@ fun LayoutBase(
         content()
         UserCorner(username)
     }
-}
+}//

@@ -26,15 +26,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import unpsjb.tnt.appdepesca.R
 import kotlinx.coroutines.launch
+import unpsjb.tnt.appdepesca.usuario.UsuarioViewModel
 
 
 // ======== PANTALLA PRINCIPAL ========
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navController: NavController
+    navController: NavController,
+    usuarioViewModel: UsuarioViewModel
 ) {
     Box(
         Modifier
@@ -42,7 +45,7 @@ fun LoginScreen(
             .background(color = Color(0xFF1B2B24))
             .padding(16.dp),
     ) {
-        Login(viewModel, navController) {
+        Login(viewModel, navController, usuarioViewModel) {
             navController.navigate("home")
         }
     }
@@ -50,7 +53,12 @@ fun LoginScreen(
 
 // ======== LoginScreen ========
 @Composable
-fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSuccesfull: () -> Unit) {
+fun Login(
+    viewModel: LoginViewModel,
+    navController: NavController,
+    usuarioViewModel: UsuarioViewModel,
+    onLoginSuccesfull: () -> Unit
+) {
 
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
@@ -87,6 +95,12 @@ fun Login(viewModel: LoginViewModel, navController: NavController, onLoginSucces
                 coroutineScope.launch {
                     val success = viewModel.onLoginSelected()
                     if (success) {
+                        //Cargar usuario desde Firestore
+                        val firebaseUser = FirebaseAuth.getInstance().currentUser
+                        if (firebaseUser != null){
+                            usuarioViewModel.cargarUsuario(firebaseUser.uid)
+                        }
+                        // Navegar al home
                         onLoginSuccesfull()
                     }
                 }
