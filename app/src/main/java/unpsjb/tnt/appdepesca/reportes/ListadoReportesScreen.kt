@@ -423,7 +423,7 @@ fun Salir(
         AlertDialog(
             onDismissRequest = { showDialog = false },
             title = { Text("Salir") },
-            text = { Text("¿Está seguro que desea cerrar sesión?") },
+            text = { Text("¿Seguro que desea salir?") },
             confirmButton = {
                 TextButton(onClick = {
                     showDialog = false
@@ -431,12 +431,12 @@ fun Salir(
                         popUpTo("home") { inclusive = true }
                     }
                 }) {
-                    Text("Sí")
+                    Text("Confirmar")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDialog = false}) {
-                    Text("No")
+                    Text("Cancelar")
                 }
             }
         )
