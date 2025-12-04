@@ -108,6 +108,14 @@ fun Login(
             RegisterButton(
                 onClick = { navController.navigate("registro")}
             )
+            TextButton(
+                onClick = { navController.navigate("resetPassword") }
+            ){
+                Text(
+                    text = "Olvidé mi contraseña",
+                    color = Color.White
+                )
+            }
         }
     }
 }
