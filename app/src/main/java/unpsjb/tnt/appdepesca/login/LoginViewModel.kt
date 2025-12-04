@@ -34,7 +34,7 @@ open class LoginViewModel : ViewModel() {
         _loginEnable.value = isValidEmail(email) && isValidPassword(password)
     }
 
-    private fun isValidPassword(password: String): Boolean = password.length >= 6
+    private fun isValidPassword(password: String): Boolean = password.length >= 8
 
     private fun isValidEmail(email: String): Boolean =
         Patterns.EMAIL_ADDRESS.matcher(email).matches()

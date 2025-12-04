@@ -27,6 +27,7 @@ import unpsjb.tnt.appdepesca.reportes.CrearReporteScreen
 import unpsjb.tnt.appdepesca.reportes.ReporteViewModel
 import unpsjb.tnt.appdepesca.login.LoginScreen
 import unpsjb.tnt.appdepesca.login.LoginViewModel
+import unpsjb.tnt.appdepesca.login.ResetPasswordScreen
 import unpsjb.tnt.appdepesca.registro.RegistroScreen
 import unpsjb.tnt.appdepesca.reportes.ListadoReportesViewModel
 import unpsjb.tnt.appdepesca.reportes.DetalleReporteScreen
@@ -208,6 +209,9 @@ class MainActivity : ComponentActivity() {
             }
             composable("registro"){
                 RegistroScreen(navController)
+            }
+            composable("resetPassword") {
+                ResetPasswordScreen(navController)
             }
         }
     }
