@@ -20,7 +20,7 @@ data class RegisterUiState(
     val formValid: Boolean
         get() = username.isNotBlank()
                 && email.isNotBlank()
-                && password.length >= 6
+                && password.length >= 8
                 && password == repeatPassword
 }
 
