@@ -24,8 +24,9 @@ fun DetalleReglamentoScreen(
     val reglamento = viewModel.reglamentos.find { it.reglamentoId == reglamentoId }
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(color = Color(0xFF1B2B24))
+            .fillMaxSize()
+            .statusBarsPadding()
     ) {
         LazyColumn(
             modifier = Modifier

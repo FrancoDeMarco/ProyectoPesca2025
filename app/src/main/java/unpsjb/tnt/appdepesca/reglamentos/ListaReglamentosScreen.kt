@@ -24,8 +24,9 @@ fun ListaReglamentosScreen(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .background(color = Color(0xFF1B2B24))
+            .fillMaxSize()
+            .statusBarsPadding()
     ) {
         Column(
             Modifier

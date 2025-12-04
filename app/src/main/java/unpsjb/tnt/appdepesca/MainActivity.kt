@@ -39,15 +39,6 @@ import unpsjb.tnt.appdepesca.reportes.SeleccionarUbicacionEditarScreen
 import unpsjb.tnt.appdepesca.ui.components.LayoutBase
 import unpsjb.tnt.appdepesca.usuario.UsuarioViewModel
 
-/*
-* Archivos sobre los que trabajar para que se vea el nombre de usuario
-* LayoutBase.kt
-* UserCorner.kt
-* ListadoReportesScreen.kt
-* UsuariosViewModel
-* MainActivity
-* LoginScreen
-* */
 class MainActivity : ComponentActivity() {
     val usuarioViewModel: UsuarioViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,12 +91,12 @@ class MainActivity : ComponentActivity() {
             }
             composable("home") {
                 LayoutBase(usuarioVM) {
-                    ListadoReportesScreen(listadoReportesVM, navController, usuarioVM)
+                    ListadoReportesScreen(listadoReportesVM, navController)
                 }
             }
             composable("reportes") {
                 LayoutBase(usuarioVM) {
-                    ListadoReportesScreen(listadoReportesVM, navController, usuarioVM)
+                    ListadoReportesScreen(listadoReportesVM, navController)
                 }
             }
             composable("reglamentos") {
@@ -121,18 +112,19 @@ class MainActivity : ComponentActivity() {
                 val reglamentoId =
                     backStackEntry.arguments?.getInt("reglamentoId") ?: return@composable
                 val reglamentosViewModel: ReglamentosViewModel = viewModel()
-                DetalleReglamentoScreen(
-                    reglamentoId = reglamentoId,
-                    viewModel = reglamentosViewModel,
-                    navController = navController
-                )
+                LayoutBase(usuarioVM) {
+                    DetalleReglamentoScreen(
+                        reglamentoId = reglamentoId,
+                        viewModel = reglamentosViewModel,
+                        navController = navController
+                    )
+                }
             }
             composable("concurso") {
                 val concursosViewModel: ConcursosViewModel = viewModel()
                 LayoutBase(usuarioVM) {
                     ListaConcursosScreen(concursosViewModel, navController)
                 }
-
             }
             composable("detalleconcurso/{concursoId}",
                 arguments = listOf(navArgument("concursoId") { type = NavType.IntType })
@@ -149,7 +141,9 @@ class MainActivity : ComponentActivity() {
             }
 
             composable("formulario") {
-                CrearReporteScreen(listadoReportesVM, navController)
+                LayoutBase(usuarioVM) {
+                    CrearReporteScreen(listadoReportesVM, navController)
+                }
             }
             composable(
                 "editar_reporte/{reporteId}",
@@ -165,11 +159,13 @@ class MainActivity : ComponentActivity() {
                         listadoReportesVM.loadReport(reporte)
                     }
                 }
-                EditarReporteScreen(
-                    reporteViewModel = reporteViewModel,
-                    listadoReportesViewModel = listadoReportesVM,
-                    navController = navController
-                )
+                LayoutBase(usuarioVM) {
+                    EditarReporteScreen(
+                        reporteViewModel = reporteViewModel,
+                        listadoReportesViewModel = listadoReportesVM,
+                        navController = navController
+                    )
+                }
             }
             composable(
                 "detalle_reporte/{reporteId}",

@@ -36,7 +36,6 @@ import androidx.navigation.NavController
 import unpsjb.tnt.appdepesca.R
 import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
-import unpsjb.tnt.appdepesca.usuario.UsuarioViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -47,7 +46,6 @@ import kotlin.Boolean
 fun ListadoReportesScreen(
     listadoReportesViewModel: ListadoReportesViewModel,
     navController: NavController,
-    usuarioViewModel: UsuarioViewModel
 ) {
     val reportes = listadoReportesViewModel.state.report
     val showDialog = remember { mutableStateOf(false) }
@@ -66,10 +64,6 @@ fun ListadoReportesScreen(
     val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
         containerColor = Color(0xFF1B2B24)
     )
-    val usernameFromVM by usuarioViewModel.username.collectAsState() //Obtener username desde el ViewModel (StateFlow)
-    //Fallback: si no llegó username desde Firestore, internar FirebaseAuth direcamente
-    val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-    val displayNameOrEmail = usernameFromVM ?: firebaseUser?.displayName ?: firebaseUser?.email
 
     LaunchedEffect(Unit) {
         fromDate.value = null
@@ -91,22 +85,6 @@ fun ListadoReportesScreen(
                 ) {
                     HeaderImage(size = 100.dp)
                 }
-                ///////AQUÍ MOSTRAMOS EL NOMBRE (SI EXISTE)///////////
-                if (!displayNameOrEmail.isNullOrBlank()){
-                    Text(
-                        text = displayNameOrEmail,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        ),
-                        textAlign = TextAlign.End
-                    )
-                }
-                //////////////////////////////////////////////////////
                 TituloReportes()
                 MapaEditar(navController)
                 Row(
