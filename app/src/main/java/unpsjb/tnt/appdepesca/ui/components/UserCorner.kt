@@ -20,7 +20,8 @@ fun UserCorner(username: String?){
         ){
             Text(
                 text = "Bienvenido, $username",
-                modifier = Modifier.align(Alignment.TopEnd),
+                modifier = Modifier.align(Alignment.TopEnd)
+                    .padding(top = 10.dp, end = 0.dp),
                 color = Color.White
             )
         }
