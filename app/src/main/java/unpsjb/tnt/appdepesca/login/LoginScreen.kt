@@ -2,6 +2,8 @@ package unpsjb.tnt.appdepesca.login
 
 // ======== IMPORTS ========
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +33,9 @@ import com.google.firebase.auth.FirebaseAuth
 import unpsjb.tnt.appdepesca.R
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.usuario.UsuarioViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 
 
 // ======== PANTALLA PRINCIPAL ========
@@ -66,6 +72,45 @@ fun Login(
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val isInvalid: Boolean by viewModel.isInvalid.observeAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    // Configurar Google Sign-In
+    val gso = remember {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+    }
+
+    val googleSignInClient = remember {
+        GoogleSignIn.getClient(context, gso)
+    }
+
+    // Launcher para Google Sign-In
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                coroutineScope.launch {
+                    val success = viewModel.loginWithGoogle(idToken)
+                    if (success) {
+                        val firebaseUser = FirebaseAuth.getInstance().currentUser
+                        if (firebaseUser != null) {
+                            usuarioViewModel.cargarUsuario(firebaseUser.uid)
+                        }
+                        onLoginSuccesfull
+                    }
+                }
+            }
+        } catch (e: Exception) {
+                e.printStackTrace()
+            }
+    }
+
 
     if (isInvalid) {
             ShowAlertDialog {
@@ -104,6 +149,15 @@ fun Login(
                         onLoginSuccesfull()
                     }
                 }
+            }
+            Button(
+                onClick = {
+                    googleLauncher.launch(googleSignInClient.signInIntent)
+                },
+                colors = ButtonDefaults.buttonColors(Color(0XFF4285F4)),
+                modifier = Modifier.fillMaxWidth()
+            ){
+                Text("Ingresar con Google", color = Color.White)
             }
             RegisterButton(
                 onClick = { navController.navigate("registro")}
