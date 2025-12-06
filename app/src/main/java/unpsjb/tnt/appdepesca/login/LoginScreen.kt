@@ -2,6 +2,7 @@ package unpsjb.tnt.appdepesca.login
 
 // ======== IMPORTS ========
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import unpsjb.tnt.appdepesca.R
 import kotlinx.coroutines.launch
@@ -42,30 +42,12 @@ import com.google.android.gms.common.api.ApiException
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navController: NavController,
-    usuarioViewModel: UsuarioViewModel
-) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFF1B2B24))
-            .padding(16.dp),
-    ) {
-        Login(viewModel, navController, usuarioViewModel) {
-            navController.navigate("home")
-        }
-    }
-}
-
-// ======== LoginScreen ========
-@Composable
-fun Login(
-    viewModel: LoginViewModel,
-    navController: NavController,
     usuarioViewModel: UsuarioViewModel,
-    onLoginSuccesfull: () -> Unit
-) {
+    onLoginSuccesfull: () -> Unit,
+    onNavigatetoRegister: () -> Unit,
+    onNavigateToResetPass: () -> Unit
 
+) {
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
     val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
@@ -81,10 +63,7 @@ fun Login(
             .requestEmail()
             .build()
     }
-
-    val googleSignInClient = remember {
-        GoogleSignIn.getClient(context, gso)
-    }
+    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
 
     // Launcher para Google Sign-In
     val googleLauncher = rememberLauncherForActivityResult(
@@ -96,79 +75,82 @@ fun Login(
             val idToken = account.idToken
             if (idToken != null) {
                 coroutineScope.launch {
-                    val success = viewModel.loginWithGoogle(idToken)
-                    if (success) {
+                    val loginSuccess = viewModel.loginWithGoogle(idToken)
+                    if (loginSuccess) {
                         val firebaseUser = FirebaseAuth.getInstance().currentUser
                         if (firebaseUser != null) {
-                            usuarioViewModel.cargarUsuario(firebaseUser.uid)
+                            //Ahora esperamos a que la función termine
+                            val userSetupSuccess = usuarioViewModel.verificarYCrearUsuariosSiEsNecesario(firebaseUser)
+                            if (userSetupSuccess) {
+                                onLoginSuccesfull() // Navegamos solo si salió all bien
+                            }
                         }
-                        onLoginSuccesfull
                     }
                 }
             }
-        } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        } catch (e: ApiException) {
+            Toast.makeText(context, "Inicio con Google cancelado o fallido", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+        }
     }
 
-
-    if (isInvalid) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1B2B24))
+            .padding(16.dp)
+    ){
+        if (isInvalid) {
             ShowAlertDialog {
                 viewModel.resetInvalid()
             }
 
-    }
-    if (isLoading) {
-        Box(Modifier.fillMaxSize()) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 64.dp, start = 16.dp, end = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HeaderImage()
-            Titulo()
-            EmailField(email) { viewModel.onLoginChanged(it, password) }
-            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            PasswordField(password) { viewModel.onLoginChanged(email, it) }
-            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            LoginButton(loginEnable) {
-                coroutineScope.launch {
-                    val success = viewModel.onLoginSelected()
-                    if (success) {
-                        //Cargar usuario desde Firestore
-                        val firebaseUser = FirebaseAuth.getInstance().currentUser
-                        if (firebaseUser != null){
-                            usuarioViewModel.cargarUsuario(firebaseUser.uid)
+        if (isLoading) {
+            Box(Modifier.fillMaxSize()) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 64.dp, start = 16.dp, end = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                HeaderImage()
+                Titulo()
+                EmailField(email) { viewModel.onLoginChanged(it, password) }
+                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+                PasswordField(password) { viewModel.onLoginChanged(email, it) }
+                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+                LoginButton(loginEnable) {
+                    coroutineScope.launch {
+                        val success = viewModel.onLoginSelected()
+                        if (success) {
+                            //Cargar usuario desde Firestore
+                            val firebaseUser = FirebaseAuth.getInstance().currentUser
+                            if (firebaseUser != null) {
+                                //Aquí también esperamos
+                                val userLoadSuccess = usuarioViewModel.cargarUsuario(firebaseUser.uid)
+                                if (userLoadSuccess){
+                                    onLoginSuccesfull()// Navegar al home
+                                }
+                            }
                         }
-                        // Navegar al home
-                        onLoginSuccesfull()
                     }
                 }
-            }
-            Button(
-                onClick = {
-                    googleLauncher.launch(googleSignInClient.signInIntent)
-                },
-                colors = ButtonDefaults.buttonColors(Color(0XFF4285F4)),
-                modifier = Modifier.fillMaxWidth()
-            ){
-                Text("Ingresar con Google", color = Color.White)
-            }
-            RegisterButton(
-                onClick = { navController.navigate("registro")}
-            )
-            TextButton(
-                onClick = { navController.navigate("resetPassword") }
-            ){
-                Text(
-                    text = "Olvidé mi contraseña",
-                    color = Color.White
-                )
+                Button(
+                    onClick = { googleLauncher.launch(googleSignInClient.signInIntent) },
+                    colors = ButtonDefaults.buttonColors(Color(0XFF4285F4)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Ingresar con Google", color = Color.White)
+                }
+                RegisterButton( onClick = { onNavigatetoRegister() })
+                TextButton( onClick = { onNavigateToResetPass() }) {
+                    Text( text = "Olvidé mi contraseña", color = Color.White)
+                }
             }
         }
     }
