@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 val vm: LoginViewModel = viewModel()
-                val usuarioVM: UsuarioViewModel = viewModel()
+                //val usuarioVM: UsuarioViewModel = viewModel()
                 LoginScreen(
                     viewModel = vm,
                     usuarioViewModel = usuarioVM,
