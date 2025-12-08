@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onNavigatetoRegister = { navController.navigate("registro") },
-                    onNavigateToResetPass = { navController.navigate("resetPassword") }
+                    navController
                 )
             }
             composable("home") {
