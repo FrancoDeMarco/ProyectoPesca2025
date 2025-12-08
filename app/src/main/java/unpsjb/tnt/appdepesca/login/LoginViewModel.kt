@@ -1,10 +1,13 @@
 package unpsjb.tnt.appdepesca.login
 
+import android.R.attr.name
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 open class LoginViewModel : ViewModel() {
@@ -61,4 +64,39 @@ open class LoginViewModel : ViewModel() {
     fun resetInvalid(){
         _isInvalid.value = false
     }
+
+    //Login con Google
+    suspend fun loginWithGoogle(idToken: String): Boolean {
+        _isLoading.value = true
+        return try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            val result = auth.signInWithCredential(credential).await()
+
+            val user = result.user
+            if (user != null){
+                ensureUserInFirestore(user.uid, user.email, user.displayName)
+            }
+
+            _isLoading.value = false
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _isLoading.value = false
+            false
+        }
+    }
+
+    private val firestore = FirebaseFirestore.getInstance()
+    private suspend fun ensureUserInFirestore(uid: String, email: String?, name:String?) {
+        val doc = firestore.collection("usuarios").document(uid).get().await()
+        if (!doc.exists()) {
+            val data = mapOf(
+                "id" to uid,
+                "email" to email,
+                "nombre" to (name ?: "Pescador")
+            )
+            firestore.collection("usuarios").document(uid).set(data).await()
+        }
+    }
 }
+

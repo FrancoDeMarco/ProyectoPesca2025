@@ -87,8 +87,18 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 val vm: LoginViewModel = viewModel()
-                LoginScreen(vm, navController, usuarioViewModel)
-
+                //val usuarioVM: UsuarioViewModel = viewModel()
+                LoginScreen(
+                    viewModel = vm,
+                    usuarioViewModel = usuarioVM,
+                    onLoginSuccesfull = {
+                        navController.navigate("home"){
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                    onNavigatetoRegister = { navController.navigate("registro") },
+                    onNavigateToResetPass = { navController.navigate("resetPassword") }
+                )
             }
             composable("home") {
                 LayoutBase(usuarioVM) {

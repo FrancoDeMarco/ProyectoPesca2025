@@ -12,7 +12,20 @@
           "package_name": "unpsjb.tnt.appdepesca"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1023312494674-d24jr7ucu2uj3g4lubtqp7dhrm5ehjt4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "unpsjb.tnt.appdepesca",
+            "certificate_hash": "ab6a37b10a69c821b5811baaec55575741898137"
+          }
+        },
+        {
+          "client_id": "1023312494674-pfg5frgmfjcm2ns01c764kub5jdnse3g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBEw1X-mUS3ROTBlrt60LDN5kNdcBYmTyA"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1023312494674-pfg5frgmfjcm2ns01c764kub5jdnse3g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

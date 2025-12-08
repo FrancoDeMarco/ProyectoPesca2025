@@ -2,6 +2,9 @@ package unpsjb.tnt.appdepesca.login
 
 // ======== IMPORTS ========
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -25,96 +29,128 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import unpsjb.tnt.appdepesca.R
 import kotlinx.coroutines.launch
 import unpsjb.tnt.appdepesca.usuario.UsuarioViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 
 
 // ======== PANTALLA PRINCIPAL ========
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    navController: NavController,
-    usuarioViewModel: UsuarioViewModel
-) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFF1B2B24))
-            .padding(16.dp),
-    ) {
-        Login(viewModel, navController, usuarioViewModel) {
-            navController.navigate("home")
-        }
-    }
-}
-
-// ======== LoginScreen ========
-@Composable
-fun Login(
-    viewModel: LoginViewModel,
-    navController: NavController,
     usuarioViewModel: UsuarioViewModel,
-    onLoginSuccesfull: () -> Unit
-) {
+    onLoginSuccesfull: () -> Unit,
+    onNavigatetoRegister: () -> Unit,
+    onNavigateToResetPass: () -> Unit
 
+) {
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
     val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
     val isLoading: Boolean by viewModel.isLoading.observeAsState(initial = false)
     val isInvalid: Boolean by viewModel.isInvalid.observeAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    if (isInvalid) {
+    // Configurar Google Sign-In
+    val gso = remember {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+    }
+    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
+
+    // Launcher para Google Sign-In
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                coroutineScope.launch {
+                    val loginSuccess = viewModel.loginWithGoogle(idToken)
+                    if (loginSuccess) {
+                        val firebaseUser = FirebaseAuth.getInstance().currentUser
+                        if (firebaseUser != null) {
+                            //Ahora esperamos a que la función termine
+                            val userSetupSuccess = usuarioViewModel.verificarYCrearUsuariosSiEsNecesario(firebaseUser)
+                            if (userSetupSuccess) {
+                                onLoginSuccesfull() // Navegamos solo si salió all bien
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: ApiException) {
+            Toast.makeText(context, "Inicio con Google cancelado o fallido", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF1B2B24))
+            .padding(16.dp)
+    ){
+        if (isInvalid) {
             ShowAlertDialog {
                 viewModel.resetInvalid()
             }
 
-    }
-    if (isLoading) {
-        Box(Modifier.fillMaxSize()) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 64.dp, start = 16.dp, end = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HeaderImage()
-            Titulo()
-            EmailField(email) { viewModel.onLoginChanged(it, password) }
-            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            PasswordField(password) { viewModel.onLoginChanged(email, it) }
-            Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
-            LoginButton(loginEnable) {
-                coroutineScope.launch {
-                    val success = viewModel.onLoginSelected()
-                    if (success) {
-                        //Cargar usuario desde Firestore
-                        val firebaseUser = FirebaseAuth.getInstance().currentUser
-                        if (firebaseUser != null){
-                            usuarioViewModel.cargarUsuario(firebaseUser.uid)
+        if (isLoading) {
+            Box(Modifier.fillMaxSize()) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 64.dp, start = 16.dp, end = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                HeaderImage()
+                Titulo()
+                EmailField(email) { viewModel.onLoginChanged(it, password) }
+                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+                PasswordField(password) { viewModel.onLoginChanged(email, it) }
+                Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+                LoginButton(loginEnable) {
+                    coroutineScope.launch {
+                        val success = viewModel.onLoginSelected()
+                        if (success) {
+                            //Cargar usuario desde Firestore
+                            val firebaseUser = FirebaseAuth.getInstance().currentUser
+                            if (firebaseUser != null) {
+                                //Aquí también esperamos
+                                val userLoadSuccess = usuarioViewModel.cargarUsuario(firebaseUser.uid)
+                                if (userLoadSuccess){
+                                    onLoginSuccesfull()// Navegar al home
+                                }
+                            }
                         }
-                        // Navegar al home
-                        onLoginSuccesfull()
                     }
                 }
-            }
-            RegisterButton(
-                onClick = { navController.navigate("registro")}
-            )
-            TextButton(
-                onClick = { navController.navigate("resetPassword") }
-            ){
-                Text(
-                    text = "Olvidé mi contraseña",
-                    color = Color.White
-                )
+                Button(
+                    onClick = { googleLauncher.launch(googleSignInClient.signInIntent) },
+                    colors = ButtonDefaults.buttonColors(Color(0XFF4285F4)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Ingresar con Google", color = Color.White)
+                }
+                RegisterButton( onClick = { onNavigatetoRegister() })
+                TextButton( onClick = { onNavigateToResetPass() }) {
+                    Text( text = "Olvidé mi contraseña", color = Color.White)
+                }
             }
         }
     }
