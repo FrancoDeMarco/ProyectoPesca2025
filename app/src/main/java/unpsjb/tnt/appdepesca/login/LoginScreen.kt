@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import unpsjb.tnt.appdepesca.R
 import kotlinx.coroutines.launch
@@ -45,8 +46,7 @@ fun LoginScreen(
     usuarioViewModel: UsuarioViewModel,
     onLoginSuccesfull: () -> Unit,
     onNavigatetoRegister: () -> Unit,
-    onNavigateToResetPass: () -> Unit
-
+    navController: NavController
 ) {
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
@@ -148,7 +148,9 @@ fun LoginScreen(
                     Text("Ingresar con Google", color = Color.White)
                 }
                 RegisterButton( onClick = { onNavigatetoRegister() })
-                TextButton( onClick = { onNavigateToResetPass() }) {
+                TextButton(
+                    onClick = { navController.navigate("resetPassword") }
+                ) {
                     Text( text = "Olvidé mi contraseña", color = Color.White)
                 }
             }
