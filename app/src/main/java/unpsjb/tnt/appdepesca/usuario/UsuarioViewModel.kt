@@ -38,10 +38,10 @@ class UsuarioViewModel : ViewModel() {
 
     suspend fun cargarUsuario(uid: String): Boolean {
         return try {
-            val doc = usuariosCollection.document(uid).get()
-                .await() //Usamos await para obtener el resultado
+            val doc = usuariosCollection.document(uid).get().await() //Usamos await para obtener el resultado
             if (doc != null && doc.exists()) {
-                _username.value = doc.getString("nombre")
+                //Si existe "nombre" (caso Google), lo usa; sino, usa "username" (caso email/clave)
+                _username.value = doc.getString("nombre") ?: doc.getString("username")
                 true // La carga fue exitosa
             } else {
                 _username.value = null
