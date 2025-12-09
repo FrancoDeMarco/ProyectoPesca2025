@@ -12,5 +12,6 @@ data class Reporte(
     @ColumnInfo val reportFecha: String,
     @ColumnInfo val reportImagenUri: String?,
     @ColumnInfo val latitud: Double?,
-    @ColumnInfo val longitud: Double?
+    @ColumnInfo val longitud: Double?,
+    @ColumnInfo val usuarioId: String // Nueva columna para filtrar reportes por usuario
 )

@@ -17,6 +17,6 @@ interface ReporteDAO {
     @Query("SELECT * FROM reporte_table")
     fun getAllReportes(): Flow<List<Reporte>>
 
-    @Query("SELECT * FROM reporte_table WHERE reportId = :id")
-    suspend fun getReporteById(id: Int): Reporte?
+    @Query("SELECT * FROM reporte_table WHERE usuarioId = :uid")
+    fun getReportesByUsuario(uid: String): Flow<List<Reporte>>
 }
