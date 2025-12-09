@@ -22,6 +22,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.compose.runtime.State
+import com.google.firebase.auth.FirebaseAuth
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -41,24 +42,45 @@ class ListadoReportesViewModel(
         _latitud.value = lat
         _longitud.value = lng
     }
-
-
     private val _imagenSeleccionada = mutableStateOf<String?>(null)
     val imagenSeleccionada: State<String?> = _imagenSeleccionada
+
+
 
     fun setImagenSeleccionada(uri: String?){
         _imagenSeleccionada.value = uri
     }
+    private val _uid = MutableStateFlow<String?>(null)
+    val uid: StateFlow<String?> = _uid
 
 
     init {
+        val auth = FirebaseAuth.getInstance()
+
+        auth.addAuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            _uid.value = user?.uid
+        }
         viewModelScope.launch {
-            dao.getAllReportes()
-                .combine(fechasFiltro) { reportes, fechas ->
-                    filterReportesByDates(reportes, fechas.first, fechas.second)
-                }
-                .collectLatest { reportes ->
-                    _state.value = state.copy(report = reportes)
+            combine(
+                uid,
+                fechasFiltro
+            ) { uidValue, fechas -> Pair(uidValue, fechas) }
+                .collectLatest { (uidValue, fechas) ->
+                    if (uidValue == null) {
+                        return@collectLatest //aún no sabemos qué usuario está logueado
+                    }
+                    dao.getReportesByUsuario(uidValue)
+                        .combine(fechasFiltro) { reportes, fechas ->
+                            filterReportesByDates(
+                                reportes,
+                                fechas.first,
+                                fechas.second
+                            )
+                        }
+                        .collectLatest { reportes ->
+                            _state.value = state.copy(report = reportes)
+                        }
                 }
         }
     }
@@ -77,21 +99,22 @@ class ListadoReportesViewModel(
 
     ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
-        val newReportId = getNextId()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         val updatedReport = Reporte(
-            reportId = newReportId,
+            reportId = state.reportId, // Room lo genera
             reportTitulo = state.reportTitle,
             reportDescripcion = state.reportDescription,
             reportFecha = state.reportDate,
             reportImagenUri = state.reportImagenUri,
             latitud = latitud.value,
-            longitud = longitud.value
+            longitud = longitud.value,
+            usuarioId = uid
         )
         println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
         viewModelScope.launch {
             try{
-                dao.insertReporte(updatedReport) //Actualiza la BD local
-                uploadReporteToFirestore(updatedReport) //Actualiza la BD en la nube
+                val id = dao.insertReporte(updatedReport).toInt() //Crea el reporte en la BD local
+                uploadReporteToFirestore(updatedReport.copy(reportId = id)) //Actualiza la BD en la nube
                 clearForm() //Si salió bien, limpia el formulario
                 println("Reporte creado correctamente.")
             }catch(e: Exception){
@@ -99,11 +122,7 @@ class ListadoReportesViewModel(
             }
         }
     }
-    
-    fun getNextId(): Int {
-        val maxId = state.report.maxOfOrNull { it.reportId } ?: 0
-        return maxId + 1
-    }
+
 
     fun clearForm() {
         _state.value = _state.value.copy(
@@ -150,6 +169,7 @@ class ListadoReportesViewModel(
     }
 
     fun updateReport() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         val updatedReport = Reporte(
             reportId = state.reportId,
             reportTitulo = state.reportTitle,
@@ -157,7 +177,8 @@ class ListadoReportesViewModel(
             reportFecha = state.reportDate,
             reportImagenUri = state.reportImagenUri,
             latitud = state.reportLat,
-            longitud = state.reportLng
+            longitud = state.reportLng,
+            usuarioId = uid
         )
         viewModelScope.launch {
             dao.updateReporte(updatedReport) //Actualiza la BD local
@@ -172,7 +193,6 @@ class ListadoReportesViewModel(
         fromDate: Date?,
         toDate: Date?
     ): List<Reporte> {
-        //val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val from = fromDate?.onlyDate()
         val to = toDate?.onlyDate()
@@ -219,7 +239,8 @@ class ListadoReportesViewModel(
             "fecha" to reporte.reportFecha,
             "imagenUri" to (reporte.reportImagenUri ?: ""),
             "latitud" to (reporte.latitud ?: 0.0),
-            "longitud" to (reporte.longitud ?: 0.0)
+            "longitud" to (reporte.longitud ?: 0.0),
+            "usuarioId" to reporte.usuarioId
         )
         db.collection("reportes")
             .document(reporte.reportId.toString()) //usa el mismo ID del reporte
