@@ -23,6 +23,8 @@ import java.util.Date
 import java.util.Locale
 import androidx.compose.runtime.State
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -38,6 +40,7 @@ class ListadoReportesViewModel(
     private val _longitud = MutableStateFlow<Double?>(null)
     val latitud = _latitud.asStateFlow()
     val longitud = _longitud.asStateFlow()
+    private val storage = FirebaseStorage.getInstance().reference
     fun setUbicacion(lat: Double, lng: Double){
         _latitud.value = lat
         _longitud.value = lng
@@ -100,23 +103,38 @@ class ListadoReportesViewModel(
     ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        val updatedReport = Reporte(
-            reportId = state.reportId, // Room lo genera
-            reportTitulo = state.reportTitle,
-            reportDescripcion = state.reportDescription,
-            reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri,
-            latitud = latitud.value,
-            longitud = longitud.value,
-            usuarioId = uid
-        )
-        println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
+        val title = state.reportTitle
+        val description= state.reportDescription
+        val date = state.reportDate
+        val localImagePath = state.reportImagenUri
+        val lat = latitud.value
+        val lng = longitud.value
+
+
         viewModelScope.launch {
+
+            val uploadedUrl = localImagePath?.let { uploadImageToFirebase(it)} // Sube la imagen a Firebase Storage
+
+            val updatedReport = Reporte(
+                reportId = state.reportId, // Room lo genera
+                reportTitulo = title,
+                reportDescripcion = description,
+                reportFecha = date,
+                reportImagenUri = uploadedUrl, // guarda la URL de Firebase
+                latitud = lat,
+                longitud = lng,
+                usuarioId = uid
+            )
+            println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
+
             try{
                 val id = dao.insertReporte(updatedReport).toInt() //Crea el reporte en la BD local
+
                 uploadReporteToFirestore(updatedReport.copy(reportId = id)) //Actualiza la BD en la nube
+
                 clearForm() //Si salió bien, limpia el formulario
                 println("Reporte creado correctamente.")
+
             }catch(e: Exception){
                 Log.e("createReport", "Error al crear el reporte", e)// si hay algún error no se limpia el formulario
             }
@@ -287,5 +305,17 @@ class ListadoReportesViewModel(
 
     fun limpiarImagenSeleccionada(){
         _imagenSeleccionada.value = null
+    }
+
+    suspend fun uploadImageToFirebase(localpath: String): String? {
+        return try {
+            val fileUri = Uri.fromFile(File(localpath))
+            val imageRef = storage.child("reportes/${fileUri.lastPathSegment}")
+            imageRef.putFile(fileUri).await() //Esperar a que la carga termine
+            imageRef.downloadUrl.await().toString() // Luego obtenemos la URL pública
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }
