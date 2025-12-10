@@ -19,4 +19,18 @@ interface ReporteDAO {
 
     @Query("SELECT * FROM reporte_table WHERE usuarioId = :uid")
     fun getReportesByUsuario(uid: String): Flow<List<Reporte>>
+
+
+    //Permite borrar todos los reportes locales y cargarlos desde Firestore
+    @Query("DELETE FROM reporte_table")
+    suspend fun deleteAll()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(reportes: List<Reporte>)
+
+    @Transaction
+    suspend fun replaceAll(reportes: List<Reporte>) {
+        deleteAll()
+        insertAll(reportes)
+    }
 }
