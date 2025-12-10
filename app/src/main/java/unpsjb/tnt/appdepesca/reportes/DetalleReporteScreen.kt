@@ -43,8 +43,6 @@ import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import com.google.android.gms.maps.model.LatLng
 import coil.compose.rememberAsyncImagePainter
-import java.io.File
-
 
 @Composable
 fun DetalleReporteScreen(
@@ -70,11 +68,10 @@ fun DetalleReporteScreen(
         NombreReporte(reporte)
         Spacer(modifier = Modifier.height(8.dp))
         /******************Imagen Reporte*******/
-        val rutaImagen = reporte.reportImagenUri
-        if (!rutaImagen.isNullOrBlank()){
-            val archivo = File(rutaImagen)
+        val imagenUrl = reporte.reportImagenUri
+        if (!imagenUrl.isNullOrBlank()){
             Image(
-                painter = rememberAsyncImagePainter(archivo),
+                painter = rememberAsyncImagePainter(model = imagenUrl),
                 contentDescription = "Imagen del reporte",
                 modifier = Modifier
                     .fillMaxWidth()

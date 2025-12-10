@@ -93,7 +93,6 @@ fun CrearReporteScreen(
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
             AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
             SiguienteCrear(navController = navController, enabled = formValido, modifier = Modifier)
-            //Spacer(modifier = Modifier.height(20.dp))
             BotonVolverCrear(navController, listadoReportesViewModel)
         }
     }
