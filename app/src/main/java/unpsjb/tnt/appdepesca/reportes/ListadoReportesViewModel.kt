@@ -47,8 +47,10 @@ class ListadoReportesViewModel(
     }
     private val _imagenSeleccionada = mutableStateOf<String?>(null)
     val imagenSeleccionada: State<String?> = _imagenSeleccionada
-
-
+    private val _ordenDesc = MutableStateFlow(true)
+    val ordenDesc: StateFlow<Boolean> = _ordenDesc
+    private val _limite = MutableStateFlow(20)
+    val limite: StateFlow<Int> = _limite.asStateFlow()
 
     fun setImagenSeleccionada(uri: String?){
         _imagenSeleccionada.value = uri
@@ -56,7 +58,7 @@ class ListadoReportesViewModel(
     private val _uid = MutableStateFlow<String?>(null)
     val uid: StateFlow<String?> = _uid
 
-
+    ///////////////CORAZÓN DEL VIEWMODEL/////////////////////////
     init {
         val auth = FirebaseAuth.getInstance()
 
@@ -67,17 +69,18 @@ class ListadoReportesViewModel(
         viewModelScope.launch {
             combine(
                 uid,
-                fechasFiltro
-            ) { uidValue, fechas -> Pair(uidValue, fechas) }
-                .collectLatest { (uidValue, fechas) ->
-                    if (uidValue == null) {
-                        return@collectLatest //aún no sabemos qué usuario está logueado
-                    }
-                    if (uidValue == null){
-                        return@collectLatest
-                    }
-                    syncFromSirestore(uidValue) //Sincronizo con la BD en la nube
-                    dao.getReportesByUsuario(uidValue)
+                fechasFiltro,
+                ordenDesc
+            ) { uidValue, fechas, desc -> Triple(uidValue, fechas, desc) }
+                .collectLatest { (uidValue, fechas, desc) ->
+                    if (uidValue == null) return@collectLatest //aún no sabemos qué usuario está logueado
+                    syncFromFirestore(uidValue)
+                    val flowBase = if (desc)
+                        dao.getReportesByUsuarioOrdenadosPorFechaDesc(uidValue)
+                    else
+                        dao.getReportesByUsuarioOrdenadosPorFechaAsc(uidValue)
+
+                    flowBase
                         .combine(fechasFiltro) { reportes, fechas ->
                             filterReportesByDates(
                                 reportes,
@@ -85,8 +88,8 @@ class ListadoReportesViewModel(
                                 fechas.second
                             )
                         }
-                        .collectLatest { reportes ->
-                            _state.value = state.copy(report = reportes)
+                        .collectLatest { reportesFiltrados -> // Actualiza el estado con los reportes filtrados
+                            _state.value = state.copy(report = reportesFiltrados.take(_limite.value))// solo muestra 20 reportes por defecto
                         }
                 }
         }
@@ -183,7 +186,7 @@ class ListadoReportesViewModel(
             reportId = reporte.reportId,
             reportTitle = reporte.reportTitulo,
             reportDescription = reporte.reportDescripcion,
-            reportDate = reporte.reportFecha,
+            reportDate = reporte.reportFecha.toString(),
             reportImagenUri = reporte.reportImagenUri,
             reportLat = reporte.latitud,
             reportLng = reporte.longitud
@@ -323,7 +326,8 @@ class ListadoReportesViewModel(
         }
     }
 
-    private fun syncFromSirestore(uid: String){
+    /////////SINCRONIZA CON LA BASE DE DATOS EN LA NUBE///////////
+    private fun syncFromFirestore(uid: String){
         db.collection("reportes")
             .whereEqualTo("usuarioId", uid)
             .addSnapshotListener { snapshot, error ->
@@ -353,5 +357,15 @@ class ListadoReportesViewModel(
                     dao.replaceAll(lista)
                 }
             }
+    }
+
+    /////////Para cambiar el orden de la lista///////////////
+    fun toggleOrden(){
+        _ordenDesc.value = !_ordenDesc.value
+    }
+
+    /////////PARA CARGAR MÁS REPORTES///////////////
+    fun cargarMas(){
+        _limite.value += 6
     }
 }

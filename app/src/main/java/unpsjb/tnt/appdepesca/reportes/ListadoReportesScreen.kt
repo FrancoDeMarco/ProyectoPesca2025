@@ -98,17 +98,45 @@ fun ListadoReportesScreen(
                     Hasta(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
                     Refrescar(fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors)
                 }
-                Row(
+                Row (
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
-                ) {
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.End
+                ){
+                    val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
+                    TextButton(onClick = { listadoReportesViewModel.toggleOrden()}) {
+                        Text(
+                            if (ordenDesc.value) "Menor a mayor" else "Mayor a menor",
+                            color = Color.White
+                        )
+                    }
                     Cabecera()
                 }
                 LineaDivisoria()
-
             }
             listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
+
+            //////////////// PARA CARGAR 20 REPORTES MÁS /////////////////////
+            item {
+                val limite = listadoReportesViewModel.limite.collectAsState(initial = 20).value
+                if (reportes.size >= limite){
+                    LaunchedEffect(reportes.size) {
+                        listadoReportesViewModel.cargarMas()
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Text(
+                            "Cargando más reportes...",
+                            color = Color.White
+                        )
+                    }
+                }
+            }
         }
     }
     Box(
