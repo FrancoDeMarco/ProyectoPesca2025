@@ -117,23 +117,24 @@ fun ListadoReportesScreen(
             }
             listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
 
-            //////////////// PARA CARGAR 20 REPORTES MÁS /////////////////////
+            //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
             item {
-                val limite = listadoReportesViewModel.limite.collectAsState(initial = 20).value
+                val limite = listadoReportesViewModel.limite.collectAsState().value
                 if (reportes.size >= limite){
-                    LaunchedEffect(reportes.size) {
-                        listadoReportesViewModel.cargarMas()
-                    }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ){
-                        Text(
-                            "Cargando más reportes...",
-                            color = Color.White
-                        )
+                        Button(
+                            onClick = { listadoReportesViewModel.cargarMas()},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF1B2B24)
+                            )
+                        ){
+                            Text("Cargar 3 reportes más", color = Color.White)
+                        }
                     }
                 }
             }

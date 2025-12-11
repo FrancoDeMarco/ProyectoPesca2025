@@ -49,7 +49,7 @@ class ListadoReportesViewModel(
     val imagenSeleccionada: State<String?> = _imagenSeleccionada
     private val _ordenDesc = MutableStateFlow(true)
     val ordenDesc: StateFlow<Boolean> = _ordenDesc
-    private val _limite = MutableStateFlow(20)
+    private val _limite = MutableStateFlow(3) // 3 por defecto
     val limite: StateFlow<Int> = _limite.asStateFlow()
 
     fun setImagenSeleccionada(uri: String?){
@@ -57,6 +57,18 @@ class ListadoReportesViewModel(
     }
     private val _uid = MutableStateFlow<String?>(null)
     val uid: StateFlow<String?> = _uid
+
+    /////////PARA CARGAR MÁS REPORTES///////////////
+    fun cargarMas(){
+        _limite.value += 3
+    }
+
+    data class Parametros(
+        val uid: String,
+        val fechas: Pair<Date?, Date?>,
+        val desc: Boolean,
+        val limite: Int
+    )
 
     ///////////////CORAZÓN DEL VIEWMODEL/////////////////////////
     init {
@@ -70,26 +82,34 @@ class ListadoReportesViewModel(
             combine(
                 uid,
                 fechasFiltro,
-                ordenDesc
-            ) { uidValue, fechas, desc -> Triple(uidValue, fechas, desc) }
-                .collectLatest { (uidValue, fechas, desc) ->
-                    if (uidValue == null) return@collectLatest //aún no sabemos qué usuario está logueado
-                    syncFromFirestore(uidValue)
-                    val flowBase = if (desc)
-                        dao.getReportesByUsuarioOrdenadosPorFechaDesc(uidValue)
+                ordenDesc,
+                limite
+            ) { uidValue, fechas, desc, limit ->
+                if (uidValue == null) return@combine null
+                Parametros(uidValue, fechas, desc, limit)
+            }.collectLatest { params ->
+                    if (params == null) return@collectLatest //aún no sabemos qué usuario está logueado
+                    // Traer datos de Firestore hacia Room
+                    syncFromFirestore(params.uid)
+                    // Elegir orden ASC/DESC
+                    val flowBase =
+                        if (params.desc)
+                        dao.getReportesByUsuarioOrdenadosPorFechaDesc(params.uid)
                     else
-                        dao.getReportesByUsuarioOrdenadosPorFechaAsc(uidValue)
-
+                        dao.getReportesByUsuarioOrdenadosPorFechaAsc(params.uid)
+                    // Combinar con fechas
                     flowBase
-                        .combine(fechasFiltro) { reportes, fechas ->
+                        .combine(fechasFiltro) { reportes, fechasActuales ->
                             filterReportesByDates(
                                 reportes,
-                                fechas.first,
-                                fechas.second
+                                fechasActuales.first,
+                                fechasActuales.second
                             )
                         }
                         .collectLatest { reportesFiltrados -> // Actualiza el estado con los reportes filtrados
-                            _state.value = state.copy(report = reportesFiltrados.take(_limite.value))// solo muestra 20 reportes por defecto
+                            _state.value = state.copy(
+                                report = reportesFiltrados.take(params.limite)// solo muestra 3 reportes por defecto
+                            )
                         }
                 }
         }
@@ -364,8 +384,4 @@ class ListadoReportesViewModel(
         _ordenDesc.value = !_ordenDesc.value
     }
 
-    /////////PARA CARGAR MÁS REPORTES///////////////
-    fun cargarMas(){
-        _limite.value += 6
-    }
 }
