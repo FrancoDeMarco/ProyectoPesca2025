@@ -73,6 +73,10 @@ class ListadoReportesViewModel(
                     if (uidValue == null) {
                         return@collectLatest //aún no sabemos qué usuario está logueado
                     }
+                    if (uidValue == null){
+                        return@collectLatest
+                    }
+                    syncFromSirestore(uidValue) //Sincronizo con la BD en la nube
                     dao.getReportesByUsuario(uidValue)
                         .combine(fechasFiltro) { reportes, fechas ->
                             filterReportesByDates(
@@ -317,5 +321,37 @@ class ListadoReportesViewModel(
             e.printStackTrace()
             null
         }
+    }
+
+    private fun syncFromSirestore(uid: String){
+        db.collection("reportes")
+            .whereEqualTo("usuarioId", uid)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("FirestoreSync", "Error escuchando Firestore", error)
+                    return@addSnapshotListener
+                }
+                val lista = snapshot?.documents?.mapNotNull { doc ->
+                    try {
+                        Reporte(
+                            reportId = doc.id.toInt(),
+                            reportTitulo = doc.getString("titulo") ?: "",
+                            reportDescripcion = doc.getString("descripcion") ?: "",
+                            reportFecha = doc.getString("fecha") ?: "",
+                            reportImagenUri = doc.getString("imagenUri"),
+                            latitud = doc.getDouble("latitud"),
+                            longitud = doc.getDouble("longitud"),
+                            usuarioId = doc.getString("usuarioId") ?: ""
+                        )
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                } ?: emptyList()
+                // Actualiza Room con esta lista
+                viewModelScope.launch {
+                    dao.replaceAll(lista)
+                }
+            }
     }
 }
