@@ -98,17 +98,46 @@ fun ListadoReportesScreen(
                     Hasta(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
                     Refrescar(fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors)
                 }
-                Row(
+                Row (
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 8.dp, end = 16.dp)
                         .fillMaxWidth()
-                ) {
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.End
+                ){
+                    val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
+                    TextButton(onClick = { listadoReportesViewModel.toggleOrden()}) {
+                        Text(
+                            if (ordenDesc.value) "Menor a mayor" else "Mayor a menor",
+                            color = Color.White
+                        )
+                    }
                     Cabecera()
                 }
                 LineaDivisoria()
-
             }
             listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
+
+            //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
+            item {
+                val limite = listadoReportesViewModel.limite.collectAsState().value
+                if (reportes.size >= limite){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Button(
+                            onClick = { listadoReportesViewModel.cargarMas()},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF1B2B24)
+                            )
+                        ){
+                            Text("Cargar 3 reportes más", color = Color.White)
+                        }
+                    }
+                }
+            }
         }
     }
     Box(

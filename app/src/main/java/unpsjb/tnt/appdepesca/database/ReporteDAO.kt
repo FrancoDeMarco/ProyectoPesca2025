@@ -33,4 +33,11 @@ interface ReporteDAO {
         deleteAll()
         insertAll(reportes)
     }
+
+    @Query("SELECT * FROM reporte_table WHERE usuarioId = :uid ORDER BY reportFecha DESC")
+    fun getReportesByUsuarioOrdenadosPorFechaDesc(uid: String): Flow<List<Reporte>>
+
+    @Query("SELECT * FROM reporte_table WHERE usuarioId = :uid ORDER BY reportFecha ASC")
+    fun getReportesByUsuarioOrdenadosPorFechaAsc(uid: String): Flow<List<Reporte>>
+
 }
