@@ -9,5 +9,5 @@ data class Evento(
     val fecha: String? = null,
     val bases: String? = null,
     val premio: String? = null,
-    val enlaces: List<String>? = null
+    val enlaces: List<String>? = emptyList()
 )

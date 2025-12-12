@@ -1,5 +1,6 @@
 package unpsjb.tnt.appdepesca.eventos
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,12 +18,18 @@ class ListadoEventosViewModel: ViewModel(){
     init {
         firestore.collection("eventos")
             .addSnapshotListener { snapshot, error ->
-                if(error != null) return@addSnapshotListener
-
+                if(error != null) {
+                    Log.e("ListadoEventosViewModel", "Error al obtener eventos", error)
+                    return@addSnapshotListener
+                }
                 val lista = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(Evento::class.java)?.copy(id = doc.id)
+                    try{
+                        doc.toObject(Evento::class.java)?.copy(id = doc.id)
+                    } catch (e: Exception){
+                        Log.e("ListadoEventosViewModel", "Documento corruputo: {$doc.id}", e)
+                        null// Ignora documentos que no se pueden convertir
+                    }
                 } ?: emptyList()
-
                 _eventos.value = lista
                 }
             }
