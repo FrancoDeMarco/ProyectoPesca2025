@@ -63,6 +63,7 @@ dependencies {
 
     //Para iniciar sesión con cuenta de Google
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation(libs.androidx.benchmark.traceprocessor.android)
 
     //Tests
     testImplementation(libs.junit)
