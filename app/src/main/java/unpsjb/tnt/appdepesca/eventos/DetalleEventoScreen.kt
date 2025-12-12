@@ -23,16 +23,27 @@ import unpsjb.tnt.appdepesca.ui.components.InfoCard
 @Composable
 fun DetalleEventoScreen(
     eventoId: String,
-    viewModel: ListadoEventosViewModel,
+    listadoEventosViewModel: ListadoEventosViewModel,
     navController: NavController
 ){
-    val evento = viewModel.eventos.collectAsState().value.find { it.id == eventoId}
-
+    val evento = listadoEventosViewModel.eventos
+        .collectAsState()
+        .value
+        .find { it.id == eventoId }
     Box(
         modifier = Modifier
             .background(Color(0xFF1B2B24))
             .fillMaxSize()
     ){
+        // Si el evento no cargó, muestra un mensaje
+        if (evento == null){
+            Text(
+                text = "Cargando evento...",
+                color = Color.White,
+                fontSize = 24.sp
+            )
+        }
+        // Esto solo cuando el evento existe
         LazyColumn(Modifier.padding(16.dp)) {
             item {
                 Text(

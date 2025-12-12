@@ -53,8 +53,8 @@ fun ListadoEventosScreen(
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(filtrados){ evento ->
-                    EventoItem(evento) {
-                        navController.navigate("detalleEvento/${evento.id}")
+                    EventoItem(evento) { id ->
+                        navController.navigate("detalleEvento/$id")
                     }
                 }
             }
@@ -100,12 +100,12 @@ fun FiltrosEventos(
 }
 
 @Composable
-fun EventoItem(evento: Evento, onClick: () -> Unit){
+fun EventoItem(evento: Evento, onClick: (String) -> Unit){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .clickAnimation(onClick),
+            .clickAnimation{onClick(evento.id)},
         colors = CardDefaults.cardColors(containerColor = Color(0xFF223029))
     ){
         Column(Modifier.padding(16.dp)){

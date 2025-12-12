@@ -22,6 +22,7 @@ import unpsjb.tnt.appdepesca.concursos.ListaConcursosScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
 import unpsjb.tnt.appdepesca.concursos.DetalleConcursoScreen
 import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
+import unpsjb.tnt.appdepesca.eventos.DetalleEventoScreen
 import unpsjb.tnt.appdepesca.eventos.ListadoEventosViewModel
 import unpsjb.tnt.appdepesca.eventos.ListadoEventosScreen
 import unpsjb.tnt.appdepesca.reportes.ListadoReportesScreen
@@ -233,8 +234,21 @@ class MainActivity : ComponentActivity() {
                         listadoEventosViewModel = listadoEventosViewModel
                     )
                 }
-
             }
+            composable (
+                "detalleEvento/{eventoId}",
+                arguments = listOf(navArgument("eventoId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                val eventoId = backStackEntry.arguments?.getString("eventoId") ?: return@composable
+                LayoutBase(usuarioVM) {
+                    DetalleEventoScreen(
+                        eventoId = eventoId,
+                        listadoEventosViewModel = listadoEventosViewModel,
+                        navController = navController
+                    )
+                }
+            }
+
         }
     }
 }
