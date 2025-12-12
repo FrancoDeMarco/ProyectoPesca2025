@@ -18,21 +18,25 @@ class ListadoEventosViewModel: ViewModel(){
     init {
         firestore.collection("eventos")
             .addSnapshotListener { snapshot, error ->
-                if(error != null) {
-                    Log.e("ListadoEventosViewModel", "Error al obtener eventos", error)
-                    return@addSnapshotListener
-                }
+                if(error != null) return@addSnapshotListener
+
                 val lista = snapshot?.documents?.mapNotNull { doc ->
-                    try{
-                        doc.toObject(Evento::class.java)?.copy(id = doc.id)
-                    } catch (e: Exception){
-                        Log.e("ListadoEventosViewModel", "Documento corruputo: {$doc.id}", e)
-                        null// Ignora documentos que no se pueden convertir
-                    }
+                    val data = doc.data ?: return@mapNotNull null
+                    Evento(
+                        id = doc.id,
+                        titulo = data["titulo"] as? String?: "",
+                        descripcion = data["descripcion"] as? String?: "",
+                        categoria = data["categoria"] as? String?: "",
+                        lugar = data["lugar"] as? String,
+                        fecha = data["fecha"] as? String,
+                        bases = data["bases"] as? String,
+                        premio = data["premio"] as? String,
+                        enlaces = (data["enlaces"] as? List<*>)?.filterIsInstance<String>()?:emptyList()
+                        )
                 } ?: emptyList()
                 _eventos.value = lista
-                }
             }
+    }
     fun filtrarPorCategoria(cat: String){
         _categoriaSeleccionada.value = cat
 
