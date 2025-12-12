@@ -5,7 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class EventosViewModel: ViewModel(){
+class ListadoEventosViewModel: ViewModel(){
     private val firestore = FirebaseFirestore.getInstance()
 
     private val _eventos = MutableStateFlow<List<Evento>>(emptyList())

@@ -27,11 +27,11 @@ import androidx.compose.foundation.lazy.items
 
 @Composable
 fun ListadoEventosScreen(
-    viewModel: EventosViewModel,
-    navController: NavController
+    navController: NavController,
+    listadoEventosViewModel: ListadoEventosViewModel
 ) {
-    val eventos by viewModel.eventos.collectAsState()
-    val categoria by viewModel.categoriaSeleccionada.collectAsState()
+    val eventos by listadoEventosViewModel.eventos.collectAsState()
+    val categoria by listadoEventosViewModel.categoriaSeleccionada.collectAsState()
 
     val filtrados = when(categoria){
         "todos" -> eventos
@@ -48,7 +48,7 @@ fun ListadoEventosScreen(
 
             FiltrosEventos(
                 categoriaActual = categoria,
-                onCategoriaClick = { viewModel.filtrarPorCategoria(it) }
+                onCategoriaClick = { listadoEventosViewModel.filtrarPorCategoria(it) }
             )
 
             LazyColumn(modifier = Modifier.weight(1f)) {

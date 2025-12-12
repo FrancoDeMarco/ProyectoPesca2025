@@ -23,7 +23,7 @@ import unpsjb.tnt.appdepesca.ui.components.InfoCard
 @Composable
 fun DetalleEventoScreen(
     eventoId: String,
-    viewModel: EventosViewModel,
+    viewModel: ListadoEventosViewModel,
     navController: NavController
 ){
     val evento = viewModel.eventos.collectAsState().value.find { it.id == eventoId}

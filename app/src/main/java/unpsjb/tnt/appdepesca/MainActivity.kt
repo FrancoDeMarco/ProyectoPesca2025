@@ -22,6 +22,8 @@ import unpsjb.tnt.appdepesca.concursos.ListaConcursosScreen
 import unpsjb.tnt.appdepesca.concursos.ConcursosViewModel
 import unpsjb.tnt.appdepesca.concursos.DetalleConcursoScreen
 import unpsjb.tnt.appdepesca.database.PescaRoomDatabase
+import unpsjb.tnt.appdepesca.eventos.ListadoEventosViewModel
+import unpsjb.tnt.appdepesca.eventos.ListadoEventosScreen
 import unpsjb.tnt.appdepesca.reportes.ListadoReportesScreen
 import unpsjb.tnt.appdepesca.reportes.CrearReporteScreen
 import unpsjb.tnt.appdepesca.reportes.ReporteViewModel
@@ -69,10 +71,10 @@ class MainActivity : ComponentActivity() {
         }
 
         val listadoReportesViewModel: ListadoReportesViewModel by viewModels { viewModelFactory }
-
+        val listadoEventosViewModel: ListadoEventosViewModel by viewModels()
         setContent {
             ProyectoPesca2023Theme {
-                AppNavigation(usuarioViewModel, listadoReportesViewModel)
+                AppNavigation(usuarioViewModel, listadoReportesViewModel, listadoEventosViewModel)
 
             }
         }
@@ -81,7 +83,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun AppNavigation(
         usuarioVM: UsuarioViewModel,
-        listadoReportesVM: ListadoReportesViewModel
+        listadoReportesVM: ListadoReportesViewModel,
+        listadoEventosViewModel: ListadoEventosViewModel
     ){
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "login") {
@@ -222,6 +225,15 @@ class MainActivity : ComponentActivity() {
             }
             composable("resetPassword") {
                 ResetPasswordScreen(navController)
+            }
+            composable("eventos"){
+                LayoutBase(usuarioVM) {
+                    ListadoEventosScreen(
+                        navController = navController,
+                        listadoEventosViewModel = listadoEventosViewModel
+                    )
+                }
+
             }
         }
     }
