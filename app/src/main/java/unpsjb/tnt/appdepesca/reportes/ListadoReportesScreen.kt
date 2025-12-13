@@ -95,38 +95,26 @@ fun ListadoReportesScreen(
                 }
                 TituloReportes()
                 MapaEditar(navController)
+                // Botón de ordenamiento
+                val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
+                TextButton(onClick = { listadoReportesViewModel.toggleOrden() }) {
+                    Text(
+                        if (ordenDesc.value) "Más nuevo a más antiguo" else "Más antiguo a más nuevo",
+                        color = Color.White
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Desde(
-                        context,
-                        fromDate,
-                        toDate,
-                        listadoReportesViewModel,
-                        dateButtonModifier,
-                        dateButtonColors,
-                        dateFormatter
-                    )
-                    Hasta(
-                        context,
-                        fromDate,
-                        toDate,
-                        listadoReportesViewModel,
-                        dateButtonModifier,
-                        dateButtonColors,
-                        dateFormatter
-                    )
-                    Refrescar(
-                        fromDate,
-                        toDate,
-                        listadoReportesViewModel,
-                        dateButtonModifier,
-                        dateButtonColors
-                    )
+                    Desde( context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors, dateFormatter)
+                    Hasta( context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors, dateFormatter)
+                }
+                // Un Row aparte para que los botones no se superpongan
+                Row(){
+                    Refrescar( fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors)
                 }
                 Row(
                     modifier = Modifier
@@ -134,13 +122,7 @@ fun ListadoReportesScreen(
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
-                    TextButton(onClick = { listadoReportesViewModel.toggleOrden() }) {
-                        Text(
-                            if (ordenDesc.value) "Menor a mayor" else "Mayor a menor",
-                            color = Color.White
-                        )
-                    }
+
                     Cabecera()
                 }
                 LineaDivisoria()
@@ -338,7 +320,7 @@ fun Refrescar(
             colors = dateButtonColors,
             shape = RectangleShape, // forma
         ) {
-            Text("Refrescar")
+            Text("Refrescar", color = Color.White)
         }
     }
 }
@@ -421,7 +403,8 @@ fun Agregar(
     ) {
         Text(
             text = "+",
-            fontSize = 30.sp    // ajustás el tamaño acá
+            fontSize = 30.sp,    // ajustás el tamaño acá
+            color = Color.White
         )
     }
 }
