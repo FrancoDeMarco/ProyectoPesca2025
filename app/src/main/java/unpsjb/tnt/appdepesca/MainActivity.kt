@@ -239,13 +239,11 @@ class MainActivity : ComponentActivity() {
                 arguments = listOf(navArgument("eventoId") { type = NavType.StringType })
                 ) { backStackEntry ->
                 val eventoId = backStackEntry.arguments?.getString("eventoId") ?: return@composable
-                LayoutBase(usuarioVM) {
                     DetalleEventoScreen(
                         eventoId = eventoId,
                         listadoEventosViewModel = listadoEventosViewModel,
                         navController = navController
                     )
-                }
             }
 
         }
