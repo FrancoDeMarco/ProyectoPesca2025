@@ -51,31 +51,39 @@ fun ListadoReportesScreen(
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
-    val context = LocalContext.current                                      //Variables para filtrar por fecha
+    val context =
+        LocalContext.current                                      //Variables para filtrar por fecha
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val fromDate = remember { mutableStateOf<Date?>(null) }
     val toDate = remember { mutableStateOf<Date?>(null) }
-    val dateButtonModifier = Modifier //variable para darle groso, color y forma al borde de los botones
-        .border(
-            width = 2.dp,               // grosor
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // forma
+    val dateButtonModifier =
+        Modifier //variable para darle groso, color y forma al borde de los botones
+            .border(
+                width = 2.dp,               // grosor
+                color = Color(0xFF3E8B75),  // color del borde
+                shape = RectangleShape      // forma
+            )
+    val dateButtonColors =
+        ButtonDefaults.buttonColors( // variable que le da color al interior del botón
+            containerColor = Color(0xFF1B2B24)
         )
-    val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
-        containerColor = Color(0xFF1B2B24)
-    )
 
     LaunchedEffect(Unit) {
         fromDate.value = null
         toDate.value = null
         listadoReportesViewModel.setFechasFiltro(null, null)
     }
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF1B2B24))
+            .background(Color(0XFF1B2B24))
     ) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn( // Lo que esté dentro de LazyColumn es scroleable
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(0xFF1B2B24))
+                .navigationBarsPadding()
+        ) {
             item {
                 Box(
                     modifier = Modifier
@@ -94,18 +102,40 @@ fun ListadoReportesScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Desde(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
-                    Hasta(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
-                    Refrescar(fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors)
+                    Desde(
+                        context,
+                        fromDate,
+                        toDate,
+                        listadoReportesViewModel,
+                        dateButtonModifier,
+                        dateButtonColors,
+                        dateFormatter
+                    )
+                    Hasta(
+                        context,
+                        fromDate,
+                        toDate,
+                        listadoReportesViewModel,
+                        dateButtonModifier,
+                        dateButtonColors,
+                        dateFormatter
+                    )
+                    Refrescar(
+                        fromDate,
+                        toDate,
+                        listadoReportesViewModel,
+                        dateButtonModifier,
+                        dateButtonColors
+                    )
                 }
-                Row (
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.End
-                ){
+                ) {
                     val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
-                    TextButton(onClick = { listadoReportesViewModel.toggleOrden()}) {
+                    TextButton(onClick = { listadoReportesViewModel.toggleOrden() }) {
                         Text(
                             if (ordenDesc.value) "Menor a mayor" else "Mayor a menor",
                             color = Color.White
@@ -115,56 +145,60 @@ fun ListadoReportesScreen(
                 }
                 LineaDivisoria()
             }
-            listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
+            listaReportes(
+                listadoReportesViewModel,
+                reportes,
+                navController,
+                reportToDelete,
+                showDialog
+            )
 
             //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
             item {
                 val limite = listadoReportesViewModel.limite.collectAsState().value
-                if (reportes.size >= limite){
+                if (reportes.size >= limite) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Button(
-                            onClick = { listadoReportesViewModel.cargarMas()},
+                            onClick = { listadoReportesViewModel.cargarMas() },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF1B2B24)
                             )
-                        ){
+                        ) {
                             Text("Cargar 3 reportes más", color = Color.White)
                         }
                     }
                 }
             }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val buttonModifier = Modifier
+                        .weight(1f)                 // Ocupa 1/4 del ancho disponible
+                        .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
+                        .padding(horizontal = 4.dp) // Espacio entre botones
+                    Agregar(navController, buttonModifier, listadoReportesViewModel)
+                    Eventos(navController, buttonModifier)
+                    Salir(navController, buttonModifier)
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
+        DetallesReporte(selectedReport)
+        EliminarReporte(showDialog, reportToDelete, listadoReportesViewModel)
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .navigationBarsPadding() // evita conflicto con la parte inferior de la pantalla
-    ) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            val buttonModifier = Modifier
-                .weight(1f)                 // Ocupa 1/4 del ancho disponible
-                .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
-                .padding(horizontal = 4.dp) // Espacio entre botones
-            Agregar(navController, buttonModifier, listadoReportesViewModel)
-            Eventos(navController, buttonModifier)
-            //Reglamentos(navController, buttonModifier)
-            Salir(navController, buttonModifier)
-        }
-    }
-    DetallesReporte(selectedReport)
-    EliminarReporte(showDialog, reportToDelete, listadoReportesViewModel)
 }
+
 
 ////////////////BOTONES QUE MUESTRAN LAS FECHAS A FILTRAR/////////////////////
 fun showDatePicker(
