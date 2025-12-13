@@ -97,9 +97,24 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
-                MapaEditar(navController)
+                val miniButtonModifier = Modifier
+                    .size(48.dp) // tamaño chico
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Box(modifier = Modifier.weight(1f)){
+                        MapaEditar(navController)
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Agregar(navController, miniButtonModifier, listadoReportesViewModel)
+                    Eventos(navController, miniButtonModifier)
+                    Salir(navController, miniButtonModifier)
+                }
                 BotonOrdenamiento(listadoReportesViewModel)
-                //
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,7 +160,7 @@ fun ListadoReportesScreen(
                 }
             }
             //////////////// BOTONES DE AGREGAR, EVENTOS Y SALIR /////////////////////
-            item {
+            /*item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier
@@ -161,7 +176,7 @@ fun ListadoReportesScreen(
                     Eventos(navController, buttonModifier)
                     Salir(navController, buttonModifier)
                 }
-            }
+            }*/
         }
         DetallesReporte(selectedReport)
         EliminarReporte(showDialog, reportToDelete, listadoReportesViewModel)
@@ -384,6 +399,7 @@ fun Agregar(
             navController.navigate("formulario")
             listadoReportesViewModel.clearForm()
         },
+        contentPadding = PaddingValues(0.dp),
         modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
@@ -394,8 +410,9 @@ fun Agregar(
     ) {
         Text(
             text = "+",
-            fontSize = 30.sp,    // ajustás el tamaño acá
-            color = Color.White
+            fontSize = 24.sp,    // ajustás el tamaño acá
+            color = Color.White,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -412,6 +429,7 @@ fun Eventos(
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
         ),
+        contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
         shape = RectangleShape  // <- esto lo hace cuadrado
     ) {
@@ -419,36 +437,11 @@ fun Eventos(
             painter = painterResource(R.drawable.concursos),
             contentDescription = "Eventos",
             modifier = Modifier
-                .size(300.dp)
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .padding(6.dp)
         )
     }
 }
-
-/*@Composable
-fun Reglamentos(
-    navController: NavController,
-    modifier: Modifier
-){
-    Button(
-        onClick = { navController.navigate("reglamentos") },
-        modifier = modifier.border(
-            width = 2.dp,               // grosor del borde
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // importante: que coincida con el shape del botón
-        ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-        shape = RectangleShape  // esto lo hace cuadrado
-    ) {
-        Image(
-            painter = painterResource(R.drawable.reglamento),
-            contentDescription = "Reglamento",
-            modifier = Modifier
-                .size(300.dp)
-                .padding(bottom = 16.dp)
-        )
-    }
-}*/
 
 @Composable
 fun Salir(
@@ -486,6 +479,7 @@ fun Salir(
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
         ),
+        contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
         shape = RectangleShape // <- esto lo hace cuadrado
     ) {
@@ -493,8 +487,8 @@ fun Salir(
             painter = painterResource(R.drawable.salir), //nombre de la imagen
             contentDescription = "Salir",
             modifier = Modifier
-                .size(300.dp)
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .padding(6.dp)
         )
     }
 }
