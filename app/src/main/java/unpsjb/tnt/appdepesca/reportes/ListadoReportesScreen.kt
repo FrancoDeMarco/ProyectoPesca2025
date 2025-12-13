@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -95,14 +98,8 @@ fun ListadoReportesScreen(
                 }
                 TituloReportes()
                 MapaEditar(navController)
-                // Botón de ordenamiento
-                val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
-                TextButton(onClick = { listadoReportesViewModel.toggleOrden() }) {
-                    Text(
-                        if (ordenDesc.value) "Más nuevo a más antiguo" else "Más antiguo a más nuevo",
-                        color = Color.White
-                    )
-                }
+                BotonOrdenamiento(listadoReportesViewModel)
+                //
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -112,8 +109,7 @@ fun ListadoReportesScreen(
                     Desde( context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors, dateFormatter)
                     Hasta( context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors, dateFormatter)
                 }
-                // Un Row aparte para que los botones no se superpongan
-                Row(){
+                Row {
                     Refrescar( fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors)
                 }
                 Row(
@@ -122,19 +118,11 @@ fun ListadoReportesScreen(
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-
                     Cabecera()
                 }
                 LineaDivisoria()
             }
-            listaReportes(
-                listadoReportesViewModel,
-                reportes,
-                navController,
-                reportToDelete,
-                showDialog
-            )
-
+            listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
             //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
             item {
                 val limite = listadoReportesViewModel.limite.collectAsState().value
@@ -156,7 +144,7 @@ fun ListadoReportesScreen(
                     }
                 }
             }
-
+            //////////////// BOTONES DE AGREGAR, EVENTOS Y SALIR /////////////////////
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
@@ -173,7 +161,6 @@ fun ListadoReportesScreen(
                     Eventos(navController, buttonModifier)
                     Salir(navController, buttonModifier)
                 }
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
         DetallesReporte(selectedReport)
@@ -320,7 +307,11 @@ fun Refrescar(
             colors = dateButtonColors,
             shape = RectangleShape, // forma
         ) {
-            Text("Refrescar", color = Color.White)
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Refrescar",
+                tint = Color.White,
+                )
         }
     }
 }
@@ -612,6 +603,19 @@ fun MapaEditar(
             contentDescription = "Mapa",
             modifier = Modifier.size(75.dp)
 
+        )
+    }
+}
+
+@Composable
+fun BotonOrdenamiento(
+    listadoReportesViewModel: ListadoReportesViewModel
+) {
+    val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
+    TextButton(onClick = { listadoReportesViewModel.toggleOrden() }) {
+        Text(
+            if (ordenDesc.value) "Más nuevo a más antiguo" else "Más antiguo a más nuevo",
+            color = Color.White
         )
     }
 }
