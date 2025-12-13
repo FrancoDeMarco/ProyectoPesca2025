@@ -157,8 +157,8 @@ fun ListadoReportesScreen(
                 .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
                 .padding(horizontal = 4.dp) // Espacio entre botones
             Agregar(navController, buttonModifier, listadoReportesViewModel)
-            Concursos(navController, buttonModifier)
-            Reglamentos(navController, buttonModifier)
+            Eventos(navController, buttonModifier)
+            //Reglamentos(navController, buttonModifier)
             Salir(navController, buttonModifier)
         }
     }
@@ -393,12 +393,12 @@ fun Agregar(
 }
 
 @Composable
-fun Concursos(
+fun Eventos(
     navController: NavController,
     modifier: Modifier
 ){
     Button(
-        onClick = { navController.navigate("concurso") },
+        onClick = { navController.navigate("eventos") },
         modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
@@ -409,7 +409,7 @@ fun Concursos(
     ) {
         Image(
             painter = painterResource(R.drawable.concursos),
-            contentDescription = "Concursos",
+            contentDescription = "Eventos",
             modifier = Modifier
                 .size(300.dp)
                 .padding(bottom = 16.dp)
@@ -417,7 +417,7 @@ fun Concursos(
     }
 }
 
-@Composable
+/*@Composable
 fun Reglamentos(
     navController: NavController,
     modifier: Modifier
@@ -440,7 +440,7 @@ fun Reglamentos(
                 .padding(bottom = 16.dp)
         )
     }
-}
+}*/
 
 @Composable
 fun Salir(

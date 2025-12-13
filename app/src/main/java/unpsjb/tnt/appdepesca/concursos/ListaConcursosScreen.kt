@@ -47,9 +47,6 @@ fun ListaConcursosScreen(
     }
 }
 
-
-
-
 //////////////TITULO/////////////////////
 @Composable
 fun TituloConcurso() {
