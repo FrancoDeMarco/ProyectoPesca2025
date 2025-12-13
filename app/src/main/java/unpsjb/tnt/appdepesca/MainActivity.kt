@@ -227,12 +227,10 @@ class MainActivity : ComponentActivity() {
                 ResetPasswordScreen(navController)
             }
             composable("eventos"){
-                //LayoutBase(usuarioVM) {
                     ListadoEventosScreen(
                         navController = navController,
                         listadoEventosViewModel = listadoEventosViewModel
                     )
-                //}
             }
             composable (
                 "detalleEvento/{eventoId}",
