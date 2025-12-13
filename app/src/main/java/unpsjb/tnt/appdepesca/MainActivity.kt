@@ -91,7 +91,6 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 val vm: LoginViewModel = viewModel()
-                //val usuarioVM: UsuarioViewModel = viewModel()
                 LoginScreen(
                     viewModel = vm,
                     usuarioViewModel = usuarioVM,
@@ -228,12 +227,12 @@ class MainActivity : ComponentActivity() {
                 ResetPasswordScreen(navController)
             }
             composable("eventos"){
-                LayoutBase(usuarioVM) {
+                //LayoutBase(usuarioVM) {
                     ListadoEventosScreen(
                         navController = navController,
                         listadoEventosViewModel = listadoEventosViewModel
                     )
-                }
+                //}
             }
             composable (
                 "detalleEvento/{eventoId}",
