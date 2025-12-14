@@ -126,6 +126,7 @@ fun NombreReporte(reporte: Reporte) {
 
 @Composable
 fun DescripcionReporte(reporte: Reporte){
+    val descripcion = reporte.reportDescripcion?.takeIf { it.isNotBlank() } ?: "(sin descripción)"
     Text(
         text = "Descripción:",
         style = MaterialTheme.typography.titleMedium,
@@ -133,7 +134,7 @@ fun DescripcionReporte(reporte: Reporte){
         fontSize = 23.sp,
     )
     Text(
-        text = reporte.reportDescripcion ?: "(sin descripción)",
+        text = descripcion,
         color = Color.White,
         fontSize = 23.sp,
     )
@@ -218,16 +219,13 @@ fun ModalidadReporte(reporte: Reporte) {
     val textoModalidad = when (reporte.reportModalidad) {
         ModalidadPesca.COSTA -> "Costa"
         ModalidadPesca.EMBARCADA -> "Embarcada"
-        null -> "No especificada"
     }
-
     Text(
         text = "Modalidad:",
         style = MaterialTheme.typography.titleMedium,
         color = Color(0xFF3E8B75),
         fontSize = 23.sp
     )
-
     Text(
         text = textoModalidad,
         color = Color.White,
