@@ -1,17 +1,14 @@
 package unpsjb.tnt.appdepesca.eventos
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,6 +21,14 @@ import unpsjb.tnt.appdepesca.reportes.BotonVolver
 import unpsjb.tnt.appdepesca.reglamentos.clickAnimation
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ListadoEventosScreen(
@@ -32,7 +37,6 @@ fun ListadoEventosScreen(
 ) {
     val eventos by listadoEventosViewModel.eventos.collectAsState()
     val categoria by listadoEventosViewModel.categoriaSeleccionada.collectAsState()
-
     val filtrados = when(categoria){
         "todos" -> eventos
         else -> eventos.filter {it.categoria == categoria}
@@ -45,12 +49,12 @@ fun ListadoEventosScreen(
     ){
         Column(Modifier.padding(16.dp)){
             TituloSeccion("Eventos")
-
-            FiltrosEventos(
+            FiltroEventosDropdown(//Esta función se encarga de filtrar los eventos por categoría y actualizar la lista filtrada.
                 categoriaActual = categoria,
-                onCategoriaClick = { listadoEventosViewModel.filtrarPorCategoria(it) }
+                onCategoriaSeleccionada = {
+                    listadoEventosViewModel.filtrarPorCategoria(it)
+                }
             )
-
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(filtrados){ evento ->
                     EventoItem(evento) { id ->
@@ -73,33 +77,6 @@ fun TituloSeccion(text: String) {
 }
 
 @Composable
-fun FiltrosEventos(
-    categoriaActual: String,
-    onCategoriaClick: (String) -> Unit
-){
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ){
-        listOf(
-            "todos" to "Todos",
-            "concurso" to "Torneos",
-            "reglamento" to "Reglamentos",
-            "sorteo" to "Sorteos",
-            "aviso" to "Avisos"
-        ).forEach { (clave, texto) ->
-            FilterChip(
-                selected = categoriaActual == clave,
-                onClick = { onCategoriaClick(clave) },
-                label = { Text(texto) }
-            )
-        }
-    }
-
-
-}
-
-@Composable
 fun EventoItem(evento: Evento, onClick: (String) -> Unit){
     Card(
         modifier = Modifier
@@ -117,6 +94,60 @@ fun EventoItem(evento: Evento, onClick: (String) -> Unit){
                 Text(it, color = Color(0xFF3E8B75))
             }
 
+        }
+    }
+}
+
+// ======== FILTRO DE EVENTOS ========
+@OptIn (ExperimentalMaterial3Api::class)
+@Composable
+fun FiltroEventosDropdown(
+    categoriaActual: String,
+    onCategoriaSeleccionada: (String) -> Unit
+){
+    var expanded by remember { mutableStateOf(false) }
+
+    val categorias = listOf(
+        "todos" to "Todos",
+        "concurso" to "Torneos",
+        "reglamento" to "Reglamentos",
+        "sorteo" to "Sorteos",
+        "aviso" to "Aviso"
+    )
+
+    val textoSeleccionado =
+        categorias.firstOrNull { it.first == categoriaActual }?.second ?: "Todos"
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded}
+    ) {
+        TextField(
+            value = textoSeleccionado,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Tipo de evento") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+            },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false}
+        ) {
+            categorias.forEach { (clave, texto) ->
+                DropdownMenuItem(
+                    text = { Text(texto) },
+                    onClick = {
+                        onCategoriaSeleccionada(clave)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
