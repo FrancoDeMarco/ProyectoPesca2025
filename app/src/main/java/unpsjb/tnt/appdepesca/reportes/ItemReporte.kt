@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun ItemReporte(
     reporte: Reporte,
-    listadoReportesViewModel: ListadoReportesViewModel,
     modifier: Modifier = Modifier,
     onEdit: (Reporte) -> Unit,
     onDelete: () -> Unit,

@@ -18,7 +18,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -38,9 +37,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material3.RadioButton
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberAsyncImagePainter
+import unpsjb.tnt.appdepesca.database.ModalidadPesca
 import java.io.File
 
 @Composable
@@ -59,7 +61,8 @@ fun CrearReporteScreen(
             state.reportDate.isNotBlank() &&
                     state.reportTitle.isNotBlank() &&
                     state.reportDescription.isNotBlank() &&
-                    !state.reportImagenUri.isNullOrBlank()
+                    !state.reportImagenUri.isNullOrBlank() &&
+                    state.reportModalidad != null // Modalidad es obligatorio
         }
     }
     LaunchedEffect(Unit) {
@@ -91,6 +94,7 @@ fun CrearReporteScreen(
             NombreReporte(listadoReportesViewModel, state, isTitleValido)
             DescripcionReporte(listadoReportesViewModel, state, isDescriptionValido)
             FechaReporte(listadoReportesViewModel, dateState, isDateValido)
+            SelectorModalidad(modalidadSeleccionada = state.reportModalidad, onSeleccionar = { listadoReportesViewModel.changeModalidad(it)})
             AgregarFotoButton(viewModel = listadoReportesViewModel, isImagenValido)
             SiguienteCrear(navController = navController, enabled = formValido, modifier = Modifier)
             BotonVolverCrear(navController, listadoReportesViewModel)
@@ -325,6 +329,37 @@ fun AgregarFotoButton(
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
+        }
+    }
+}
+
+@Composable
+fun SelectorModalidad(
+    modalidadSeleccionada: ModalidadPesca?,
+    onSeleccionar: (ModalidadPesca) -> Unit
+){
+    Column {
+        Text(
+            text = "Modalidad",
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Row(verticalAlignment = Alignment.CenterVertically){
+            RadioButton(
+                selected = modalidadSeleccionada == ModalidadPesca.COSTA,
+                onClick = { onSeleccionar(ModalidadPesca.COSTA) }
+            )
+            Text("Costa", color = Color.White)
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(
+                selected = modalidadSeleccionada == ModalidadPesca.EMBARCADA,
+                onClick = { onSeleccionar(ModalidadPesca.EMBARCADA) }
+            )
+            Text("Embarcada", color = Color.White)
         }
     }
 }

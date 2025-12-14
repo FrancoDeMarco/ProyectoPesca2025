@@ -350,7 +350,6 @@ fun LazyListScope.listaReportes(
         items(list) { reporte ->
             ItemReporte(// Item de Reporte
                 reporte = reporte,
-                listadoReportesViewModel = listadoReportesViewModel,
                 modifier = Modifier.fillMaxWidth(),
                 onEdit = {
                     listadoReportesViewModel.loadReport(reporte) // precarga los datos del reporte

@@ -60,7 +60,8 @@ fun EditarReporteScreen(
             state.reportDate.isNotBlank() &&
                     state.reportTitle.isNotBlank() &&
                     state.reportDescription.isNotBlank() &&
-                    !state.reportImagenUri.isNullOrBlank()
+                    !state.reportImagenUri.isNullOrBlank() &&
+                    state.reportModalidad != null // Modalidad es obligatorio
         }
     }
     // Inicialización de los estados cuando se abre la pantalla
@@ -89,6 +90,7 @@ fun EditarReporteScreen(
             EditarNombreReporte(listadoReportesViewModel, state, isTitleValid)
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
+            SelectorModalidad(modalidadSeleccionada = state.reportModalidad, onSeleccionar = { listadoReportesViewModel.changeModalidad(it)})
             EditarImagenReporte(viewModel = listadoReportesViewModel)
             SiguienteEditar(navController, modifier = Modifier, enabled = formValido)
             BotonVolver(navController)

@@ -130,7 +130,7 @@ fun DescripcionReporte(reporte: Reporte){
         fontSize = 23.sp,
     )
     Text(
-        text = reporte.reportDescripcion,
+        text = reporte.reportDescripcion ?: " ",
         color = Color.White,
         fontSize = 23.sp,
     )
