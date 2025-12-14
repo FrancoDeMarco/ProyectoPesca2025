@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
                             popUpTo("login") { inclusive = true }
                         }
                     },
-                    onNavigatetoRegister = { navController.navigate("registro") },
+                    onNavigateToRegister = { navController.navigate("registro") },
                     navController
                 )
             }
