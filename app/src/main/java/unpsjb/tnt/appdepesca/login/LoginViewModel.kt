@@ -98,5 +98,13 @@ open class LoginViewModel : ViewModel() {
             firestore.collection("usuarios").document(uid).set(data).await()
         }
     }
+
+    fun resetForm(){
+        _email.value = ""
+        _password.value = ""
+        _loginEnable.value = false
+        _isInvalid.value = false
+        _isLoading.value = false
+    }
 }
 

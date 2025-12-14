@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -51,31 +54,39 @@ fun ListadoReportesScreen(
     val showDialog = remember { mutableStateOf(false) }
     val reportToDelete = remember { mutableStateOf<Reporte?>(null) }
     val selectedReport = remember { mutableStateOf<Reporte?>(null) }
-    val context = LocalContext.current                                      //Variables para filtrar por fecha
+    val context =
+        LocalContext.current                                      //Variables para filtrar por fecha
     val dateFormatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val fromDate = remember { mutableStateOf<Date?>(null) }
     val toDate = remember { mutableStateOf<Date?>(null) }
-    val dateButtonModifier = Modifier //variable para darle groso, color y forma al borde de los botones
-        .border(
-            width = 2.dp,               // grosor
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // forma
+    val dateButtonModifier =
+        Modifier //variable para darle groso, color y forma al borde de los botones
+            .border(
+                width = 2.dp,               // grosor
+                color = Color(0xFF3E8B75),  // color del borde
+                shape = RectangleShape      // forma
+            )
+    val dateButtonColors =
+        ButtonDefaults.buttonColors( // variable que le da color al interior del botón
+            containerColor = Color(0xFF1B2B24)
         )
-    val dateButtonColors = ButtonDefaults.buttonColors( // variable que le da color al interior del botón
-        containerColor = Color(0xFF1B2B24)
-    )
 
     LaunchedEffect(Unit) {
         fromDate.value = null
         toDate.value = null
         listadoReportesViewModel.setFechasFiltro(null, null)
     }
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFF1B2B24))
+            .background(Color(0XFF1B2B24))
     ) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn( // Lo que esté dentro de LazyColumn es scroleable
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(0xFF1B2B24))
+                .navigationBarsPadding()
+        ) {
             item {
                 Box(
                     modifier = Modifier
@@ -86,85 +97,74 @@ fun ListadoReportesScreen(
                     HeaderImage(size = 100.dp)
                 }
                 TituloReportes()
-                MapaEditar(navController)
+                val miniButtonModifier = Modifier
+                    .size(48.dp) // tamaño chico
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Box(modifier = Modifier.weight(1f)){
+                        MapaEditar(navController)
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Agregar(navController, miniButtonModifier, listadoReportesViewModel)
+                    Eventos(navController, miniButtonModifier)
+                    Salir(navController, miniButtonModifier)
+                }
+                BotonOrdenamiento(listadoReportesViewModel)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Desde(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
-                    Hasta(context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors,  dateFormatter)
-                    Refrescar(fromDate, toDate, listadoReportesViewModel, dateButtonModifier,  dateButtonColors)
+                    Desde( context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors, dateFormatter)
+                    Hasta( context, fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors, dateFormatter)
                 }
-                Row (
+                Row {
+                    Refrescar( fromDate, toDate, listadoReportesViewModel, dateButtonModifier, dateButtonColors)
+                }
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.End
-                ){
-                    val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
-                    TextButton(onClick = { listadoReportesViewModel.toggleOrden()}) {
-                        Text(
-                            if (ordenDesc.value) "Menor a mayor" else "Mayor a menor",
-                            color = Color.White
-                        )
-                    }
+                ) {
                     Cabecera()
                 }
-                LineaDivisoria()
+                LineaDivisoriaGruesa()
             }
             listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
-
             //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
             item {
                 val limite = listadoReportesViewModel.limite.collectAsState().value
-                if (reportes.size >= limite){
+                if (reportes.size >= limite) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Button(
-                            onClick = { listadoReportesViewModel.cargarMas()},
+                            onClick = { listadoReportesViewModel.cargarMas() },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF1B2B24)
                             )
-                        ){
+                        ) {
                             Text("Cargar 3 reportes más", color = Color.White)
                         }
                     }
                 }
             }
         }
+        DetallesReporte(selectedReport)
+        EliminarReporte(showDialog, reportToDelete, listadoReportesViewModel)
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .navigationBarsPadding() // evita conflicto con la parte inferior de la pantalla
-    ) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            val buttonModifier = Modifier
-                .weight(1f)                 // Ocupa 1/4 del ancho disponible
-                .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
-                .padding(horizontal = 4.dp) // Espacio entre botones
-            Agregar(navController, buttonModifier, listadoReportesViewModel)
-            Eventos(navController, buttonModifier)
-            //Reglamentos(navController, buttonModifier)
-            Salir(navController, buttonModifier)
-        }
-    }
-    DetallesReporte(selectedReport)
-    EliminarReporte(showDialog, reportToDelete, listadoReportesViewModel)
 }
+
 
 ////////////////BOTONES QUE MUESTRAN LAS FECHAS A FILTRAR/////////////////////
 fun showDatePicker(
@@ -304,7 +304,11 @@ fun Refrescar(
             colors = dateButtonColors,
             shape = RectangleShape, // forma
         ) {
-            Text("Refrescar")
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Refrescar",
+                tint = Color.White,
+                )
         }
     }
 }
@@ -344,7 +348,7 @@ fun LazyListScope.listaReportes(
 ){
     reportes?.let { list -> //Listado de Reportes
         items(list) { reporte ->
-            ItemReporte(
+            ItemReporte(// Item de Reporte
                 reporte = reporte,
                 listadoReportesViewModel = listadoReportesViewModel,
                 modifier = Modifier.fillMaxWidth(),
@@ -361,6 +365,7 @@ fun LazyListScope.listaReportes(
                     navController.navigate("detalle_reporte/${reporte.reportId}")
                 }
             )
+            LineaDivisoriaFina()
         }
     }
 }
@@ -377,6 +382,7 @@ fun Agregar(
             navController.navigate("formulario")
             listadoReportesViewModel.clearForm()
         },
+        contentPadding = PaddingValues(0.dp),
         modifier = modifier.border(
             width = 2.dp,               // grosor del borde
             color = Color(0xFF3E8B75),  // color del borde
@@ -387,7 +393,9 @@ fun Agregar(
     ) {
         Text(
             text = "+",
-            fontSize = 30.sp    // ajustás el tamaño acá
+            fontSize = 24.sp,    // ajustás el tamaño acá
+            color = Color.White,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -404,6 +412,7 @@ fun Eventos(
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
         ),
+        contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
         shape = RectangleShape  // <- esto lo hace cuadrado
     ) {
@@ -411,36 +420,11 @@ fun Eventos(
             painter = painterResource(R.drawable.concursos),
             contentDescription = "Eventos",
             modifier = Modifier
-                .size(300.dp)
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .padding(6.dp)
         )
     }
 }
-
-/*@Composable
-fun Reglamentos(
-    navController: NavController,
-    modifier: Modifier
-){
-    Button(
-        onClick = { navController.navigate("reglamentos") },
-        modifier = modifier.border(
-            width = 2.dp,               // grosor del borde
-            color = Color(0xFF3E8B75),  // color del borde
-            shape = RectangleShape      // importante: que coincida con el shape del botón
-        ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
-        shape = RectangleShape  // esto lo hace cuadrado
-    ) {
-        Image(
-            painter = painterResource(R.drawable.reglamento),
-            contentDescription = "Reglamento",
-            modifier = Modifier
-                .size(300.dp)
-                .padding(bottom = 16.dp)
-        )
-    }
-}*/
 
 @Composable
 fun Salir(
@@ -478,6 +462,7 @@ fun Salir(
             color = Color(0xFF3E8B75),  // color del borde
             shape = RectangleShape      // importante: que coincida con el shape del botón
         ),
+        contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B2B24)),
         shape = RectangleShape // <- esto lo hace cuadrado
     ) {
@@ -485,8 +470,8 @@ fun Salir(
             painter = painterResource(R.drawable.salir), //nombre de la imagen
             contentDescription = "Salir",
             modifier = Modifier
-                .size(300.dp)
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .padding(6.dp)
         )
     }
 }
@@ -570,13 +555,26 @@ fun ConfirmationDialog(
 }
 
 @Composable
-fun LineaDivisoria(){
+fun LineaDivisoriaGruesa(){
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
     HorizontalDivider(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        thickness = 2.dp,
+        thickness = 3.dp,
+        color = Color(0xFF3E8B75)
+    )
+    Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+}
+
+@Composable
+fun LineaDivisoriaFina(){
+    Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+    HorizontalDivider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        thickness = 1.dp,
         color = Color(0xFF3E8B75)
     )
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
@@ -595,6 +593,19 @@ fun MapaEditar(
             contentDescription = "Mapa",
             modifier = Modifier.size(75.dp)
 
+        )
+    }
+}
+
+@Composable
+fun BotonOrdenamiento(
+    listadoReportesViewModel: ListadoReportesViewModel
+) {
+    val ordenDesc = listadoReportesViewModel.ordenDesc.collectAsState()
+    TextButton(onClick = { listadoReportesViewModel.toggleOrden() }) {
+        Text(
+            if (ordenDesc.value) "Más nuevo a más antiguo" else "Más antiguo a más nuevo",
+            color = Color.White
         )
     }
 }

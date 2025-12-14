@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -48,9 +47,13 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     usuarioViewModel: UsuarioViewModel,
     onLoginSuccesfull: () -> Unit,
-    onNavigatetoRegister: () -> Unit,
+    onNavigateToRegister: () -> Unit,
     navController: NavController
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.resetForm()
+    }
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
     val loginEnable: Boolean by viewModel.loginEnable.observeAsState(initial = false)
@@ -107,7 +110,6 @@ fun LoginScreen(
             ShowAlertDialog {
                 viewModel.resetInvalid()
             }
-
         }
         if (isLoading) {
             Box(Modifier.fillMaxSize()) {
@@ -151,7 +153,7 @@ fun LoginScreen(
                 ) {
                     Text("Ingresar con Google", color = Color.White)
                 }
-                RegisterButton( onClick = { onNavigatetoRegister() })
+                RegisterButton( onClick = { onNavigateToRegister() })
                 TextButton(
                     onClick = { navController.navigate("resetPassword") }
                 ) {

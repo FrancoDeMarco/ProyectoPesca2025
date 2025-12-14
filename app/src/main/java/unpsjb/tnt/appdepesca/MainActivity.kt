@@ -91,7 +91,6 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 val vm: LoginViewModel = viewModel()
-                //val usuarioVM: UsuarioViewModel = viewModel()
                 LoginScreen(
                     viewModel = vm,
                     usuarioViewModel = usuarioVM,
@@ -100,7 +99,7 @@ class MainActivity : ComponentActivity() {
                             popUpTo("login") { inclusive = true }
                         }
                     },
-                    onNavigatetoRegister = { navController.navigate("registro") },
+                    onNavigateToRegister = { navController.navigate("registro") },
                     navController
                 )
             }
@@ -228,25 +227,21 @@ class MainActivity : ComponentActivity() {
                 ResetPasswordScreen(navController)
             }
             composable("eventos"){
-                LayoutBase(usuarioVM) {
                     ListadoEventosScreen(
                         navController = navController,
                         listadoEventosViewModel = listadoEventosViewModel
                     )
-                }
             }
             composable (
                 "detalleEvento/{eventoId}",
                 arguments = listOf(navArgument("eventoId") { type = NavType.StringType })
                 ) { backStackEntry ->
                 val eventoId = backStackEntry.arguments?.getString("eventoId") ?: return@composable
-                LayoutBase(usuarioVM) {
                     DetalleEventoScreen(
                         eventoId = eventoId,
                         listadoEventosViewModel = listadoEventosViewModel,
                         navController = navController
                     )
-                }
             }
 
         }
