@@ -1,5 +1,6 @@
 package unpsjb.tnt.appdepesca.reportes
 
+import unpsjb.tnt.appdepesca.database.ModalidadPesca
 import unpsjb.tnt.appdepesca.database.Reporte
 
 data class ReportState(
@@ -10,5 +11,6 @@ data class ReportState(
     val report: List<Reporte> = emptyList(),
     val reportImagenUri: String? = null,
     val reportLat: Double? = null,
-    val reportLng: Double? = null
+    val reportLng: Double? = null,
+    val reportModalidad : ModalidadPesca? = null
 )

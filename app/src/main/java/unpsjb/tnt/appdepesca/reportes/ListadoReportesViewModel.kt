@@ -25,6 +25,7 @@ import androidx.compose.runtime.State
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import unpsjb.tnt.appdepesca.database.ModalidadPesca
 
 class ListadoReportesViewModel(
     private val dao: ReporteDAO
@@ -127,15 +128,22 @@ class ListadoReportesViewModel(
         _state.value = state.copy(reportDate = date)
     }
 
+    fun changeModalidad(modalidad: ModalidadPesca){
+        _state.value = state.copy(
+            reportModalidad = modalidad
+        )
+    }
+
     ///////////////CREAR REPORTE/////////////////////////
     fun createReport() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         val title = state.reportTitle
-        val description= state.reportDescription
+        val description= state.reportDescription.ifBlank { null } // si está vacío, no se guarda
         val date = state.reportDate
         val localImagePath = state.reportImagenUri
         val lat = latitud.value
         val lng = longitud.value
+        val modalidad = state.reportModalidad ?: return
 
 
         viewModelScope.launch {
@@ -150,6 +158,7 @@ class ListadoReportesViewModel(
                 reportImagenUri = uploadedUrl, // guarda la URL de Firebase
                 latitud = lat,
                 longitud = lng,
+                reportModalidad = modalidad,
                 usuarioId = uid
             )
             println("Fecha guardada: ${updatedReport.reportFecha}")///para ver en que formato se guarda la fecha cuando creo el reporte
@@ -177,7 +186,8 @@ class ListadoReportesViewModel(
             reportDate = "",
             reportImagenUri = null,
             reportLat = null,
-            reportLng = null
+            reportLng = null,
+            reportModalidad = null // Modalidad por defecto
         )
         limpiarImagenSeleccionada()
     }
@@ -186,6 +196,41 @@ class ListadoReportesViewModel(
     fun changeImage(context: Context, uri: Uri) {
     val rutaInterna = guardarImagenEnInterno(context,uri)
         _state.value = state.copy(reportImagenUri = rutaInterna)
+    }
+
+    ////////////EDITAR REPORTE//////
+    fun loadReport(reporte: Reporte) {
+        _state.value = _state.value.copy(
+            reportId = reporte.reportId,
+            reportTitle = reporte.reportTitulo,
+            reportDescription = reporte.reportDescripcion ?: "",
+            reportDate = reporte.reportFecha.toString(),
+            reportImagenUri = reporte.reportImagenUri,
+            reportLat = reporte.latitud,
+            reportLng = reporte.longitud,
+            reportModalidad = reporte.reportModalidad
+        )
+    }
+
+    fun updateReport() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val modalidad = state.reportModalidad ?: return
+        val updatedReport = Reporte(
+            reportId = state.reportId,
+            reportTitulo = state.reportTitle,
+            reportDescripcion = state.reportDescription.ifBlank { null },
+            reportFecha = state.reportDate,
+            reportImagenUri = state.reportImagenUri,
+            latitud = state.reportLat,
+            longitud = state.reportLng,
+            reportModalidad = modalidad,
+            usuarioId = uid
+        )
+        viewModelScope.launch {
+            dao.updateReporte(updatedReport) //Actualiza la BD local
+            uploadReporteToFirestore(updatedReport)//Actualiza la BD en la nube
+        }
+        clearForm()
     }
 
     /////////////////////ELIMINAR REPORTE///////////////////
@@ -198,38 +243,6 @@ class ListadoReportesViewModel(
 
     fun obtenerReportePorId(id: Int): Reporte? {
         return state.report.find {it.reportId == id}
-    }
-
-    ////////////EDITAR REPORTE//////
-    fun loadReport(reporte: Reporte) {
-        _state.value = _state.value.copy(
-            reportId = reporte.reportId,
-            reportTitle = reporte.reportTitulo,
-            reportDescription = reporte.reportDescripcion,
-            reportDate = reporte.reportFecha.toString(),
-            reportImagenUri = reporte.reportImagenUri,
-            reportLat = reporte.latitud,
-            reportLng = reporte.longitud
-        )
-    }
-
-    fun updateReport() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        val updatedReport = Reporte(
-            reportId = state.reportId,
-            reportTitulo = state.reportTitle,
-            reportDescripcion = state.reportDescription,
-            reportFecha = state.reportDate,
-            reportImagenUri = state.reportImagenUri,
-            latitud = state.reportLat,
-            longitud = state.reportLng,
-            usuarioId = uid
-        )
-        viewModelScope.launch {
-            dao.updateReporte(updatedReport) //Actualiza la BD local
-            uploadReporteToFirestore(updatedReport)//Actualiza la BD en la nube
-        }
-        clearForm()
     }
 
     /////////////////FILTRADO DE FECHAS///////////////////////////////////
@@ -285,6 +298,7 @@ class ListadoReportesViewModel(
             "imagenUri" to (reporte.reportImagenUri ?: ""),
             "latitud" to (reporte.latitud ?: 0.0),
             "longitud" to (reporte.longitud ?: 0.0),
+            "modalidad" to reporte.reportModalidad.name,
             "usuarioId" to reporte.usuarioId
         )
         db.collection("reportes")
@@ -357,6 +371,10 @@ class ListadoReportesViewModel(
                 }
                 val lista = snapshot?.documents?.mapNotNull { doc ->
                     try {
+                        val modalidadString = doc.getString("modalidad")
+                        val modalidad = ModalidadPesca.valueOf(
+                            modalidadString ?: "COSTA"
+                        )
                         Reporte(
                             reportId = doc.id.toInt(),
                             reportTitulo = doc.getString("titulo") ?: "",
@@ -365,6 +383,7 @@ class ListadoReportesViewModel(
                             reportImagenUri = doc.getString("imagenUri"),
                             latitud = doc.getDouble("latitud"),
                             longitud = doc.getDouble("longitud"),
+                            reportModalidad = modalidad,
                             usuarioId = doc.getString("usuarioId") ?: ""
                         )
                     } catch (e: Exception) {

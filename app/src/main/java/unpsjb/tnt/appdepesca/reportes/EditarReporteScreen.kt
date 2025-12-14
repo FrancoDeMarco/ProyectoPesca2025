@@ -20,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
@@ -40,6 +41,7 @@ import unpsjb.tnt.appdepesca.login.HeaderImage
 import java.util.Calendar
 import kotlin.Boolean
 import androidx.core.net.toUri
+import unpsjb.tnt.appdepesca.database.ModalidadPesca
 
 /****El FormularioScreen, recibe los view model y el nav para trabajar sobre ellos.*/
 @Composable
@@ -59,8 +61,8 @@ fun EditarReporteScreen(
         derivedStateOf {
             state.reportDate.isNotBlank() &&
                     state.reportTitle.isNotBlank() &&
-                    state.reportDescription.isNotBlank() &&
-                    !state.reportImagenUri.isNullOrBlank()
+                    !state.reportImagenUri.isNullOrBlank() &&
+                    state.reportModalidad != null // Modalidad es obligatorio
         }
     }
     // Inicialización de los estados cuando se abre la pantalla
@@ -89,11 +91,41 @@ fun EditarReporteScreen(
             EditarNombreReporte(listadoReportesViewModel, state, isTitleValid)
             EditarDescripcionReporte(listadoReportesViewModel, state, isDescriptionValid)
             EditarFechaReporte(listadoReportesViewModel, dateState, isDateValid)
+            EditarModalidad(modalidadSeleccionada = state.reportModalidad, onSeleccionar = { listadoReportesViewModel.changeModalidad(it)})
             EditarImagenReporte(viewModel = listadoReportesViewModel)
             SiguienteEditar(navController, modifier = Modifier, enabled = formValido)
             BotonVolver(navController)
         }
 
+    }
+}
+
+@Composable
+fun EditarModalidad(
+    modalidadSeleccionada: ModalidadPesca?,
+    onSeleccionar: (ModalidadPesca) -> Unit
+){
+    Column {
+        Text(
+            text = "Modalidad",
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Row(verticalAlignment = Alignment.CenterVertically){
+            RadioButton(
+                selected = modalidadSeleccionada == ModalidadPesca.COSTA,
+                onClick = { onSeleccionar(ModalidadPesca.COSTA) }
+            )
+            Text("Costa", color = Color.White)
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(
+                selected = modalidadSeleccionada == ModalidadPesca.EMBARCADA,
+                onClick = { onSeleccionar(ModalidadPesca.EMBARCADA) }
+            )
+            Text("Embarcada", color = Color.White)
+        }
     }
 }
 
@@ -285,3 +317,5 @@ fun SiguienteEditar(
         )
     }
 }
+
+
