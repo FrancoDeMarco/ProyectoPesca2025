@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,8 +48,12 @@ fun ListadoEventosScreen(
         modifier = Modifier
             .background(color = Color(0xFF1B2B24))
             .fillMaxSize()
+            .systemBarsPadding() //La pantalla no hace conflicto con la cámara (notch) ni con los botones inferiores (navigation) del celu.
     ){
-        Column(Modifier.padding(16.dp)){
+        Column(
+            Modifier
+                .padding(16.dp)
+        ){
             TituloSeccion("Eventos")
             FiltroEventosDropdown(//Esta función se encarga de filtrar los eventos por categoría y actualizar la lista filtrada.
                 categoriaActual = categoria,
