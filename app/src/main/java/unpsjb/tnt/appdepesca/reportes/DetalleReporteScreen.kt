@@ -43,6 +43,7 @@ import unpsjb.tnt.appdepesca.database.Reporte
 import unpsjb.tnt.appdepesca.login.HeaderImage
 import com.google.android.gms.maps.model.LatLng
 import coil.compose.rememberAsyncImagePainter
+import unpsjb.tnt.appdepesca.database.ModalidadPesca
 
 @Composable
 fun DetalleReporteScreen(
@@ -89,6 +90,8 @@ fun DetalleReporteScreen(
         ) {
             FechaReporte(reporte)
             Spacer(modifier = Modifier.height(8.dp))
+            ModalidadReporte(reporte)
+            Spacer(modifier = Modifier.height(8.dp))
             DescripcionReporte(reporte)
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -130,7 +133,7 @@ fun DescripcionReporte(reporte: Reporte){
         fontSize = 23.sp,
     )
     Text(
-        text = reporte.reportDescripcion ?: " ",
+        text = reporte.reportDescripcion ?: "(sin descripción)",
         color = Color.White,
         fontSize = 23.sp,
     )
@@ -208,4 +211,26 @@ fun UbicacionReporte(reporte: Reporte, navController: NavController){
             BotonVolver(navController)
         }
     }
+}
+
+@Composable
+fun ModalidadReporte(reporte: Reporte) {
+    val textoModalidad = when (reporte.reportModalidad) {
+        ModalidadPesca.COSTA -> "Costa"
+        ModalidadPesca.EMBARCADA -> "Embarcada"
+        null -> "No especificada"
+    }
+
+    Text(
+        text = "Modalidad:",
+        style = MaterialTheme.typography.titleMedium,
+        color = Color(0xFF3E8B75),
+        fontSize = 23.sp
+    )
+
+    Text(
+        text = textoModalidad,
+        color = Color.White,
+        fontSize = 23.sp
+    )
 }
