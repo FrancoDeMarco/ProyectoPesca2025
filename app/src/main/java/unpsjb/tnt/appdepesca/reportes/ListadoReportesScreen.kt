@@ -135,7 +135,7 @@ fun ListadoReportesScreen(
                 ) {
                     Cabecera()
                 }
-                LineaDivisoria()
+                LineaDivisoriaGruesa()
             }
             listaReportes(listadoReportesViewModel, reportes, navController, reportToDelete, showDialog)
             //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
@@ -159,24 +159,6 @@ fun ListadoReportesScreen(
                     }
                 }
             }
-            //////////////// BOTONES DE AGREGAR, EVENTOS Y SALIR /////////////////////
-            /*item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    val buttonModifier = Modifier
-                        .weight(1f)                 // Ocupa 1/4 del ancho disponible
-                        .aspectRatio(1f)            // Hace que el alto sea igual al ancho (cuadrado)
-                        .padding(horizontal = 4.dp) // Espacio entre botones
-                    Agregar(navController, buttonModifier, listadoReportesViewModel)
-                    Eventos(navController, buttonModifier)
-                    Salir(navController, buttonModifier)
-                }
-            }*/
         }
         DetallesReporte(selectedReport)
         EliminarReporte(showDialog, reportToDelete, listadoReportesViewModel)
@@ -366,7 +348,7 @@ fun LazyListScope.listaReportes(
 ){
     reportes?.let { list -> //Listado de Reportes
         items(list) { reporte ->
-            ItemReporte(
+            ItemReporte(// Item de Reporte
                 reporte = reporte,
                 listadoReportesViewModel = listadoReportesViewModel,
                 modifier = Modifier.fillMaxWidth(),
@@ -383,6 +365,7 @@ fun LazyListScope.listaReportes(
                     navController.navigate("detalle_reporte/${reporte.reportId}")
                 }
             )
+            LineaDivisoriaFina()
         }
     }
 }
@@ -572,13 +555,26 @@ fun ConfirmationDialog(
 }
 
 @Composable
-fun LineaDivisoria(){
+fun LineaDivisoriaGruesa(){
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
     HorizontalDivider(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        thickness = 2.dp,
+        thickness = 3.dp,
+        color = Color(0xFF3E8B75)
+    )
+    Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+}
+
+@Composable
+fun LineaDivisoriaFina(){
+    Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
+    HorizontalDivider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        thickness = 1.dp,
         color = Color(0xFF3E8B75)
     )
     Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
