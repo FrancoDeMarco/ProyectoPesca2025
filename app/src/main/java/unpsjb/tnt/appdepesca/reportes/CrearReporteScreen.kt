@@ -60,7 +60,6 @@ fun CrearReporteScreen(
         derivedStateOf {
             state.reportDate.isNotBlank() &&
                     state.reportTitle.isNotBlank() &&
-                    state.reportDescription.isNotBlank() &&
                     !state.reportImagenUri.isNullOrBlank() &&
                     state.reportModalidad != null // Modalidad es obligatorio
         }
@@ -345,7 +344,6 @@ fun SelectorModalidad(
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
-
         Row(verticalAlignment = Alignment.CenterVertically){
             RadioButton(
                 selected = modalidadSeleccionada == ModalidadPesca.COSTA,
@@ -353,7 +351,6 @@ fun SelectorModalidad(
             )
             Text("Costa", color = Color.White)
         }
-
         Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(
                 selected = modalidadSeleccionada == ModalidadPesca.EMBARCADA,

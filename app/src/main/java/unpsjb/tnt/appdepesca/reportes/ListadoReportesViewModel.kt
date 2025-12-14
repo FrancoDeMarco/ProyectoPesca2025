@@ -129,7 +129,9 @@ class ListadoReportesViewModel(
     }
 
     fun changeModalidad(modalidad: ModalidadPesca){
-        _state.value = state.copy(reportModalidad = modalidad)
+        _state.value = state.copy(
+            reportModalidad = modalidad
+        )
     }
 
     ///////////////CREAR REPORTE/////////////////////////
@@ -185,7 +187,7 @@ class ListadoReportesViewModel(
             reportImagenUri = null,
             reportLat = null,
             reportLng = null,
-            reportModalidad = ModalidadPesca.COSTA // Modalidad por defecto
+            reportModalidad = null // Modalidad por defecto
         )
         limpiarImagenSeleccionada()
     }
@@ -205,7 +207,8 @@ class ListadoReportesViewModel(
             reportDate = reporte.reportFecha.toString(),
             reportImagenUri = reporte.reportImagenUri,
             reportLat = reporte.latitud,
-            reportLng = reporte.longitud
+            reportLng = reporte.longitud,
+            reportModalidad = reporte.reportModalidad
         )
     }
 
@@ -295,6 +298,7 @@ class ListadoReportesViewModel(
             "imagenUri" to (reporte.reportImagenUri ?: ""),
             "latitud" to (reporte.latitud ?: 0.0),
             "longitud" to (reporte.longitud ?: 0.0),
+            "modalidad" to reporte.reportModalidad.name,
             "usuarioId" to reporte.usuarioId
         )
         db.collection("reportes")
