@@ -50,6 +50,8 @@ class ListadoReportesViewModel(
     val imagenSeleccionada: State<String?> = _imagenSeleccionada
     private val _ordenDesc = MutableStateFlow(true)
     val ordenDesc: StateFlow<Boolean> = _ordenDesc
+    private val _totalReportes = MutableStateFlow(0)
+    val totalReportes: StateFlow<Int> = _totalReportes.asStateFlow()
     private val _limite = MutableStateFlow(3) // 3 por defecto
     val limite: StateFlow<Int> = _limite.asStateFlow()
 
@@ -76,8 +78,7 @@ class ListadoReportesViewModel(
         val auth = FirebaseAuth.getInstance()
 
         auth.addAuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            _uid.value = user?.uid
+            _uid.value = firebaseAuth.currentUser?.uid
         }
         viewModelScope.launch {
             combine(
@@ -86,35 +87,39 @@ class ListadoReportesViewModel(
                 ordenDesc,
                 limite
             ) { uidValue, fechas, desc, limit ->
-                if (uidValue == null) return@combine null
-                Parametros(uidValue, fechas, desc, limit)
+                if (uidValue == null) null
+                else Parametros(uidValue, fechas, desc, limit)
             }.collectLatest { params ->
-                    if (params == null) return@collectLatest //aún no sabemos qué usuario está logueado
-                    // Traer datos de Firestore hacia Room
-                    syncFromFirestore(params.uid)
-                    // Elegir orden ASC/DESC
-                    val flowBase =
-                        if (params.desc)
-                        dao.getReportesByUsuarioOrdenadosPorFechaDesc(params.uid)
-                    else
-                        dao.getReportesByUsuarioOrdenadosPorFechaAsc(params.uid)
-                    // Combinar con fechas
-                    flowBase
-                        .combine(fechasFiltro) { reportes, fechasActuales ->
-                            filterReportesByDates(
-                                reportes,
-                                fechasActuales.first,
-                                fechasActuales.second
-                            )
+                if (params == null) return@collectLatest //aún no sabemos qué usuario está logueado
+                // Traer datos de Firestore hacia Room
+                syncFromFirestore(params.uid)
+                    dao.getReportesByUsuario(params.uid)
+                    .collectLatest { reportes ->
+                        // Filtrar por fechas
+                        val filtrados = filterReportesByDates(
+                            reportes,
+                            params.fechas.first,
+                            params.fechas.second
+                        )
+                        // Guardar TOTAL (para mostrar/ocultar botón)
+                        _totalReportes.value = filtrados.size
+                        // Limitar (solo visibles)
+                        val visibles = filtrados.take(params.limite)
+                        // Ordenar solo los visibles
+                        val ordenados = if (params.desc) {
+                            visibles.sortedByDescending { it.reportFecha }
+                        } else {
+                            visibles.sortedBy { it.reportFecha }
                         }
-                        .collectLatest { reportesFiltrados -> // Actualiza el estado con los reportes filtrados
-                            _state.value = state.copy(
-                                report = reportesFiltrados.take(params.limite)// solo muestra 3 reportes por defecto
-                            )
-                        }
-                }
+                        //Actualizar UI
+                        _state.value = _state.value.copy(
+                            report = ordenados
+                        )
+                    }
+            }
         }
     }
+
 
     fun changeTitle(title: String) {
         _state.value = state.copy(reportTitle = title)
