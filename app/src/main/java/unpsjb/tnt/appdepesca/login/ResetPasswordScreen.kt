@@ -99,7 +99,7 @@ fun ResetPasswordScreen(
                 onDismissRequest = { showDialog = false },
                 title = { Text("Correo enviado") },
                 text = {
-                    Text("Revisá tu casilla y seguí el enlace para restablecer la contraseña.")
+                    Text("Si el correo está registrado, vas a recibir un email con instrucciones para recuperar tu contraseña.")
                 },
                 confirmButton = {
                     TextButton(
