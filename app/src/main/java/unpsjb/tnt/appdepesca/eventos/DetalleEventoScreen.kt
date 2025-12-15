@@ -55,13 +55,24 @@ fun DetalleEventoScreen(
                 )
                 Spacer(Modifier.height(16.dp))
             }
-            evento?.lugar?.let { item { InfoCard("Lugar", it) } }
-            evento?.fecha?.let { item { InfoCard("Fecha", it) } }
-            evento?.descripcion?.let { item { InfoCard("Descripcion", it) } }
-            evento?.bases?.let {  item { InfoCard("Bases", it) } }
-            evento?.premio?.let {  item { InfoCard("Premio", it) } }
-            evento?.enlaces?.let {  item { InfoCard("Enlaces", it.joinToString("\n") { "• $it" }) } }
-        }
+            evento?.lugar
+                ?.takeIf { it.isNotBlank()} // Elimina el campo si está vacío
+                ?.let { item { InfoCard("Lugar", it) } }
+            evento?.fecha
+                ?.takeIf { it.isNotBlank()}
+                ?.let { item { InfoCard("Fecha", it) } }
+            evento?.descripcion
+                ?.takeIf { it.isNotBlank()}
+                ?.let { item { InfoCard("Descripcion", it) } }
+            evento?.bases
+                ?.takeIf { it.isNotBlank()}
+                ?.let {  item { InfoCard("Bases", it) } }
+            evento?.premio
+                ?.takeIf { it.isNotBlank()}
+                ?.let {  item { InfoCard("Premio", it) } }
+            evento?.enlaces
+                ?.takeIf { it.isNotEmpty()}
+                ?.let { item { InfoCard( "Enlaces", it.joinToString("\n") { enlace -> "• $enlace" }) } } }
         BotonVolver(navController)
     }
 }
