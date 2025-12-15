@@ -84,7 +84,7 @@ fun Registro(viewModel: RegistroViewModel, navController: NavController){
         Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
         RepetirPasswordField(repeatPassword = state.repeatPassword, onRepeatPasswordChange = { viewModel.onRepeatPasswordChange(it)})
         Spacer(modifier = Modifier.height(16.dp))  // Espacio de 16dp entre los campos
-        RegistrarseButton(botonHabilitado = state.formValid, onClick = { viewModel.register()})
+        RegistrarseButton(botonHabilitado = true, onClick = { viewModel.register()})
         MensajeDeError(error = state.error)
         Spacer(modifier = Modifier.height(8.dp))  // Espacio de 8dp entre los campos
         TengoCuentaButton(navController)

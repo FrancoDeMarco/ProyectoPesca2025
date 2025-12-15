@@ -141,7 +141,8 @@ fun ListadoReportesScreen(
             //////////////// PARA CARGAR 3 REPORTES MÁS /////////////////////
             item {
                 val limite = listadoReportesViewModel.limite.collectAsState().value
-                if (reportes.size >= limite) {
+                val total = listadoReportesViewModel.totalReportes.collectAsState().value
+                if (total > limite) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
